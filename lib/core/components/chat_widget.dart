@@ -38,7 +38,9 @@ class _ChatWidgetState extends State<ChatWidget> {
     _chatCubit.setCurrentChat(widget.eventId);
 
     // Отмечаем сообщения как прочитанные
-    _chatCubit.markEventMessagesAsRead(widget.eventId);
+    if (_chatCubit.getUnreadCountForEvent(widget.eventId) != 0) {
+      _chatCubit.markEventMessagesAsRead(widget.eventId);
+    }
   }
 
   void _onScroll() {

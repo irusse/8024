@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
+import 'package:neighbours/core/components/custom_svg.dart';
 import 'package:neighbours/core/components/shaped_cached_image.dart';
 import 'package:neighbours/core/constants/ui_constants.dart';
 import 'package:neighbours/core/cubits/chat/chat_cubit.dart';
@@ -29,12 +30,7 @@ class ChatListItem extends StatelessWidget {
             Expanded(
               child: Row(
                 children: [
-                  ShapedCachedImage(
-                    url: entity.image,
-                    radius: 24,
-                    border:
-                        Border.all(width: 2, color: context.color.secondary),
-                  ),
+                  _chatPicture(context, entity),
                   const HorizontalGap(8),
                   Expanded(
                       child: Text(
@@ -76,5 +72,24 @@ class ChatListItem extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _chatPicture(BuildContext context, EventEntity event) {
+    if (event.image != null && event.image!.isNotEmpty) {
+      return ShapedCachedImage(
+        url: entity.image,
+        radius: 24,
+      );
+    }
+    return CircleAvatar(
+        radius: 24,
+        backgroundColor: event.category.color,
+        child: CustomSvg(
+          asset: event.category.icon,
+          color: Colors.white,
+          width: 24,
+          height: 24,
+          isNetwork: true,
+        ));
   }
 }
