@@ -1,0 +1,61 @@
+abstract class AppRoutePath {
+  static const home = '/';
+  static const authWelcome = '/auth-welcome';
+  static const splash = '/splash';
+  static const login = '/login';
+  static const propertyDetails = '/property-details/:propertyId';
+  static const propertyEdit = 'edit';
+  static const communityInfo = '/community-info';
+  static const resourceForm = 'resource-form';
+  static const sms = '/sms/:phone';
+  static const profile = '/profile';
+  static const editProfile = 'edit';
+  static const myEvents = 'my-events';
+  static const noInternet = '/no_internet';
+  static const unexpectedError = '/unexpected-error';
+  static const notificationForm = '/notification-form';
+  static const eventForm = '/event-form';
+  static const eventDetails = '/event-details';
+  static const fullMapPreview = '/full-map-preview';
+  static const propertyVerifications = 'property-verifications';
+  static const documentPage = 'document-page/:key';
+  static const chatListPage = '/chat-list-page';
+  static const chatPage = 'chat-page/:eventId';
+  static const settingsPage = 'settings';
+  static const deleteSmsCode = 'delete-sms-code';
+}
+
+abstract class AppRouteBuilder {
+  static String documentPage(String key) =>
+      '${AppRoutePath.profile}/document-page/$key';
+
+  static String propertyDetails(int propertyId) =>
+      '/property-details/$propertyId';
+
+  static String chatPage(int eventId) =>
+      '${AppRoutePath.chatListPage}/${AppRoutePath.chatPage}'
+          .replaceAll(':eventId', eventId.toString());
+
+  static String propertyEdit(int propertyId) =>
+      '/property-details/$propertyId/${AppRoutePath.propertyEdit}';
+
+  static String resourceForm(int propertyId) =>
+      '/property-details/$propertyId/${AppRoutePath.resourceForm}';
+
+  static String editProfile() =>
+      "${AppRoutePath.profile}/${AppRoutePath.editProfile}";
+
+  static String myEvents() =>
+      '${AppRoutePath.profile}/${AppRoutePath.myEvents}';
+
+  static String settings() =>
+      '${AppRoutePath.profile}/${AppRoutePath.settingsPage}';
+
+  static String propertyVerifications() =>
+      '${AppRoutePath.profile}/${AppRoutePath.propertyVerifications}';
+
+  static String deleteSmsCode() =>
+      '${AppRoutePath.profile}/${AppRoutePath.settingsPage}/${AppRoutePath.deleteSmsCode}';
+
+  static String sms(String phone) => '/sms/$phone';
+}

@@ -1,0 +1,105 @@
+name: neighbours
+description: "A new Flutter project."
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+# In Windows, build-name is used as the major, minor, and patch parts
+# of the product and file versions while build-number is used as the build suffix.
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.3 <4.0.0'
+
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # UI
+  cupertino_icons: ^1.0.2
+  flutter_screenutil: ^5.9.3
+  cached_network_image: ^3.4.1
+
+  # State Management
+  flutter_bloc: ^9.1.1
+  equatable: ^2.0.7
+
+  # Navigation
+  go_router: ^16.0.0
+
+  # Network
+  dio: ^5.8.0+1
+  pretty_dio_logger: ^1.4.0
+
+
+  # Dependency Injection
+  get_it: ^8.0.3
+  injectable: ^2.5.1
+
+  # Local Storage
+  objectbox: ^2.0.0
+  objectbox_flutter_libs: ^2.0.0
+  path_provider: ^2.1.2
+
+  intl: ^0.20.2
+
+  injectable_generator: ^2.3.2
+  objectbox_generator: ^2.0.0
+  mask_text_input_formatter: ^2.7.0
+  image_picker: ^1.1.2
+  mapbox_maps_flutter: ^2.10.0
+  freezed: ^2.5.7
+  freezed_annotation: ^2.4.4
+  json_annotation: ^4.9.0
+  flutter_dotenv: ^5.2.1
+  flutter_secure_storage: ^9.2.4
+  http: ^1.4.0
+  collection: ^1.19.1
+  flutter_svg: ^2.2.0
+  dartz: ^0.10.1
+  socket_io_client: ^3.1.2
+  geocoding: ^4.0.0
+  geolocator: ^14.0.2
+  bloc: ^9.0.0
+  vector_graphics: ^1.1.19
+  chucker_flutter: ^1.8.5
+  change_app_package_name: ^1.5.0
+  flutter_markdown_plus: ^1.0.3
+  auto_size_text: ^3.0.0
+  shared_preferences: ^2.5.3
+  flutter_local_notifications: ^19.4.0
+  app_links: ^6.4.1
+
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  json_serializable: ^6.8.0
+  flutter_lints: ^2.0.0
+  build_runner: ^2.4.15
+  vector_graphics_compiler: ^1.1.19
+
+flutter:
+  uses-material-design: true
+  assets:
+    - path: assets/icons/
+      transformers:
+          - package: vector_graphics_compiler
+    - assets/images/
+    - .env
+
+
