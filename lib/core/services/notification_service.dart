@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -38,7 +39,11 @@ class NotificationService {
       initializationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
         if (response.payload != null) {
-          _handleNotificationTap(response.payload!);
+          final data = jsonDecode(response.payload!);
+          final eventId = data["eventId"];
+          final eventTitle = data["eventTitle"];
+
+          _handleNotificationTap(eventId, eventTitle);
         }
       },
     );
@@ -68,10 +73,10 @@ class NotificationService {
     _isInitialized = true;
   }
 
-  void _handleNotificationTap(String eventId) {
+  void _handleNotificationTap(String eventId, String eventTitle) {
     getIt<AppRouter>()
         .router
-        .push(AppRouteBuilder.chatPage(int.parse(eventId)));
+        .push(AppRouteBuilder.chatPage(int.parse(eventId), eventTitle));
   }
 
   NotificationDetails _chatNotificationDetails() {
@@ -93,14 +98,13 @@ class NotificationService {
     final eventsCubit = getIt<EventsCubit>();
     final event = eventsCubit.state.events[message.eventId] ??
         eventsCubit.state.notifications[message.eventId];
-
+    String eventTitle = "Чат";
     if (event != null) {
-      final eventTitle = event.title;
-      debugPrint('Новое сообщение в событии "$eventTitle"');
+      eventTitle = event.title;
     }
     final title = event is FullEvent
-        ? 'Мероприятие "${event.title}"'
-        : 'Оповещение "${event!.title}"';
+        ? 'Мероприятие "$eventTitle"'
+        : 'Оповещение "$eventTitle"';
     final body =
         '${message.user.firstName}: ${message.text.length > 25 ? "${message.text.substring(0, 25)}..." : message.text}';
     return notificationPlugin.show(
@@ -108,7 +112,10 @@ class NotificationService {
       title,
       body,
       _chatNotificationDetails(),
-      payload: message.eventId.toString(),
+      payload: jsonEncode({
+        "eventId": message.eventId.toString(),
+        "eventTitle": eventTitle,
+      }),
     );
   }
 }

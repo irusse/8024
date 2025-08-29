@@ -17,7 +17,10 @@ class ChatList extends StatelessWidget {
     final allUserNotifications =
         context.read<EventsCubit>().allUserNotifications(userId);
     return Scaffold(
-      appBar: const DefaultAppBar(showBackButton: true),
+      appBar: const DefaultAppBar(
+        showBackButton: true,
+        title: 'Чаты',
+      ),
       body: DefaultTabController(
         length: 2,
         child: Column(

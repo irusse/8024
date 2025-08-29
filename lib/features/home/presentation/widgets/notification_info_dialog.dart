@@ -54,15 +54,26 @@ class NotificationInfoDialog extends StatelessWidget {
               ),
             ),
             const VerticalGap(16),
-            _bottom(context, notification.id, isCreator, isParticipant, state),
+            _bottom(context,
+                eventId: notification.id,
+                isCreator: isCreator,
+                isParticipant: isParticipant,
+                eventTitle: notification.title,
+                state: state),
           ],
         );
       },
     );
   }
 
-  Widget _bottom(BuildContext context, int eventId, bool isCreator,
-      bool isParticipant, EventsState state) {
+  Widget _bottom(
+    BuildContext context, {
+    required int eventId,
+    required String eventTitle,
+    required bool isCreator,
+    required bool isParticipant,
+    required EventsState state,
+  }) {
     if (isCreator) {
       return Row(
         children: [
@@ -75,7 +86,8 @@ class NotificationInfoDialog extends StatelessWidget {
           const HorizontalGap(16),
           Expanded(
               child: CustomOutlinedButton(
-            onPressed: () => context.push(AppRouteBuilder.chatPage(eventId)),
+            onPressed: () =>
+                context.push(AppRouteBuilder.chatPage(eventId, eventTitle)),
             text: 'Чат',
             verticalPadding: 12,
           )),
@@ -100,8 +112,8 @@ class NotificationInfoDialog extends StatelessWidget {
                 const HorizontalGap(16),
                 Expanded(
                   child: CustomOutlinedButton(
-                    onPressed: () =>
-                        context.push(AppRouteBuilder.chatPage(eventId)),
+                    onPressed: () => context
+                        .push(AppRouteBuilder.chatPage(eventId, eventTitle)),
                     text: 'Чат',
                     verticalPadding: 12,
                   ),

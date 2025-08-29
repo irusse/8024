@@ -194,6 +194,8 @@ class AppRouter {
                 path: AppRoutePath.chatPage,
                 pageBuilder: (context, state) {
                   final eventId = int.parse(state.pathParameters['eventId']!);
+                  final eventTitle =
+                      state.pathParameters['eventTitle'] ?? 'Чат';
 
                   return CustomPageTransition.slideFromRight(
                       child: MultiBlocProvider(
@@ -203,7 +205,10 @@ class AppRouter {
                       ),
                       BlocProvider.value(value: getIt<UserCubit>()),
                     ],
-                    child: Chat(eventId: eventId),
+                    child: Chat(
+                      eventId: eventId,
+                      eventTitle: eventTitle,
+                    ),
                   ));
                 }),
           ],

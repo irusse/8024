@@ -120,7 +120,7 @@ class EventDetails extends StatelessWidget {
             Scaffold(
               appBar: DefaultAppBar(
                 showBackButton: true,
-                title: fullEvent.category.name,
+                title: fullEvent.title,
                 actions: [
                   CustomButton(
                     onPressed: () => _onOptionsClick(

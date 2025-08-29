@@ -10,13 +10,14 @@ import 'package:neighbours/features/chat/presentation/widgets/message_list.dart'
 
 class Chat extends StatelessWidget {
   final int eventId;
+  final String eventTitle;
 
-  const Chat({super.key, required this.eventId});
+  const Chat({super.key, required this.eventId, required this.eventTitle});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const DefaultAppBar(showBackButton: true, title: 'Чат'),
+      appBar: DefaultAppBar(showBackButton: true, title: eventTitle),
       body: ChatWidget(
         eventId: eventId,
       ),

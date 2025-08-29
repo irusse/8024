@@ -20,7 +20,7 @@ abstract class AppRoutePath {
   static const propertyVerifications = 'property-verifications';
   static const documentPage = 'document-page/:key';
   static const chatListPage = '/chat-list-page';
-  static const chatPage = 'chat-page/:eventId';
+  static const chatPage = 'chat-page/:eventId/:eventTitle';
   static const settingsPage = 'settings';
   static const deleteSmsCode = 'delete-sms-code';
 }
@@ -32,9 +32,16 @@ abstract class AppRouteBuilder {
   static String propertyDetails(int propertyId) =>
       '/property-details/$propertyId';
 
-  static String chatPage(int eventId) =>
+  static String chatPage(int eventId, String eventTitle) =>
       '${AppRoutePath.chatListPage}/${AppRoutePath.chatPage}'
-          .replaceAll(':eventId', eventId.toString());
+          .replaceAll(
+            ':eventId',
+            eventId.toString(),
+          )
+          .replaceAll(
+            ':eventTitle',
+            eventTitle,
+          );
 
   static String propertyEdit(int propertyId) =>
       '/property-details/$propertyId/${AppRoutePath.propertyEdit}';
