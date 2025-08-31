@@ -102,9 +102,9 @@ class _HomeState extends State<Home>
     initializeServices();
     performDataFetch();
     final chatCubit = context.read<ChatCubit>();
-    chatCubit.initializeSocket().then((_) {
-      chatCubit.listenEventMessages();
-    });
+    // chatCubit.initializeSocket().then((_) {
+    //   chatCubit.listenEventMessages();
+    // });
 
     _viewSwitcherNotifier.addListener(_onViewSwitcherChanged);
   }

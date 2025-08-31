@@ -60,11 +60,9 @@ abstract class LayerService {
     double? clusterMaxZoom,
   }) async {
     try {
-      print("Переустанавливаю");
       // Проверяем, существует ли источник
       final sourceExists = await style.styleSourceExists(sourceId);
       if (sourceExists) {
-        print("Удаляю источник ${sourceId}");
         await style.removeStyleSource(sourceId);
         await _removeExistingLayers(style, layers);
       }

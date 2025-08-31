@@ -119,7 +119,11 @@ class _EventFormState extends State<EventForm> {
             prev.updateEventState != curr.updateEventState,
         listener: (context, state) {
           state.createEventState.handleApiState(
-              onSuccess: () => context.pop(),
+              onSuccess: () {
+                context.snackbar
+                    .success(context, "Мероприятие успешно создано");
+                context.pop();
+              },
               onError: (error) => context.snackbar.show(context, error));
           state.updateEventState.handleApiState(
               onSuccess: () {
@@ -230,7 +234,8 @@ class _EventFormState extends State<EventForm> {
                               builder: (context, state) {
                                 return ReusableTextField(
                                   controller: _descriptionEditingController,
-                                  hintText: '',
+                                  hintText: 'Введите описание мероприятия...',
+                                  maxLines: 4,
                                   onChange: (value) => context
                                       .read<EventFormCubit>()
                                       .setDescription(value),
@@ -277,7 +282,7 @@ class _EventFormState extends State<EventForm> {
                           BlocBuilder<EventFormCubit, EventFormState>(
                             builder: (context, eventFormState) {
                               return PrimaryButton(
-                                text: isNew ? 'Добавить' : 'Изменить',
+                                text: isNew ? 'Создать' : 'Редактировать',
                                 isLoading:
                                     eventsState.createEventState.isLoading ||
                                         eventsState.updateEventState.isLoading,

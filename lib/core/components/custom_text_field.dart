@@ -23,6 +23,7 @@ class CustomTextField extends StatefulWidget {
   final TextAlign textAlign;
   final ScrollController? scrollController;
   final Widget? prefix;
+  final int? maxLines;
 
   const CustomTextField(
       {super.key,
@@ -43,7 +44,8 @@ class CustomTextField extends StatefulWidget {
       this.enabled = true,
       this.counterText,
       this.textStyle,
-      this.borderVisible = false});
+      this.borderVisible = false,
+      this.maxLines});
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
@@ -111,7 +113,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
               maxLength: widget.maxLength,
               focusNode: _focusNode,
               enabled: widget.enabled,
-
               onChanged: widget.onChanged,
               textAlign: widget.textAlign,
               readOnly: widget.readOnly,
@@ -122,6 +123,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                     fontWeight: FontWeight.w500,
                   ),
               keyboardType: widget.keyboardType,
+              maxLines: widget.maxLines,
               inputFormatters: widget.inputFormatters ??
                   (widget.keyboardType ==
                           const TextInputType.numberWithOptions(decimal: true)

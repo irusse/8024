@@ -187,7 +187,8 @@ class _NotificationFormState extends State<NotificationForm> {
                               state.description.trim().isEmpty;
                           return ReusableTextField(
                             controller: _descriptionTextController,
-                            hintText: 'Утечка возле 4 дома',
+                            hintText: 'Введите описание оповещения...',
+                            maxLines: 4,
                             errorText:
                                 (state.descriptionDirty && isDescriptionEmpty)
                                     ? 'Описание обязательно'

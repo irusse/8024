@@ -16,22 +16,19 @@ class ChatSocketDataSource {
   bool _isConnected = false;
   StreamSubscription<String?>? _tokenSub;
 
+  final Set<int> _roomsToJoin = <int>{};
+
   io.Socket? get socket => _socket;
 
-  // Вызываем один раз при старте приложения (после DI setup)
   Future<void> initializeSocket() async {
-    // подписка на изменения токена
     _tokenSub ??= _authService.accessTokenStream.listen((token) async {
       if (token == null || token.isEmpty) {
-        // нет токена → гарантированно отключаемся
         _teardownSocket();
         return;
       }
-      // есть новый токен → переподключаемся с новым query
       await _reconnectWithToken(token);
     });
 
-    // первичная инициализация, если токен уже есть
     final token = await _authService.getAccessToken();
     if (token != null && token.isNotEmpty) {
       await _reconnectWithToken(token);
@@ -48,21 +45,21 @@ class ChatSocketDataSource {
         .setReconnectionDelay(1000)
         .setReconnectionDelayMax(5000)
         .setTimeout(20000)
-        .setQuery({'token': token, 'EIO': '4'})
+        .setQuery({'token': token})
         .enableForceNew()
         .build();
 
-    _socket = io.io(
-      AppConfig.socketUrl,
-      opts,
-    );
+    _socket = io.io(AppConfig.socketUrl, opts);
     _setupSocketListeners();
-    _socket!.connect(); // вручную подключаемся
+    _socket!.connect();
   }
 
   void _setupSocketListeners() {
     _socket?.onConnect((_) {
       _isConnected = true;
+      for (final id in _roomsToJoin) {
+        _emitJoin(id);
+      }
     });
 
     _socket?.onDisconnect((_) {
@@ -72,19 +69,36 @@ class ChatSocketDataSource {
     _socket?.onConnectError((error) {
       _isConnected = false;
     });
+  }
 
-    _socket?.onError((error) {});
-
-    _socket?.on('connected', (data) {});
+  void _emitJoin(int eventId) {
+    _socket!.emit('joinEvent', eventId);
   }
 
   void joinEvent(int eventId) {
-    if (_socket == null || !_isConnected) {
-      debugPrint('Socket not connected. Cannot join event.');
+    if (_socket == null) {
+      _roomsToJoin.add(eventId);
+      debugPrint('Socket not initialized yet. Queued join for $eventId');
       return;
     }
-    _socket!.emit('joinEvent', eventId);
+    if (!_isConnected) {
+      _roomsToJoin.add(eventId);
+      debugPrint('Socket not connected. Queued join for $eventId');
+      return;
+    }
+    // Уже подключены — вступаем сразу
+    _emitJoin(eventId);
     debugPrint('Joined event chat: $eventId');
+  }
+
+  void leaveEvent(int eventId) {
+    // удаляем намерение, чтобы при реконнекте не вступать снова
+    _roomsToJoin.remove(eventId);
+
+    if (_socket == null || !_isConnected) {
+      return;
+    }
+    _socket!.emit('leaveEvent', eventId);
   }
 
   void sendMessage(int eventId, String messageText) {
@@ -94,40 +108,26 @@ class ChatSocketDataSource {
     }
     final messageData = {
       'eventId': eventId,
-      'message': {
-        'text': messageText,
-      }
+      'message': {'text': messageText}
     };
     _socket!.emit('sendMessage', messageData);
   }
 
   void listenToNewMessages(Function(MessageModel) onNewMessage) {
-    if (_socket == null) {
-      return;
-    }
-    _socket!.on('newMessage', (data) {
+    _socket?.on('newMessage', (data) {
       onNewMessage(MessageModel.fromJson(data));
     });
   }
 
-  void leaveEvent(int eventId) {
-    if (_socket == null || !_isConnected) {
-      return;
-    }
-    _socket!.emit('leaveEvent', eventId);
-  }
-
   void disconnect() {
+    _roomsToJoin.clear();
     _teardownSocket();
     _tokenSub?.cancel();
     _tokenSub = null;
   }
 
   void _teardownSocket() {
-    try {
-      _socket?.disconnect();
-      _socket?.dispose();
-    } catch (_) {}
+    _socket?.dispose();
     _socket = null;
     _isConnected = false;
   }

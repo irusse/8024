@@ -80,9 +80,7 @@ class _ChatWidgetState extends State<ChatWidget> {
 
   @override
   void dispose() {
-    // Сбрасываем текущий открытый чат
     _chatCubit.setCurrentChat(null);
-
     _scrollController.dispose();
     _messageController.dispose();
     super.dispose();

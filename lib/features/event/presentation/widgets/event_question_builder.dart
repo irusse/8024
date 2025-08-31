@@ -146,7 +146,7 @@ class _EventQuestionBuilderState extends State<EventQuestionBuilder> {
           ),
           const HorizontalGap(8),
           Text(
-            'Добавить вопрос',
+            'Добавить ответ',
             style:
                 context.text.bodyMedium.copyWith(color: context.color.primary),
           )

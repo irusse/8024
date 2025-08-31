@@ -98,7 +98,7 @@ flutter:
   assets:
     - path: assets/icons/
       transformers:
-          - package: vector_graphics_compiler
+        - package: vector_graphics_compiler
     - assets/images/
     - .env
 

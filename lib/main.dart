@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
       selector: (state) => state.isDark,
       builder: (context, isDark) {
         return MaterialApp.router(
-          title: 'Тучат',
+          title: '8024',
           debugShowCheckedModeBanner: false,
           theme: createLightTheme(),
           darkTheme: createDarkTheme(),
@@ -63,10 +63,4 @@ class MyApp extends StatelessWidget {
       },
     );
   }
-}
-
-Future<void> mainWithEnv(
-    {required String baseUrl, required String mabBox}) async {
-  // BASE_URL будет подхвачен через dart-define
-  main();
 }

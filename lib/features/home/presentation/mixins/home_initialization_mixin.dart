@@ -101,6 +101,9 @@ mixin HomeInitializationMixin<T extends StatefulWidget> on State<Home> {
       ]);
       if (firstInit) {
         chatCubit.fetchUnreadMessageCounts(userCubit.state.user.id);
+        await chatCubit.initializeSocket().then((_) {
+          chatCubit.listenEventMessages();
+        });
       }
       final community = userCubit.state.user.communities.firstOrNull;
 

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/router/app_router.dart';
 
@@ -10,6 +11,8 @@ class NavigationService {
   NavigationService(this._appRouter);
 
   void goToLogin() {
-    _appRouter.router.go(AppRoutePath.login);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _appRouter.router.go(AppRoutePath.login);
+    });
   }
 }

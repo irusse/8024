@@ -1,5 +1,9 @@
 PODS:
+  - app_links (6.4.1):
+    - Flutter
   - Flutter (1.0.0)
+  - flutter_local_notifications (0.0.1):
+    - Flutter
   - flutter_secure_storage (6.0.0):
     - Flutter
   - geocoding_ios (1.0.5):
@@ -9,17 +13,17 @@ PODS:
     - FlutterMacOS
   - image_picker_ios (0.0.1):
     - Flutter
-  - mapbox_maps_flutter (2.8.0):
+  - mapbox_maps_flutter (2.10.0):
     - Flutter
-    - MapboxMaps (= 11.12.0)
+    - MapboxMaps (= 11.14.0)
     - Turf (= 4.0.0)
-  - MapboxCommon (24.12.0):
+  - MapboxCommon (24.14.0):
     - Turf (= 4.0.0)
-  - MapboxCoreMaps (11.12.0):
-    - MapboxCommon (= 24.12.0)
-  - MapboxMaps (11.12.0):
-    - MapboxCommon (= 24.12.0)
-    - MapboxCoreMaps (= 11.12.0)
+  - MapboxCoreMaps (11.14.0):
+    - MapboxCommon (= 24.14.0)
+  - MapboxMaps (11.14.0):
+    - MapboxCommon (= 24.14.0)
+    - MapboxCoreMaps (= 11.14.0)
     - Turf (= 4.0.0)
   - ObjectBox (1.9.2)
   - objectbox_flutter_libs (0.0.1):
@@ -41,7 +45,9 @@ PODS:
   - Turf (4.0.0)
 
 DEPENDENCIES:
+  - app_links (from `.symlinks/plugins/app_links/ios`)
   - Flutter (from `Flutter`)
+  - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - geocoding_ios (from `.symlinks/plugins/geocoding_ios/ios`)
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/darwin`)
@@ -63,8 +69,12 @@ SPEC REPOS:
     - Turf
 
 EXTERNAL SOURCES:
+  app_links:
+    :path: ".symlinks/plugins/app_links/ios"
   Flutter:
     :path: Flutter
+  flutter_local_notifications:
+    :path: ".symlinks/plugins/flutter_local_notifications/ios"
   flutter_secure_storage:
     :path: ".symlinks/plugins/flutter_secure_storage/ios"
   geocoding_ios:
@@ -89,15 +99,17 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/sqflite_darwin/darwin"
 
 SPEC CHECKSUMS:
+  app_links: 3dbc685f76b1693c66a6d9dd1e9ab6f73d97dc0a
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  flutter_local_notifications: a5a732f069baa862e728d839dd2ebb904737effb
   flutter_secure_storage: 1ed9476fba7e7a782b22888f956cce43e2c62f13
   geocoding_ios: 33776c9ebb98d037b5e025bb0e7537f6dd19646e
   geolocator_apple: ab36aa0e8b7d7a2d7639b3b4e48308394e8cef5e
   image_picker_ios: 7fe1ff8e34c1790d6fff70a32484959f563a928a
-  mapbox_maps_flutter: d2baa706ab3c1e5ec304ee1e011f25449f754746
-  MapboxCommon: 5be9807f4d03e616ecf470ab8202f0d88ecbd459
-  MapboxCoreMaps: 036e9ce8711450a368304e30adc0156383357096
-  MapboxMaps: 9539e2193f6723b3179d1e8243aac5abf9b0e365
+  mapbox_maps_flutter: 63957d7c8978bba514fb113906e0d87767eadb5f
+  MapboxCommon: 7aa10394fbcfc1d5a737d2a157c35388666e77e5
+  MapboxCoreMaps: fddb4a008e3200c963a68074afccd8f6d816544c
+  MapboxMaps: 308bb0be5e7a59c9f68a3b06f48998ccb4477583
   ObjectBox: 46757a559717ab49b1cc0612eaff82b705acf394
   objectbox_flutter_libs: d196bad2ce3e05e9a8e18529f31634a1a2457c4c
   package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499

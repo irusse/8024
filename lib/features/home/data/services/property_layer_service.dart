@@ -213,7 +213,6 @@ class PropertyLayerService extends LayerService {
     final dpr = MediaQuery.of(context).devicePixelRatio; // <- точный DPR
     const double targetDp = 56; // <- желаемый логический размер на карте
     final int pxSize = (targetDp * dpr).round();
-    print("Reupdating");
     for (final property in properties.values) {
       final String imageId = property.id.toString();
       try {

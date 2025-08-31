@@ -11,6 +11,7 @@ class ReusableTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final VoidCallback? onTap;
   final void Function(String)? onChange;
+  final int? maxLines;
 
   const ReusableTextField({
     super.key,
@@ -21,6 +22,7 @@ class ReusableTextField extends StatelessWidget {
     this.keyboardType,
     this.onChange,
     this.onTap,
+    this.maxLines,
   });
 
   @override
@@ -29,7 +31,9 @@ class ReusableTextField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          height: UIConstants.defaultTextFieldHeight,
+          height: maxLines != null && maxLines! > 1 
+              ? null 
+              : UIConstants.defaultTextFieldHeight,
           child: CustomTextField(
             controller: controller,
             readOnly: readOnly,
@@ -40,6 +44,7 @@ class ReusableTextField extends StatelessWidget {
             enabled: true,
             textStyle: context.text.bodyMedium,
             borderVisible: true,
+            maxLines: maxLines,
           ),
         ),
         if (errorText != null)
