@@ -53,3 +53,7 @@ app.*.map.json
 .fvm/
 
 .env
+keystore.properties
+**/*.keystore
+**/*.jks
+*.jks
