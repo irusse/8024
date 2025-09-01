@@ -28,34 +28,20 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  # UI
+
   cupertino_icons: ^1.0.2
   flutter_screenutil: ^5.9.3
   cached_network_image: ^3.4.1
-
-  # State Management
   flutter_bloc: ^9.1.1
-  equatable: ^2.0.7
-
-  # Navigation
   go_router: ^16.0.0
-
-  # Network
   dio: ^5.8.0+1
   pretty_dio_logger: ^1.4.0
-
-
-  # Dependency Injection
   get_it: ^8.0.3
   injectable: ^2.5.1
-
-  # Local Storage
   objectbox: ^2.0.0
   objectbox_flutter_libs: ^2.0.0
   path_provider: ^2.1.2
-
   intl: ^0.20.2
-
   injectable_generator: ^2.3.2
   objectbox_generator: ^2.0.0
   mask_text_input_formatter: ^2.7.0
@@ -76,7 +62,6 @@ dependencies:
   bloc: ^9.0.0
   vector_graphics: ^1.1.19
   chucker_flutter: ^1.8.5
-  change_app_package_name: ^1.5.0
   flutter_markdown_plus: ^1.0.3
   auto_size_text: ^3.0.0
   shared_preferences: ^2.5.3
