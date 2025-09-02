@@ -4,10 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/components/default_app_bar.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
-import 'package:neighbours/core/components/phone_input_field.dart';
+import 'package:neighbours/core/state/api_state.dart';
+import 'package:neighbours/features/auth/presentation/widgets/country_code_select_button.dart';
 import 'package:neighbours/core/components/primary_button.dart';
 import 'package:neighbours/core/router/app_routes.dart';
 import 'package:neighbours/core/services/snackbar_service.dart';
+import 'package:neighbours/features/auth/presentation/widgets/phone_number_text_field.dart';
 import '../../../../core/constants/ui_constants.dart';
 import '../cubits/auth/auth_cubit.dart';
 
@@ -19,35 +21,22 @@ class PhoneAuthPage extends StatefulWidget {
 }
 
 class _PhoneAuthPageState extends State<PhoneAuthPage> {
-  final _controller = TextEditingController();
-
-  void _onContinue() {
-    final phone = '7${_controller.text.replaceAll(RegExp(r'\D'), '')}';
-    if (phone.length == 11) {
-      context.read<AuthCubit>().phoneLogin(phone);
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
+    final isValid = context.select<AuthCubit, bool>((c) => c.state.isValid);
     return BlocListener<AuthCubit, AuthState>(
+      listenWhen: (prev, curr) => prev.loginState != curr.loginState,
       listener: (context, state) {
-        if (state is AuthAuthenticated || state is SmsSent) {
-          final phone = '7${_controller.text.replaceAll(RegExp(r'\D'), '')}';
-          context.pushNamed(AppRouteBuilder.sms(phone));
-        } else if (state is SmsSentWithCode) {
+        if (state.loginState.isSuccess) {
+          final phone = '7${state.digits}';
+          if (state.smsCode == null) {
+            context.push(AppRouteBuilder.sms(phone));
+            return;
+          }
           // TODO убрать это когда выйдем в мвп
           final controller = context.snackbar.info(
-              context, 'Код для тестирования: ${state.code}',
+              context, 'Код для тестирования: ${state.smsCode}',
               position: SnackBarPosition.top);
-
-          final phone = '7${_controller.text.replaceAll(RegExp(r'\D'), '')}';
 
           controller.closed.then((_) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -56,8 +45,9 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
               }
             });
           });
-        } else if (state is AuthError) {
-          context.snackbar.error(context, state.message);
+        }
+        if (state.loginState.isFailure) {
+          context.snackbar.error(context, state.loginState.error!);
         }
       },
       child: Scaffold(
@@ -77,7 +67,17 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
                 style: context.text.bodyMedium,
               ),
               const VerticalGap(8),
-              PhoneInputField(controller: _controller),
+              BlocBuilder<AuthCubit, AuthState>(
+                builder: (context, state) {
+                  return Column(
+                    children: [
+                      CountrySelectButton(selectedCountry: state.country),
+                      const VerticalGap(16),
+                      PhoneNumberTextField(country: state.country),
+                    ],
+                  );
+                },
+              ),
               const VerticalGap(12),
               Text(
                 'На указанный номер телефона будет отправлен код подтверждения',
@@ -89,8 +89,9 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
                 builder: (context, state) {
                   return PrimaryButton(
                     text: 'Продолжить',
-                    onPressed: _onContinue,
-                    isLoading: state is AuthLoading,
+                    onPressed: () => context.read<AuthCubit>().phoneLogin(),
+                    isEnabled: isValid,
+                    isLoading: state.loginState.isLoading,
                   );
                 },
               ),

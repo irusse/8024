@@ -92,7 +92,7 @@ abstract class LayerService {
 
       try {
         await style.removeStyleLayer(layerId);
-        print("Удаляю слой ${layerId}");
+        debugPrint("Удаляю слой $layerId");
       } catch (e) {
         // Если параллельно стиль сменился или слой уже удалён — пропускаем
         debugPrint('Skip removing layer $layerId: $e');

@@ -101,11 +101,6 @@ class _HomeState extends State<Home>
     WidgetsBinding.instance.addObserver(this);
     initializeServices();
     performDataFetch();
-    final chatCubit = context.read<ChatCubit>();
-    // chatCubit.initializeSocket().then((_) {
-    //   chatCubit.listenEventMessages();
-    // });
-
     _viewSwitcherNotifier.addListener(_onViewSwitcherChanged);
   }
 

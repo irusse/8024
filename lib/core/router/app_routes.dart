@@ -23,6 +23,7 @@ abstract class AppRoutePath {
   static const chatPage = 'chat-page/:eventId/:eventTitle';
   static const settingsPage = 'settings';
   static const deleteSmsCode = 'delete-sms-code';
+  static const countryCodeSelect = '/countryCodeSelect';
 }
 
 abstract class AppRouteBuilder {

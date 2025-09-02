@@ -57,8 +57,7 @@ class Settings extends StatelessWidget {
 
           if (currentLocation != null &&
               !currentLocation.contains(AppRoutePath.deleteSmsCode)) {
-            context.snackbar.show(context, 'Код для тестирования: $code',
-                textColor: context.color.primaryText,
+            context.snackbar.info(context, 'Код для тестирования: $code',
                 position: SnackBarPosition.top);
             if (context.mounted) context.push(AppRouteBuilder.deleteSmsCode());
           }

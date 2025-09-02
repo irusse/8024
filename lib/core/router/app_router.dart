@@ -22,6 +22,7 @@ import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/features/auth/presentation/cubits/auth/auth_cubit.dart';
 import 'package:neighbours/features/auth/presentation/cubits/otp/otp_cubit.dart';
 import 'package:neighbours/features/auth/presentation/pages/auth_welcome_page.dart';
+import 'package:neighbours/features/auth/presentation/pages/country_code_select.dart';
 import 'package:neighbours/features/chat/presentation/screens/chat_list.dart';
 import 'package:neighbours/features/community/presentation/cubits/community/community_cubit.dart';
 import 'package:neighbours/features/community/presentation/screens/community.dart';
@@ -139,6 +140,18 @@ class AppRouter {
           builder: (context, state) => const AuthWelcomePage(),
         ),
         GoRoute(
+          path: AppRoutePath.countryCodeSelect,
+          name: AppRoutePath.countryCodeSelect,
+          pageBuilder: (context, state) {
+            final authCubit = getIt<AuthCubit>();
+            return CustomPageTransition.slideFromRight(
+                child: BlocProvider<AuthCubit>.value(
+              value: authCubit,
+              child: const CountryCodeSelect(),
+            ));
+          },
+        ),
+        GoRoute(
           path: AppRoutePath.login,
           pageBuilder: (context, state) => CustomPageTransition.slideFromRight(
             child: BlocProvider<AuthCubit>(
@@ -152,39 +165,45 @@ class AppRouter {
           pageBuilder: (context, state) {
             final phone = state.pathParameters['phone']!;
             return CustomPageTransition.slideFromRight(
-              child: MultiBlocProvider(
-                  providers: [
-                    BlocProvider.value(value: getIt<AuthCubit>()),
-                    BlocProvider<OtpCubit>(
-                      create: (_) => OtpCubit(),
-                    )
-                  ],
-                  child: BlocConsumer<AuthCubit, AuthState>(
-                    listener: (context, state) {
-                      if (state is AuthAuthenticated) {
-                        context.go(AppRoutePath.home);
-                      }
-                      if (state is SmsSentWithCode) {
-                        context.snackbar.show(
-                            context, 'Код для тестирования: ${state.code}',
-                            textColor: context.color.primaryText,
-                            position: SnackBarPosition.top);
-                      }
-                    },
-                    builder: (context, state) {
-                      return SmsCodePage(
-                        isLoading: state is AuthLoading,
-                        isError: state is AuthError,
-                        phone: phone,
-                        onCodeCompleted: (code) => context
-                            .read<AuthCubit>()
-                            .verifySmsCode(phone, code),
-                        onRetry: (phone) =>
-                            context.read<AuthCubit>().phoneLogin(phone),
-                      );
-                    },
-                  )),
-            );
+                child: MultiBlocProvider(
+                    providers: [
+                  BlocProvider.value(value: getIt<AuthCubit>()),
+                  BlocProvider<OtpCubit>(
+                    create: (_) => OtpCubit(),
+                  )
+                ],
+                    child: BlocConsumer<AuthCubit, AuthState>(
+                      listener: (context, state) {
+                        if (state.isAuthenticated) {
+                          context.go(AppRoutePath.home);
+                        }
+                        if (state.resendState.isSuccess) {
+                          if (state.smsCode != null) {
+                            context.snackbar.info(
+                              context,
+                              'Код для тестирования: ${state.smsCode}',
+                              position: SnackBarPosition.top,
+                            );
+                          }
+                        }
+                      },
+                      builder: (context, state) {
+                        return SmsCodePage(
+                          isLoading: state.loginState.isLoading ||
+                              state.verifyState.isLoading ||
+                              state.resendState.isLoading,
+                          isError: state.loginState.isFailure ||
+                              state.verifyState.isFailure ||
+                              state.resendState.isFailure,
+                          phone: phone,
+                          onCodeCompleted: (code) => context
+                              .read<AuthCubit>()
+                              .verifySmsCode(phone, code),
+                          onRetry: (phone) =>
+                              context.read<AuthCubit>().resendOtp(),
+                        );
+                      },
+                    )));
           },
         ),
         GoRoute(
@@ -414,9 +433,8 @@ class AppRouter {
                                 }
                                 if (state.requestProfileDeletion.isSuccess) {
                                   final code = state.deletionRequestCode;
-                                  context.snackbar.show(
+                                  context.snackbar.info(
                                       context, 'Код для тестирования: $code',
-                                      textColor: context.color.primaryText,
                                       position: SnackBarPosition.top);
                                 }
                               },

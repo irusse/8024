@@ -221,7 +221,7 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i491.CommunityCubit(gh<_i248.CommunityRepository>()));
     gh.singleton<_i1069.ChatSocketRepository>(
         () => _i732.ChatSocketRepositoryImpl(gh<_i186.ChatSocketDataSource>()));
-    gh.factory<_i235.AuthCubit>(
+    gh.singleton<_i235.AuthCubit>(
         () => _i235.AuthCubit(gh<_i787.AuthRepository>()));
     gh.factory<_i470.ProfileCubit>(
         () => _i470.ProfileCubit(gh<_i787.AuthRepository>()));
