@@ -100,6 +100,7 @@ class _PhoneNumberTextFieldState extends State<PhoneNumberTextField> {
                   listenWhen: (prev, curr) => prev.country != curr.country,
                   listener: (context, state) => _clear(),
                   child: TextField(
+                    focusNode: _focusNode,
                     controller: _controller,
                     keyboardType: TextInputType.number,
                     onChanged: (vak) => _onChanged(),
