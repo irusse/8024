@@ -112,7 +112,7 @@ class VoteCubit extends Cubit<VoteState> {
   Future<void> getVotingResults({
     required int eventId,
   }) async {
-    _resetState();
+    _resetStates();
     emit(state.copyWith(votingResultsState: const ApiState.loading()));
 
     final result = await _voteRepository.getVotingResults(
@@ -132,7 +132,7 @@ class VoteCubit extends Cubit<VoteState> {
     );
   }
 
-  void _resetState() {
+  void _resetStates() {
     emit(state.copyWith(
       voteState: const ApiState.initial(),
       cancelVoteState: const ApiState.initial(),

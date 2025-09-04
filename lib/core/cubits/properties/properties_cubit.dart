@@ -174,7 +174,7 @@ class PropertiesCubit extends Cubit<PropertiesState> {
     }
   }
 
-  void clear() {
+  void onLogout() {
     emit(state.copyWith(properties: {}));
   }
 

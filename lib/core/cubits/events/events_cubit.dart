@@ -65,7 +65,7 @@ class EventsCubit extends Cubit<EventsState> {
     required int communityId,
     required String description,
   }) async {
-    _resetState();
+    _resetStates();
     emit(state.copyWith(createNotificationState: const ApiState.loading()));
 
     final result = await _eventRepository.createNotification(
@@ -98,7 +98,7 @@ class EventsCubit extends Cubit<EventsState> {
     XFile? pickedImage,
     DateTime? eventDateTime,
   }) async {
-    _resetState();
+    _resetStates();
     emit(state.copyWith(createEventState: const ApiState.loading()));
 
     final result = await _eventRepository.createEvent(
@@ -133,7 +133,7 @@ class EventsCubit extends Cubit<EventsState> {
     int? page,
     int? limit,
   }) async {
-    _resetState();
+    _resetStates();
     emit(state.copyWith(fetchState: const ApiState.loading()));
 
     final result = await _eventRepository.fetchCommunityEvents(
@@ -153,7 +153,7 @@ class EventsCubit extends Cubit<EventsState> {
   }
 
   Future<void> deleteEvent({required String eventId}) async {
-    _resetState();
+    _resetStates();
     final int? id = int.tryParse(eventId);
     if (id == null) return;
     final previousState = state;
@@ -172,7 +172,7 @@ class EventsCubit extends Cubit<EventsState> {
   }
 
   Future<void> fetchEventCategories() async {
-    _resetState();
+    _resetStates();
     emit(state.copyWith(categoriesState: const ApiState.loading()));
 
     final result = await _eventRepository.fetchEventCategories();
@@ -189,7 +189,7 @@ class EventsCubit extends Cubit<EventsState> {
   }
 
   Future<void> joinEvent({required String eventId}) async {
-    _resetState();
+    _resetStates();
     final int? id = int.tryParse(eventId);
     if (id == null) return;
 
@@ -206,7 +206,7 @@ class EventsCubit extends Cubit<EventsState> {
   }
 
   Future<void> leaveEvent({required String eventId}) async {
-    _resetState();
+    _resetStates();
     final int? id = int.tryParse(eventId);
     if (id == null) return;
 
@@ -230,7 +230,7 @@ class EventsCubit extends Cubit<EventsState> {
     required double longitude,
     required int categoryId,
   }) async {
-    _resetState();
+    _resetStates();
     emit(state.copyWith(updateNotificationState: const ApiState.loading()));
 
     final result = await _eventRepository.updateNotification(
@@ -264,7 +264,7 @@ class EventsCubit extends Cubit<EventsState> {
     List<String>? votingOptions,
     required bool hasVoting,
   }) async {
-    _resetState();
+    _resetStates();
     emit(state.copyWith(updateEventState: const ApiState.loading()));
 
     final result = await _eventRepository.updateEvent(
@@ -290,7 +290,7 @@ class EventsCubit extends Cubit<EventsState> {
     );
   }
 
-  void _resetState() {
+  void _resetStates() {
     emit(state.copyWith(
         createNotificationState: const ApiState.initial(),
         createEventState: const ApiState.initial(),
@@ -303,8 +303,7 @@ class EventsCubit extends Cubit<EventsState> {
         leaveEventState: const ApiState.initial()));
   }
 
-  void clearAll() {
-    _resetState();
+  void onLogout() {
     emit(state.copyWith(notifications: {}, events: {}));
   }
 

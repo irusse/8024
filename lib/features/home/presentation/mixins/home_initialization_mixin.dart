@@ -14,6 +14,7 @@ import 'package:neighbours/core/di/injection.dart';
 import 'package:neighbours/features/home/data/services/event_layer_service.dart';
 import 'package:neighbours/features/home/data/services/property_layer_service.dart';
 import 'package:neighbours/features/home/presentation/pages/home.dart';
+import 'package:neighbours/features/notification/presentation/cubits/notification_cubit.dart';
 import '../../data/services/notification_layer_service.dart';
 import '../cubits/home/home_cubit.dart';
 
@@ -93,6 +94,7 @@ mixin HomeInitializationMixin<T extends StatefulWidget> on State<Home> {
     final eventsCubit = context.read<EventsCubit>();
     final locationCubit = context.read<UserLocationCubit>();
     final chatCubit = context.read<ChatCubit>();
+    final notificationCubit = context.read<NotificationCubit>();
 
     try {
       await Future.wait([
@@ -101,6 +103,7 @@ mixin HomeInitializationMixin<T extends StatefulWidget> on State<Home> {
       ]);
       if (firstInit) {
         chatCubit.fetchUnreadMessageCounts(userCubit.state.user.id);
+        notificationCubit.fetchUnreadCount();
         await chatCubit.initializeSocket().then((_) {
           chatCubit.listenEventMessages();
         });

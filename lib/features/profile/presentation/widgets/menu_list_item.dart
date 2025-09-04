@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/components/custom_svg.dart';
+import 'package:neighbours/core/constants/ui_constants.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 
 class MenuListItem extends StatelessWidget {
@@ -11,43 +12,66 @@ class MenuListItem extends StatelessWidget {
   final Color? iconColor;
   final Color? textColor;
   final bool showArrow;
+  final bool showBadge;
 
-  const MenuListItem({
-    super.key,
-    required this.text,
-    required this.onTap,
-    this.iconColor,
-    this.textColor,
-    this.icon,
-    this.iconPath,
-    this.showArrow = true,
-  });
+  const MenuListItem(
+      {super.key,
+      required this.text,
+      required this.onTap,
+      this.iconColor,
+      this.textColor,
+      this.icon,
+      this.iconPath,
+      this.showArrow = true,
+      this.showBadge = false});
 
-  Widget _buildIcon() {
+  Widget _buildIcon(BuildContext context) {
+    Widget iconWidget;
+
     if (iconPath != null && iconColor != null) {
-      return Container(
-        margin: const EdgeInsets.only(right: 16),
-        child: CustomSvg(asset: iconPath!, color: iconColor!),
-      );
+      iconWidget = CustomSvg(asset: iconPath!, color: iconColor!);
+    } else if (icon != null) {
+      iconWidget = Icon(icon, color: iconColor, size: 24);
+    } else {
+      return const HorizontalGap(40);
     }
 
-    if (icon != null) {
-      return Container(
-          margin: const EdgeInsets.only(right: 16),
-          child: Icon(icon, color: iconColor, size: 24));
-    }
-    return const HorizontalGap(40);
+    return Container(
+      margin: const EdgeInsets.only(right: 16),
+      width: 24,
+      height: 24,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Center(child: iconWidget),
+          if (showBadge)
+            Positioned(
+              right: 4,
+              top: 2,
+              child: Container(
+                width: 7,
+                height: 7,
+                decoration: BoxDecoration(
+                  color: context.color.basicRed, // цвет бейджа
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 16),
+      child: Container(
+        margin: const EdgeInsets.symmetric(
+            horizontal: UIConstants.defaultHorizontalPadding, vertical: 16),
         child: Row(
           children: [
-            _buildIcon(),
+            _buildIcon(context),
             Expanded(
               child: Text(
                 text,

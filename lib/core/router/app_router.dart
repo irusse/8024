@@ -33,6 +33,8 @@ import 'package:neighbours/features/event/presentation/screens/event_details.dar
 import 'package:neighbours/features/event/presentation/screens/event_form.dart';
 import 'package:neighbours/features/event/presentation/screens/notification_form.dart';
 import 'package:neighbours/features/home/presentation/pages/home.dart';
+import 'package:neighbours/features/notification/presentation/cubits/notification_cubit.dart';
+import 'package:neighbours/features/notification/presentation/screens/notification_screen.dart';
 import 'package:neighbours/features/profile/presentation/cubits/document/document_cubit.dart';
 import 'package:neighbours/features/profile/presentation/cubits/edit_profile/edit_profile_cubit.dart';
 import 'package:neighbours/features/profile/presentation/cubits/profile/profile_cubit.dart';
@@ -277,6 +279,9 @@ class AppRouter {
             BlocProvider.value(
               value: getIt<HomeCubit>(),
             ),
+            BlocProvider.value(
+              value: getIt<NotificationCubit>(),
+            ),
             BlocProvider.value(value: getIt<EventsCubit>()),
             BlocProvider.value(
               value: getIt<UserCubit>(),
@@ -369,6 +374,9 @@ class AppRouter {
                   key: state.pageKey,
                   child: MultiBlocProvider(
                     providers: [
+                      BlocProvider.value(
+                        value: getIt<NotificationCubit>(),
+                      ),
                       BlocProvider(
                         create: (_) => getIt<ProfileCubit>(),
                       ),
@@ -384,6 +392,7 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: AppRoutePath.editProfile,
+                name: AppRoutePath.editProfile,
                 pageBuilder: (context, state) =>
                     CustomPageTransition.slideFromRight(
                   key: state.pageKey,
@@ -403,6 +412,7 @@ class AppRouter {
               ),
               GoRoute(
                   path: AppRoutePath.settingsPage,
+                  name: AppRoutePath.settingsPage,
                   pageBuilder: (context, state) {
                     return CustomPageTransition.slideFromRight(
                       key: state.pageKey,
@@ -461,7 +471,69 @@ class AppRouter {
                     ),
                   ]),
               GoRoute(
+                  path: AppRoutePath.notifications,
+                  name: AppRoutePath.notifications,
+                  pageBuilder: (context, state) {
+                    return CustomPageTransition.slideFromRight(
+                      key: state.pageKey,
+                      child: BlocProvider.value(
+                        value: getIt<NotificationCubit>(),
+                        child: const NotificationScreen(),
+                      ),
+                    );
+                  },
+                  routes: [
+                    GoRoute(
+                      path: AppRoutePath.deleteSmsCode,
+                      name: AppRoutePath.deleteSmsCode,
+                      pageBuilder: (context, state) =>
+                          CustomPageTransition.slideFromRight(
+                        child: MultiBlocProvider(
+                            providers: [
+                              BlocProvider.value(
+                                value: getIt<UserCubit>(),
+                              ),
+                              BlocProvider<OtpCubit>(
+                                create: (_) => OtpCubit(),
+                              )
+                            ],
+                            child: BlocConsumer<UserCubit, UserState>(
+                              listener: (context, state) {
+                                if (state.confirmProfileDeletion.isSuccess) {
+                                  context.pop();
+                                }
+                                if (state.requestProfileDeletion.isSuccess) {
+                                  final code = state.deletionRequestCode;
+                                  context.snackbar.info(
+                                      context, 'Код для тестирования: $code',
+                                      position: SnackBarPosition.top);
+                                }
+                              },
+                              builder: (context, state) => SmsCodePage(
+                                  phone: getIt<UserCubit>().state.user.phone,
+                                  onCodeCompleted: (code) => context
+                                      .read<UserCubit>()
+                                      .confirmProfileDeletion(code),
+                                  onRetry: (phone) => context
+                                      .read<UserCubit>()
+                                      .requestProfileDeletion(),
+                                  isError: context
+                                      .read<UserCubit>()
+                                      .state
+                                      .confirmProfileDeletion
+                                      .isFailure,
+                                  isLoading: context
+                                      .read<UserCubit>()
+                                      .state
+                                      .confirmProfileDeletion
+                                      .isLoading),
+                            )),
+                      ),
+                    ),
+                  ]),
+              GoRoute(
                 path: AppRoutePath.myEvents,
+                name: AppRoutePath.myEvents,
                 pageBuilder: (context, state) =>
                     CustomPageTransition.slideFromRight(
                   child: MultiBlocProvider(providers: [
@@ -476,6 +548,7 @@ class AppRouter {
               ),
               GoRoute(
                 path: AppRoutePath.propertyVerifications,
+                name: AppRoutePath.propertyVerifications,
                 pageBuilder: (context, state) =>
                     CustomPageTransition.slideFromRight(
                   child: MultiBlocProvider(providers: [

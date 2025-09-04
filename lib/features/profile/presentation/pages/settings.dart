@@ -59,7 +59,7 @@ class Settings extends StatelessWidget {
               !currentLocation.contains(AppRoutePath.deleteSmsCode)) {
             context.snackbar.info(context, 'Код для тестирования: $code',
                 position: SnackBarPosition.top);
-            if (context.mounted) context.push(AppRouteBuilder.deleteSmsCode());
+            if (context.mounted) context.pushNamed(AppRoutePath.deleteSmsCode);
           }
         }
         if (state.restoreProfile.isSuccess) {
@@ -79,14 +79,14 @@ class Settings extends StatelessWidget {
                 showBackButton: true,
                 title: 'Настройки',
               ),
-              body: Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: UIConstants.defaultHorizontalPadding),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      const VerticalGap(16),
-                      Row(
+              body: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const VerticalGap(16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: UIConstants.defaultHorizontalPadding),
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
@@ -108,28 +108,28 @@ class Settings extends StatelessWidget {
                                   .setCurrentTheme(value))
                         ],
                       ),
-                      const VerticalGap(16),
-                      const DefaultDivider(),
-                      MenuListItem(
-                        text: deletionScheduledAt != null
-                            ? 'Восстановить до ${dateFormat.format(deletionScheduledAt)}'
-                            : 'Удалить профиль',
-                        onTap: () => deletionScheduledAt != null
-                            ? context.read<UserCubit>().restoreProfile()
-                            : _onDeleteClick(context),
-                        textColor: deletionScheduledAt != null
-                            ? context.color.primary
-                            : context.color.basicRed,
-                        iconColor: deletionScheduledAt != null
-                            ? context.color.primary
-                            : context.color.basicRed,
-                        iconPath: deletionScheduledAt != null
-                            ? Assets.icons.reset
-                            : Assets.icons.delete,
-                        showArrow: true,
-                      )
-                    ],
-                  ),
+                    ),
+                    const VerticalGap(16),
+                    const DefaultDivider(),
+                    MenuListItem(
+                      text: deletionScheduledAt != null
+                          ? 'Восстановить до ${dateFormat.format(deletionScheduledAt)}'
+                          : 'Удалить профиль',
+                      onTap: () => deletionScheduledAt != null
+                          ? context.read<UserCubit>().restoreProfile()
+                          : _onDeleteClick(context),
+                      textColor: deletionScheduledAt != null
+                          ? context.color.primary
+                          : context.color.basicRed,
+                      iconColor: deletionScheduledAt != null
+                          ? context.color.primary
+                          : context.color.basicRed,
+                      iconPath: deletionScheduledAt != null
+                          ? Assets.icons.reset
+                          : Assets.icons.delete,
+                      showArrow: true,
+                    )
+                  ],
                 ),
               ),
             ),

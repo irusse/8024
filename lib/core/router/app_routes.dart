@@ -24,6 +24,7 @@ abstract class AppRoutePath {
   static const settingsPage = 'settings';
   static const deleteSmsCode = 'delete-sms-code';
   static const countryCodeSelect = '/countryCodeSelect';
+  static const notifications = 'notifications';
 }
 
 abstract class AppRouteBuilder {
@@ -49,21 +50,6 @@ abstract class AppRouteBuilder {
 
   static String resourceForm(int propertyId) =>
       '/property-details/$propertyId/${AppRoutePath.resourceForm}';
-
-  static String editProfile() =>
-      "${AppRoutePath.profile}/${AppRoutePath.editProfile}";
-
-  static String myEvents() =>
-      '${AppRoutePath.profile}/${AppRoutePath.myEvents}';
-
-  static String settings() =>
-      '${AppRoutePath.profile}/${AppRoutePath.settingsPage}';
-
-  static String propertyVerifications() =>
-      '${AppRoutePath.profile}/${AppRoutePath.propertyVerifications}';
-
-  static String deleteSmsCode() =>
-      '${AppRoutePath.profile}/${AppRoutePath.settingsPage}/${AppRoutePath.deleteSmsCode}';
 
   static String sms(String phone) => '/sms/$phone';
 }

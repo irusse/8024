@@ -45,6 +45,14 @@ import '../../features/home/presentation/cubits/create_community_form/create_com
 import '../../features/home/presentation/cubits/home/home_cubit.dart' as _i715;
 import '../../features/home/presentation/cubits/profile_create/profile_create_cubit.dart'
     as _i1041;
+import '../../features/notification/data/datasources/notification_remote_datasource.dart'
+    as _i227;
+import '../../features/notification/data/repositories/notification_repository_impl.dart'
+    as _i407;
+import '../../features/notification/domain/repositories/notification_repository.dart'
+    as _i630;
+import '../../features/notification/presentation/cubits/notification_cubit.dart'
+    as _i882;
 import '../../features/profile/data/datasources/document_data_source.dart'
     as _i609;
 import '../../features/profile/data/repositories/document_repository_impl.dart'
@@ -155,6 +163,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i537.ChatRemoteDataSource>(
         () => _i537.ChatRemoteDataSourceImpl(gh<_i361.Dio>()));
     gh.singleton<_i342.SnackbarService>(() => _i342.SnackbarServiceImpl());
+    gh.singleton<_i227.NotificationRemoteDataSource>(
+        () => _i227.NotificationRemoteDataSourceImpl(gh<_i361.Dio>()));
     gh.singleton<_i990.VoteRemoteDatasource>(
         () => _i990.VoteRemoteDatasourceImpl(gh<_i361.Dio>()));
     gh.singleton<_i609.DocumentDataSource>(
@@ -163,6 +173,9 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i107.AuthRemoteDataSourceImpl(gh<_i361.Dio>()));
     gh.factory<_i31.NavigationService>(
         () => _i31.NavigationService(gh<_i81.AppRouter>()));
+    gh.singleton<_i630.NotificationRepository>(() =>
+        _i407.NotificationRepositoryImpl(
+            gh<_i227.NotificationRemoteDataSource>()));
     gh.singleton<_i293.UserRemoteDataSource>(
         () => _i293.UserRemoteDataSourceImpl(gh<_i361.Dio>()));
     gh.factory<_i45.MarkerService>(() => _i45.MarkerServiceImpl());
@@ -195,6 +208,8 @@ extension GetItInjectableX on _i174.GetIt {
         ));
     gh.singleton<_i221.VoteRepository>(
         () => _i630.VoteRepositoryImpl(gh<_i990.VoteRemoteDatasource>()));
+    gh.singleton<_i882.NotificationCubit>(
+        () => _i882.NotificationCubit(gh<_i630.NotificationRepository>()));
     gh.singleton<_i248.CommunityRepository>(() =>
         _i46.CommunityRepositoryImpl(gh<_i455.CommunityRemoteDataSource>()));
     gh.lazySingleton<_i549.ResourcesCubit>(

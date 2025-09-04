@@ -208,10 +208,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                             label: 'Состояние',
                             value:
                                 currentProperty.buildVerificationStatusText(),
-                            valueColor: currentProperty.verificationStatus ==
-                                    'UNVERIFIED'
-                                ? context.color.secondaryText
-                                : context.color.primary,
+                            valueColor: currentProperty.verificationStatusColor(context),
                           ),
                           const VerticalGap(8),
                           LabelValueText(

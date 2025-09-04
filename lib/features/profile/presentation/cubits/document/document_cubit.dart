@@ -16,7 +16,7 @@ class DocumentCubit extends Cubit<DocumentState> {
   DocumentCubit(this._documentRepository) : super(const DocumentState());
 
   Future<void> getDocumentByType(String type) async {
-    _resetState();
+    _resetStates();
     emit(state.copyWith(fetchState: const ApiState.loading()));
 
     final result = await _documentRepository.getDocumentByType(type);
@@ -32,7 +32,7 @@ class DocumentCubit extends Cubit<DocumentState> {
     );
   }
 
-  void _resetState() {
+  void _resetStates() {
     emit(state.copyWith(fetchState: const ApiState.initial()));
   }
 }
