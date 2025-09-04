@@ -18,7 +18,6 @@ class HomeMapView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MapWidget(
-
       styleUri: context.read<ThemeCubit>().getThemeMap,
       onMapCreated: (controller) {
         controller

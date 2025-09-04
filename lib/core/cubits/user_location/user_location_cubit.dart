@@ -25,8 +25,10 @@ class UserLocationCubit extends Cubit<UserLocationState> {
     try {
       emit(const UserLocationState.loading());
       final position = await Geolocator.getCurrentPosition();
+
       final coordinates = LatLng(position.latitude, position.longitude);
       await _updateUserLocation(coordinates);
+
       return coordinates;
     } on LocationServiceDisabledException {
       _serviceDisabled();

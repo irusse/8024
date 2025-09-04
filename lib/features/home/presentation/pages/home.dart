@@ -271,9 +271,10 @@ class _HomeState extends State<Home>
                       orElse: () {},
                       locationReceived: (coordinates, _) {
                         MapCameraUtils.flyToPosition(
-                            mapboxMapController!,
-                            Position(
-                                coordinates.longitude, coordinates.latitude));
+                          mapboxMapController!,
+                          coordinates.latitude,
+                          coordinates.longitude,
+                        );
                       });
                 },
               )
@@ -314,7 +315,7 @@ class _HomeState extends State<Home>
                   child: BottomPanel(
                     navigateToProperty: (lat, lng) =>
                         MapCameraUtils.flyToPosition(
-                            mapboxMapController!, Position(lng, lat)),
+                            mapboxMapController!, lat, lng),
                   ),
                 ),
                 MyLocationBtn(

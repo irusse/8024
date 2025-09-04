@@ -64,7 +64,7 @@ class _MapPreviewState extends State<MapPreview> {
       iconSize: 1.0,
     ));
     await MapCameraUtils.flyToPosition(
-        mapboxMap, Position(widget.longitude, widget.latitude));
+        mapboxMap, widget.latitude, widget.longitude);
   }
 
   @override

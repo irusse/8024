@@ -128,6 +128,7 @@ class PropertyLayerService extends LayerService {
           iconAllowOverlap: true,
           iconIgnorePlacement: true,
           iconAnchor: IconAnchor.CENTER,
+          iconPitchAlignment: IconPitchAlignment.VIEWPORT,
           iconSizeExpression: [
             "interpolate",
             ["linear"],
@@ -164,12 +165,16 @@ class PropertyLayerService extends LayerService {
           "interpolate",
           ["linear"],
           ["zoom"],
+          14,
+          50,
           16,
-          45,
+          55,
           18,
-          47,
+          61,
           20,
-          49
+          63,
+          22,
+          65
         ],
         circleColor: CommonModeColors.blue.withValues(alpha: 0.4).toARGB32(),
         circlePitchAlignment: CirclePitchAlignment.VIEWPORT,
