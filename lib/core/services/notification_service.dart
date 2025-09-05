@@ -7,9 +7,9 @@ import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/cubits/events/events_cubit.dart';
 import 'package:neighbours/core/di/injection.dart';
 import 'package:neighbours/core/domain/entities/event/event_entity.dart';
-import 'package:neighbours/core/domain/entities/message/message_entity.dart';
 import 'package:neighbours/core/router/app_router.dart';
 import 'package:neighbours/core/router/app_routes.dart';
+import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
 
 @singleton
 class NotificationService {

@@ -1,4 +1,5 @@
-import 'package:neighbours/core/domain/entities/message/message_entity.dart';
+
+import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
 
 abstract class ChatSocketRepository {
   Future<void> initialize();

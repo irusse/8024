@@ -2,11 +2,11 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:neighbours/core/domain/entities/message/message_entity.dart';
-import 'package:neighbours/core/domain/repositories/chat_socket_repository.dart';
 import 'package:neighbours/core/state/api_state.dart';
-import 'package:neighbours/core/domain/repositories/chat_repository.dart';
+import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
+import 'package:neighbours/features/chat/domain/repositories/chat_repository.dart';
 import 'package:neighbours/core/services/notification_service.dart';
+import 'package:neighbours/features/chat/domain/repositories/chat_socket_repository.dart';
 
 part 'chat_cubit.freezed.dart';
 

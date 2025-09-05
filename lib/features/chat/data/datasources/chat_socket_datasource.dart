@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:injectable/injectable.dart';
-import 'package:neighbours/core/data/models/message/message_model.dart';
+import 'package:neighbours/features/chat/data/models/message/message_model.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:neighbours/core/config/app_config.dart';
 import 'package:neighbours/core/services/auth_service.dart';

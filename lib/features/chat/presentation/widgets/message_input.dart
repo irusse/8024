@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:neighbours/core/cubits/chat/chat_cubit.dart';
-import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/state/api_state.dart';
+import 'package:neighbours/features/chat/presentation/cubits/chat/chat_cubit.dart';
+import 'package:neighbours/core/extensions/context_ext.dart';
 
 class MessageInput extends StatelessWidget {
   final TextEditingController messageController;

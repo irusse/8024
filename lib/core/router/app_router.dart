@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:neighbours/core/components/full_screen_map_view.dart';
 import 'package:neighbours/core/components/lost_connection_screen.dart';
 import 'package:neighbours/core/components/unexpected_error_screen.dart';
-import 'package:neighbours/core/cubits/chat/chat_cubit.dart';
+import 'package:neighbours/features/chat/presentation/cubits/chat/chat_cubit.dart';
 import 'package:neighbours/core/cubits/events/events_cubit.dart';
 import 'package:neighbours/core/cubits/properties/properties_cubit.dart';
 import 'package:neighbours/core/cubits/property_form/property_form_cubit.dart';

@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
-import 'package:neighbours/core/domain/entities/message/message_entity.dart';
 import 'package:neighbours/core/error/failures.dart';
-import '../../domain/entities/unread_summary/unread_summary_entity.dart';
+import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
+import '../../../../core/domain/entities/unread_summary/unread_summary_entity.dart';
 import '../../domain/repositories/chat_repository.dart';
 import '../datasources/chat_remote_datasource.dart';
 

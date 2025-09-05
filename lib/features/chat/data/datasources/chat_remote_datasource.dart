@@ -4,7 +4,7 @@ import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/data/models/unread_summary/unread_summary_model.dart';
 import 'package:neighbours/core/error/failures.dart';
 import 'package:neighbours/core/network/network_handler.dart';
-import 'package:neighbours/core/data/models/message/message_model.dart';
+import 'package:neighbours/features/chat/data/models/message/message_model.dart';
 
 abstract class ChatRemoteDataSource {
   Future<Either<Failure, List<MessageModel>>> fetchEventMessages({

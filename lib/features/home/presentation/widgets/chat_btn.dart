@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:neighbours/core/components/custom_svg.dart';
-import 'package:neighbours/core/cubits/chat/chat_cubit.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/router/app_routes.dart';
+import 'package:neighbours/features/chat/presentation/cubits/chat/chat_cubit.dart';
 
 import '../../../../core/constants/assets.dart';
 

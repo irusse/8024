@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
-import 'package:neighbours/core/domain/entities/message/message_entity.dart';
 import 'package:neighbours/core/domain/entities/unread_summary/unread_summary_entity.dart';
 import 'package:neighbours/core/error/failures.dart';
+import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
 
 abstract class ChatRepository {
   Future<Either<Failure, List<MessageEntity>>> fetchEventMessages({

@@ -1,6 +1,6 @@
 import 'package:injectable/injectable.dart';
-import 'package:neighbours/core/domain/entities/message/message_entity.dart';
-import '../../domain/repositories/chat_socket_repository.dart';
+import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
+import 'package:neighbours/features/chat/domain/repositories/chat_socket_repository.dart';
 import '../datasources/chat_socket_datasource.dart';
 
 @Singleton(as: ChatSocketRepository)

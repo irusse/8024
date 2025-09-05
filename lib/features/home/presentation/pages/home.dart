@@ -27,8 +27,7 @@ import 'package:neighbours/features/home/presentation/widgets/top_panel.dart';
 import 'package:neighbours/features/home/presentation/mixins/home_map_mixin.dart';
 import 'package:neighbours/features/home/presentation/mixins/home_initialization_mixin.dart';
 import 'package:neighbours/features/home/presentation/widgets/view_switcher.dart';
-
-import '../../../../core/cubits/chat/chat_cubit.dart';
+import 'package:neighbours/features/chat/presentation/cubits/chat/chat_cubit.dart';
 import '../../../../core/cubits/property_form/property_form_cubit.dart';
 import '../../../../core/cubits/theme/theme_cubit.dart';
 import '../../data/services/notification_layer_service.dart';

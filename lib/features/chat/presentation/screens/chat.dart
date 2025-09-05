@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:neighbours/core/components/chat_widget.dart';
+import 'package:neighbours/features/chat/presentation/widgets/chat_widget.dart';
 import 'package:neighbours/core/components/default_app_bar.dart';
 
 class Chat extends StatelessWidget {

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
-import 'package:neighbours/core/domain/entities/message/message_entity.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
+import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
 
 import '../../../../core/components/default_circle_avatar.dart';
 
