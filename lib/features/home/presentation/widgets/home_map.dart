@@ -9,15 +9,18 @@ class HomeMapView extends StatelessWidget {
     required this.onMapCreated,
     required this.onStyleLoadedListener,
     this.onMapTap,
+    this.initialCameraOptions,
   });
 
   final Function(MapboxMap) onMapCreated;
   final Function(MapContentGestureContext)? onMapTap;
   final Function(StyleLoadedEventData)? onStyleLoadedListener;
+  final CameraOptions? initialCameraOptions;
 
   @override
   Widget build(BuildContext context) {
     return MapWidget(
+      cameraOptions: initialCameraOptions,
       styleUri: context.read<ThemeCubit>().getThemeMap,
       onMapCreated: (controller) {
         controller

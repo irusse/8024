@@ -123,8 +123,8 @@ mixin HomeInitializationMixin<T extends StatefulWidget> on State<Home> {
         ]);
       }
 
-      await locationCubit.fetchLocalLocation();
-      await locationCubit.getPosition();
+      // Загружаем реальную геолокацию параллельно, не блокируя инициализацию
+      locationCubit.getPosition();
     } on NetworkException {
       if (!mounted) return;
       context.push(AppRoutePath.noInternet, extra: performDataFetch);

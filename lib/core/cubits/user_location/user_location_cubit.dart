@@ -17,7 +17,7 @@ class UserLocationCubit extends Cubit<UserLocationState> {
   final UserLocationRepository _userLocationRepository;
   final MapService _mapService;
 
-  UserLocationCubit(this._mapService, this._userLocationRepository)
+  UserLocationCubit(this._userLocationRepository, this._mapService)
       : super(const UserLocationState.initial());
 
   Future<LatLng?> getPosition() async {

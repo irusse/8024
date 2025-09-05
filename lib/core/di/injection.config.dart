@@ -226,10 +226,6 @@ extension GetItInjectableX on _i174.GetIt {
         _i46.CommunityRepositoryImpl(gh<_i455.CommunityRemoteDataSource>()));
     gh.lazySingleton<_i549.ResourcesCubit>(
         () => _i549.ResourcesCubit(gh<_i50.ResourceRepository>()));
-    gh.singleton<_i940.UserLocationCubit>(() => _i940.UserLocationCubit(
-          gh<_i569.MapService>(),
-          gh<_i543.UserLocationRepository>(),
-        ));
     gh.singleton<_i787.AuthRepository>(() => _i153.AuthRepositoryImpl(
           gh<_i107.AuthRemoteDataSource>(),
           gh<_i745.AuthService>(),
@@ -242,6 +238,10 @@ extension GetItInjectableX on _i174.GetIt {
         ));
     gh.singleton<_i913.EventsCubit>(
         () => _i913.EventsCubit(gh<_i195.EventRepository>()));
+    gh.singleton<_i940.UserLocationCubit>(() => _i940.UserLocationCubit(
+          gh<_i543.UserLocationRepository>(),
+          gh<_i569.MapService>(),
+        ));
     gh.singleton<_i1067.UserCubit>(
         () => _i1067.UserCubit(gh<_i544.UserRepository>()));
     gh.factory<_i502.VoteCubit>(

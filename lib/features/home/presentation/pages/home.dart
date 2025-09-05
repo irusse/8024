@@ -49,6 +49,8 @@ class _HomeState extends State<Home>
         WidgetsBindingObserver {
   MapboxMap? _mapboxMapController;
   final ValueNotifier<int> _viewSwitcherNotifier = ValueNotifier<int>(0);
+  CameraOptions? _initialCameraOptions;
+  bool _isMapReady = false;
 
   // Services
   late MapService _mapService;
@@ -99,8 +101,31 @@ class _HomeState extends State<Home>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     initializeServices();
+    _prepareInitialCamera();
     performDataFetch();
     _viewSwitcherNotifier.addListener(_onViewSwitcherChanged);
+  }
+
+  Future<void> _prepareInitialCamera() async {
+    // Сначала пытаемся загрузить кешированную позицию
+    final cachedPosition =
+        await context.read<UserLocationCubit>().fetchLocalLocation();
+
+    if (cachedPosition != null) {
+      _initialCameraOptions = MapCameraUtils.createCameraOptions(
+        lat: cachedPosition.latitude,
+        lng: cachedPosition.longitude,
+      );
+    } else {
+      // Если кешированной позиции нет, используем дефолтную
+      _initialCameraOptions = MapCameraUtils.defaultCameraOptions();
+    }
+
+    if (mounted) {
+      setState(() {
+        _isMapReady = true;
+      });
+    }
   }
 
   @override
@@ -280,12 +305,20 @@ class _HomeState extends State<Home>
             ],
             child: Stack(
               children: [
-                HomeMapView(
-                  onMapCreated: onMapCreated,
-                  onMapTap: onMapTap,
-                  onStyleLoadedListener: (s) =>
-                      reinitializeLayersAfterThemeChange(),
-                ),
+                if (!_isMapReady)
+                  Center(
+                    child: CircularProgressIndicator(
+                      color: context.color.primary,
+                    ),
+                  )
+                else
+                  HomeMapView(
+                    initialCameraOptions: _initialCameraOptions,
+                    onMapCreated: onMapCreated,
+                    onMapTap: onMapTap,
+                    onStyleLoadedListener: (s) =>
+                        reinitializeLayersAfterThemeChange(),
+                  ),
                 if (showMarker) const PropertyMarker(),
                 Positioned(
                   top: MediaQuery.of(context).padding.top + 10,
