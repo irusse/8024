@@ -12,4 +12,7 @@ abstract class NotificationRepository {
 
   /// Получить количество непрочитанных уведомлений
   Future<Either<Failure, int>> getUnreadCount();
+
+  /// Удалить все уведомления
+  Future<Either<Failure, void>> deleteAllNotifications();
 }

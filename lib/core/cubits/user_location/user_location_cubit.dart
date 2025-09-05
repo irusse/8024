@@ -24,12 +24,22 @@ class UserLocationCubit extends Cubit<UserLocationState> {
 
     try {
       emit(const UserLocationState.loading());
-      final position = await Geolocator.getCurrentPosition();
+
+      const LocationSettings locationSettings = LocationSettings(
+          accuracy: LocationAccuracy.high,
+          distanceFilter: 10,
+          timeLimit: Duration(seconds: 10));
+
+      Position position = await Geolocator.getCurrentPosition(
+          locationSettings: locationSettings);
 
       final coordinates = LatLng(position.latitude, position.longitude);
       await _updateUserLocation(coordinates);
 
       return coordinates;
+    } on TimeoutException {
+      final lastKnownPosition = await getLastKnownPosition();
+      return lastKnownPosition;
     } on LocationServiceDisabledException {
       _serviceDisabled();
       return null;
@@ -37,6 +47,16 @@ class UserLocationCubit extends Cubit<UserLocationState> {
       emit(const UserLocationState.failedToResolvePlacemark());
       return null;
     }
+  }
+
+  Future<LatLng?> getLastKnownPosition() async {
+    final Position? position = await Geolocator.getLastKnownPosition();
+    if (position != null) {
+      final coordinates = LatLng(position.latitude, position.longitude);
+      await _updateUserLocation(coordinates);
+      return coordinates;
+    }
+    return null;
   }
 
   Future<void> _updateUserLocation(

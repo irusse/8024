@@ -49,11 +49,42 @@ class NotificationCubit extends Cubit<NotificationState> {
     );
   }
 
+  Future<void> deleteAllNotifications() async {
+    final currentNotifications = state.notifications;
+    final currentUnreadCount = state.unreadCount;
+
+    emit(state.copyWith(
+      deleteAllState: const ApiState.loading(),
+      notifications: [],
+      unreadCount: 0,
+    ));
+
+    final result = await _repository.deleteAllNotifications();
+
+    result.fold(
+      (failure) {
+        emit(state.copyWith(
+          deleteAllState: ApiState.failure(failure.message),
+          notifications: currentNotifications,
+          unreadCount: currentUnreadCount,
+        ));
+      },
+      (_) {
+        emit(state.copyWith(
+          deleteAllState: const ApiState.success(null),
+        ));
+      },
+    );
+  }
+
   void onLogout() {
     emit(state.copyWith(notifications: [], unreadCount: 0));
   }
 
   void _resetStates() {
-    emit(state.copyWith(fetchState: const ApiState.initial()));
+    emit(state.copyWith(
+      fetchState: const ApiState.initial(),
+      deleteAllState: const ApiState.initial(),
+    ));
   }
 }

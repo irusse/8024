@@ -15,6 +15,9 @@ abstract class NotificationRemoteDataSource {
 
   /// Получить количество непрочитанных уведомлений
   Future<Either<Failure, int>> getUnreadCount();
+
+  /// Удалить все уведомления
+  Future<Either<Failure, void>> deleteAllNotifications();
 }
 
 @Singleton(as: NotificationRemoteDataSource)
@@ -45,6 +48,13 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
     return NetworkHandler.handleRequest(() async {
       final response = await _dio.get('/notifications/unread-count');
       return response.data['count'] as int;
+    });
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteAllNotifications() async {
+    return NetworkHandler.handleRequest(() async {
+      await _dio.delete('/notifications');
     });
   }
 }

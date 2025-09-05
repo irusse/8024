@@ -39,4 +39,9 @@ class NotificationRepositoryImpl implements NotificationRepository {
   Future<Either<Failure, int>> getUnreadCount() async {
     return await _remoteDataSource.getUnreadCount();
   }
+
+  @override
+  Future<Either<Failure, void>> deleteAllNotifications() async {
+    return await _remoteDataSource.deleteAllNotifications();
+  }
 }

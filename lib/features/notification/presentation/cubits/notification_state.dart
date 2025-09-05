@@ -4,6 +4,7 @@ part of 'notification_cubit.dart';
 class NotificationState with _$NotificationState {
   const factory NotificationState({
     @Default(ApiState.initial()) ApiState<void> fetchState,
+    @Default(ApiState.initial()) ApiState<void> deleteAllState,
     @Default([]) List<NotificationEntity> notifications,
     @Default(0) int unreadCount,
   }) = _NotificationState;
