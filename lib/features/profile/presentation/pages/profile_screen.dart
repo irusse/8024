@@ -8,13 +8,13 @@ import 'package:neighbours/core/components/default_circle_avatar.dart';
 import 'package:neighbours/core/components/default_page_wrapper.dart';
 import 'package:neighbours/core/constants/default_constants.dart';
 import 'package:neighbours/core/cubits/events/events_cubit.dart';
-import 'package:neighbours/core/cubits/properties/properties_cubit.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
 import 'package:neighbours/core/domain/entities/user/user_entity.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/extensions/full_name_ext.dart';
 import 'package:neighbours/features/notification/presentation/cubits/notification_cubit.dart';
 import 'package:neighbours/features/profile/presentation/cubits/profile/profile_cubit.dart';
+import 'package:neighbours/features/property/presentation/cubits/properties/properties_cubit.dart';
 
 import '../../../../core/components/custom_alert_dialog.dart';
 import '../../../../core/router/app_routes.dart';

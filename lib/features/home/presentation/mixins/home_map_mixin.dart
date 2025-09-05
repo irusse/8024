@@ -6,10 +6,8 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' hide Error;
 import 'package:neighbours/core/components/bottom_sheet_dialog.dart';
 import 'package:neighbours/core/cubits/events/events_cubit.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
-import 'package:neighbours/core/cubits/user_location/user_location_cubit.dart';
 import 'package:neighbours/core/di/injection.dart';
 import 'package:neighbours/core/domain/entities/event/event_entity.dart';
-import 'package:neighbours/core/services/map_service.dart';
 import 'package:neighbours/core/utils/map_camera_utils.dart';
 import 'package:neighbours/features/home/data/services/event_layer_service.dart';
 import 'package:neighbours/features/home/data/services/notification_layer_service.dart';
@@ -19,7 +17,7 @@ import 'package:neighbours/features/home/presentation/widgets/event_cluster_list
 import 'package:neighbours/features/home/presentation/widgets/event_info_dialog.dart';
 import 'package:neighbours/features/home/presentation/widgets/property_info_dialog.dart';
 import 'package:neighbours/features/home/presentation/widgets/notification_info_dialog.dart';
-import '../../../../core/cubits/properties/properties_cubit.dart';
+import 'package:neighbours/features/property/presentation/cubits/properties/properties_cubit.dart';
 
 import '../widgets/notification_cluster_list.dart';
 
@@ -39,7 +37,6 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
   }
 
   /// Публичный метод для пересоздания слоев
-
   Future<void> reinitializeLayersAfterThemeChange() async {
     if (mapboxMapController == null) return;
 
@@ -49,12 +46,8 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
       if (!mounted) return;
 
       // Обновляем данные на карте
-      final propertiesState = context
-          .read<PropertiesCubit>()
-          .state;
-      final eventsState = context
-          .read<EventsCubit>()
-          .state;
+      final propertiesState = context.read<PropertiesCubit>().state;
+      final eventsState = context.read<EventsCubit>().state;
 
       if (propertiesState.properties.isNotEmpty) {
         propertyLayerService.updateData(
@@ -131,8 +124,8 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
         final List<EventEntity> notifications = [];
         for (final l in leaves) {
           final notification =
-          notificationLayerService.parseNotificationFromFeature(
-              jsonDecode(jsonEncode(l)) as Map<String, dynamic>);
+              notificationLayerService.parseNotificationFromFeature(
+                  jsonDecode(jsonEncode(l)) as Map<String, dynamic>);
           if (notification != null) {
             notifications.add(notification.toEntity());
           }
@@ -151,11 +144,7 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
               value: getIt<EventsCubit>(),
               child: NotificationClusterList(
                   notifications: notifications,
-                  userId: context
-                      .read<UserCubit>()
-                      .state
-                      .user
-                      .id,
+                  userId: context.read<UserCubit>().state.user.id,
                   onNotRelevantClick: (int value) {
                     context
                         .read<EventsCubit>()
@@ -227,7 +216,7 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
 
     // Проверяем отдельные уведомления
     final notificationFeatures =
-    await mapboxMapController?.queryRenderedFeatures(
+        await mapboxMapController?.queryRenderedFeatures(
       RenderedQueryGeometry.fromScreenCoordinate(screenPoint),
       RenderedQueryOptions(
           layerIds: [NotificationLayerService.notificationsUnclusteredLayerId]),
@@ -238,8 +227,8 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
       final feature = notificationFeatures.first?.queriedFeature.feature;
       if (feature == null) return;
       final notification =
-      notificationLayerService.parseNotificationFromFeature(
-          jsonDecode(jsonEncode(feature)) as Map<String, dynamic>);
+          notificationLayerService.parseNotificationFromFeature(
+              jsonDecode(jsonEncode(feature)) as Map<String, dynamic>);
 
       if (notification == null) return;
 
@@ -250,11 +239,7 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
             value: getIt<EventsCubit>(),
             child: NotificationInfoDialog(
                 eventId: notification.id,
-                userId: context
-                    .read<UserCubit>()
-                    .state
-                    .user
-                    .id,
+                userId: context.read<UserCubit>().state.user.id,
                 onNotRelevantClick: (int value) {
                   context
                       .read<EventsCubit>()
@@ -296,7 +281,7 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
 
   Future<void> onMapTap(MapContentGestureContext gestureContext) async {
     final screenPoint =
-    await mapboxMapController?.pixelForCoordinate(gestureContext.point);
+        await mapboxMapController?.pixelForCoordinate(gestureContext.point);
 
     if (screenPoint == null) {
       debugPrint("Не удалось получить screen coordinate");

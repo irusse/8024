@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
-import 'package:neighbours/core/cubits/properties/properties_cubit.dart';
 import 'package:neighbours/core/cubits/user_location/user_location_cubit.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/components/custom_label.dart';
 import 'package:neighbours/core/services/snackbar_service.dart';
 import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/features/home/presentation/widgets/set_coordinates_button.dart';
+import 'package:neighbours/features/property/presentation/cubits/properties/properties_cubit.dart';
+import 'package:neighbours/features/property/presentation/cubits/property_form/property_form_cubit.dart';
 import '../../../../core/components/category_select_field.dart';
 import '../../../../core/components/image_picker_field.dart';
 import '../../../../core/components/primary_button.dart';
-import '../../../../core/cubits/property_form/property_form_cubit.dart';
 import '../../../../core/components/reusable_text_field.dart';
 
 class AddPropertyDialog extends StatefulWidget {

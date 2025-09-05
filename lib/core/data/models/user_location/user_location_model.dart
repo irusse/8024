@@ -1,7 +1,5 @@
-import 'package:geocoding/geocoding.dart';
 import 'package:neighbours/core/domain/entities/user_location/user_location_entity.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:neighbours/core/domain/entities/user_location/user_location_entity.dart';
 
 part 'user_location_model.g.dart';
 
@@ -26,9 +24,9 @@ class UserLocationModel {
   Map<String, dynamic> toJson() => _$UserLocationModelToJson(this);
 
   UserLocationEntity toEntity() => UserLocationEntity(
-    lat: lat,
-    lng: lng,
-  );
+        lat: lat,
+        lng: lng,
+      );
 
   factory UserLocationModel.fromEntity(UserLocationEntity entity) =>
       UserLocationModel(

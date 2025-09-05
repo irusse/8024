@@ -1,12 +1,11 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:neighbours/core/constants/default_constants.dart';
 import 'package:neighbours/core/di/injection.dart';
-import 'package:neighbours/core/domain/entities/property/property_entity.dart';
 import 'package:neighbours/core/services/image_service.dart';
-
-import '../../constants/default_constants.dart';
-import '../../services/map_service.dart';
+import 'package:neighbours/core/services/map_service.dart';
+import 'package:neighbours/features/property/domain/entities/property/property_entity.dart';
 
 part 'property_form_cubit.freezed.dart';
 

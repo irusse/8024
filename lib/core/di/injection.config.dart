@@ -77,32 +77,36 @@ import '../../features/profile/presentation/cubits/profile/profile_cubit.dart'
     as _i470;
 import '../../features/profile/presentation/cubits/user_verified_properties/user_verified_properties_cubit.dart'
     as _i526;
+import '../../features/property/data/datasources/property_remote_datasource.dart'
+    as _i954;
 import '../../features/property/data/datasources/resource_remote_datasource.dart'
     as _i129;
+import '../../features/property/data/repositories/property_repository_impl.dart'
+    as _i758;
 import '../../features/property/data/repositories/resource_repository_impl.dart'
     as _i41;
+import '../../features/property/domain/repositories/property_repository.dart'
+    as _i61;
 import '../../features/property/domain/repositories/resource_repository.dart'
     as _i50;
+import '../../features/property/presentation/cubits/properties/properties_cubit.dart'
+    as _i468;
 import '../../features/property/presentation/cubits/resources/resources_cubit.dart'
     as _i549;
 import '../cubits/events/events_cubit.dart' as _i913;
-import '../cubits/properties/properties_cubit.dart' as _i12;
 import '../cubits/theme/theme_cubit.dart' as _i93;
 import '../cubits/user/user_cubit.dart' as _i1067;
 import '../cubits/user_location/user_location_cubit.dart' as _i940;
 import '../data/datasources/community_remote_datasource.dart' as _i455;
 import '../data/datasources/event_remote_datasource.dart' as _i591;
-import '../data/datasources/property_remote_datasource.dart' as _i237;
 import '../data/datasources/user_location_local_datasource.dart' as _i392;
 import '../data/datasources/user_remote_datasource.dart' as _i293;
 import '../data/repositories/community_repository_impl.dart' as _i46;
 import '../data/repositories/event_repository_impl.dart' as _i687;
-import '../data/repositories/property_repository_impl.dart' as _i487;
 import '../data/repositories/user_location_repository_impl.dart' as _i247;
 import '../data/repositories/user_repository_impl.dart' as _i223;
 import '../domain/repositories/community_repository.dart' as _i248;
 import '../domain/repositories/event_repository.dart' as _i195;
-import '../domain/repositories/property_repository.dart' as _i201;
 import '../domain/repositories/user_location_repository.dart' as _i543;
 import '../domain/repositories/user_repository.dart' as _i544;
 import '../network/dio_client.dart' as _i667;
@@ -140,12 +144,10 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i361.Dio>(() => networkModule.dio);
     gh.singleton<_i941.NotificationService>(() => _i941.NotificationService());
     gh.singleton<_i81.AppRouter>(() => _i81.AppRouter());
-    gh.singleton<_i237.PropertyRemoteDataSource>(
-        () => _i237.PropertyRemoteDataSourceImpl(gh<_i361.Dio>()));
+    gh.singleton<_i954.PropertyRemoteDataSource>(
+        () => _i954.PropertyRemoteDataSourceImpl(gh<_i361.Dio>()));
     gh.singleton<_i93.ThemeCubit>(
         () => _i93.ThemeCubit(gh<_i460.SharedPreferences>()));
-    gh.singleton<_i201.PropertyRepository>(() =>
-        _i487.PropertyRepositoryImpl(gh<_i237.PropertyRemoteDataSource>()));
     gh.factory<_i166.PropertyLayerService>(
         () => _i166.PropertyLayerService(gh<_i485.MapIconService>()));
     gh.factory<_i835.NotificationLayerService>(
@@ -156,10 +158,6 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i591.EventRemoteDataSourceImpl(gh<_i361.Dio>()));
     gh.lazySingleton<_i569.MapService>(() => _i569.MapboxService());
     gh.singleton<_i768.ImageService>(() => _i768.ImageServiceImpl());
-    gh.factory<_i526.UserVerifiedPropertiesCubit>(() =>
-        _i526.UserVerifiedPropertiesCubit(gh<_i201.PropertyRepository>()));
-    gh.singleton<_i12.PropertiesCubit>(
-        () => _i12.PropertiesCubit(gh<_i201.PropertyRepository>()));
     gh.singleton<_i278.HomeRemoteDataSource>(
         () => _i278.HomeRemoteDataSourceImpl(gh<_i361.Dio>()));
     gh.singleton<_i129.ResourceRemoteDataSource>(
@@ -194,10 +192,16 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i392.UserLocationLocalDataSource>(() =>
         _i392.UserLocationLocalDataSourceImpl(
             gh<_i558.FlutterSecureStorage>()));
+    gh.singleton<_i61.PropertyRepository>(() =>
+        _i758.PropertyRepositoryImpl(gh<_i954.PropertyRemoteDataSource>()));
     gh.singleton<_i745.AuthService>(
         () => _i745.AuthService(gh<_i558.FlutterSecureStorage>()));
     gh.singleton<_i420.ChatRepository>(
         () => _i504.ChatRepositoryImpl(gh<_i159.ChatRemoteDataSource>()));
+    gh.factory<_i526.UserVerifiedPropertiesCubit>(
+        () => _i526.UserVerifiedPropertiesCubit(gh<_i61.PropertyRepository>()));
+    gh.singleton<_i468.PropertiesCubit>(
+        () => _i468.PropertiesCubit(gh<_i61.PropertyRepository>()));
     gh.singleton<_i195.EventRepository>(
         () => _i687.EventRepositoryImpl(gh<_i591.EventRemoteDataSource>()));
     gh.singleton<_i544.UserRepository>(

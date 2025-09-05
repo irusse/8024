@@ -9,10 +9,8 @@ import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/themes/theme.dart';
 import 'package:neighbours/features/home/data/services/layer_service.dart';
 import 'package:neighbours/features/home/data/services/map_icon_service.dart';
-
-import '../../../../core/domain/entities/property/property_entity.dart';
-
-import '../../../../core/data/models/property/property_model.dart';
+import 'package:neighbours/features/property/data/models/property/property_model.dart';
+import 'package:neighbours/features/property/domain/entities/property/property_entity.dart';
 
 @injectable
 class PropertyLayerService extends LayerService {

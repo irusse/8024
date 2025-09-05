@@ -3,9 +3,9 @@ import 'package:collection/collection.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
-import 'package:neighbours/core/domain/entities/property/property_entity.dart';
-import 'package:neighbours/core/domain/repositories/property_repository.dart';
-import '../../state/api_state.dart';
+import 'package:neighbours/core/state/api_state.dart';
+import 'package:neighbours/features/property/domain/entities/property/property_entity.dart';
+import 'package:neighbours/features/property/domain/repositories/property_repository.dart';
 
 part 'properties_cubit.freezed.dart';
 

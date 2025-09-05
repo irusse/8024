@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:neighbours/core/domain/entities/property/property_entity.dart';
-import '../../../config/app_config.dart';
-import '../../../utils/date_time_converter.dart';
+import 'package:neighbours/core/config/app_config.dart';
+import 'package:neighbours/core/utils/date_time_converter.dart';
+import 'package:neighbours/features/property/domain/entities/property/property_entity.dart';
 
 part 'property_model.g.dart';
 

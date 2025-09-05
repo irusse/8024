@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:neighbours/core/cubits/properties/properties_cubit.dart';
 import 'package:neighbours/core/cubits/user_location/user_location_cubit.dart';
 import 'package:neighbours/core/di/injection.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
@@ -13,8 +12,9 @@ import 'package:neighbours/features/home/presentation/widgets/profile_dialog.dar
 import 'package:neighbours/features/home/presentation/widgets/add_property_dialog.dart';
 import 'package:neighbours/core/components/bottom_sheet_dialog.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
+import 'package:neighbours/features/property/presentation/cubits/properties/properties_cubit.dart';
+import 'package:neighbours/features/property/presentation/cubits/property_form/property_form_cubit.dart';
 
-import '../../../../core/cubits/property_form/property_form_cubit.dart';
 import '../../../../core/utils/sheet_utils.dart';
 import '../cubits/home/home_cubit.dart';
 import '../cubits/profile_create/profile_create_cubit.dart';

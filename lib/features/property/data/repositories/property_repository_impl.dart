@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
-import 'package:neighbours/core/data/datasources/property_remote_datasource.dart';
-import 'package:neighbours/core/domain/entities/property/property_entity.dart';
-import 'package:neighbours/core/domain/entities/user_verified_property/user_verified_property_entity.dart';
-import 'package:neighbours/core/domain/repositories/property_repository.dart';
+import 'package:neighbours/features/property/data/datasources/property_remote_datasource.dart';
+import 'package:neighbours/features/property/domain/entities/property/property_entity.dart';
+import 'package:neighbours/features/property/domain/entities/user_verified_property/user_verified_property_entity.dart';
+import 'package:neighbours/features/property/domain/repositories/property_repository.dart';
 import 'package:neighbours/core/error/failures.dart';
 
 @Singleton(as: PropertyRepository)

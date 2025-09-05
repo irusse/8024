@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:neighbours/features/chat/presentation/cubits/chat/chat_cubit.dart';
 import 'dart:async';
 import 'package:neighbours/core/cubits/events/events_cubit.dart';
-import 'package:neighbours/core/cubits/properties/properties_cubit.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
 import 'package:neighbours/core/cubits/user_location/user_location_cubit.dart';
 import 'package:neighbours/core/exceptions/exceptions.dart';
@@ -15,6 +14,7 @@ import 'package:neighbours/features/home/data/services/event_layer_service.dart'
 import 'package:neighbours/features/home/data/services/property_layer_service.dart';
 import 'package:neighbours/features/home/presentation/pages/home.dart';
 import 'package:neighbours/features/notification/presentation/cubits/notification_cubit.dart';
+import 'package:neighbours/features/property/presentation/cubits/properties/properties_cubit.dart';
 import '../../data/services/notification_layer_service.dart';
 import '../cubits/home/home_cubit.dart';
 

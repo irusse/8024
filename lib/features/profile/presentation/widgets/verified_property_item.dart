@@ -4,9 +4,9 @@ import 'package:intl/intl.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/components/shaped_cached_image.dart';
 import 'package:neighbours/core/constants/default_constants.dart';
-import 'package:neighbours/core/domain/entities/user_verified_property/user_verified_property_entity.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/themes/theme.dart';
+import 'package:neighbours/features/property/domain/entities/user_verified_property/user_verified_property_entity.dart';
 
 import '../../../../core/router/app_routes.dart';
 

@@ -4,19 +4,17 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' hide ImageSource;
 import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/components/default_app_bar.dart';
 import 'package:neighbours/core/components/default_page_wrapper.dart';
-
 import 'package:neighbours/core/components/primary_button.dart';
-
 import 'package:image_picker/image_picker.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/services/map_service.dart';
 import 'package:neighbours/core/state/api_state.dart';
+import 'package:neighbours/features/property/presentation/cubits/properties/properties_cubit.dart';
+import 'package:neighbours/features/property/presentation/cubits/property_form/property_form_cubit.dart';
 import '../../../../core/components/category_select_field.dart';
 import '../../../../core/components/centered_map_picker.dart';
 import '../../../../core/components/custom_label.dart';
 import '../../../../core/components/image_picker_field.dart';
-import '../../../../core/cubits/properties/properties_cubit.dart';
-import '../../../../core/cubits/property_form/property_form_cubit.dart';
 import '../../../../core/components/reusable_text_field.dart';
 import '../../../home/presentation/widgets/property_marker.dart';
 

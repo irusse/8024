@@ -5,7 +5,6 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' hide Error;
 import 'package:neighbours/core/components/bottom_sheet_dialog.dart';
 import 'package:neighbours/core/components/get_location_dialog.dart';
 import 'package:neighbours/core/components/my_location_btn.dart';
-import 'package:neighbours/core/cubits/properties/properties_cubit.dart';
 import 'package:neighbours/core/cubits/events/events_cubit.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
 import 'package:neighbours/core/cubits/user_location/user_location_cubit.dart';
@@ -28,7 +27,8 @@ import 'package:neighbours/features/home/presentation/mixins/home_map_mixin.dart
 import 'package:neighbours/features/home/presentation/mixins/home_initialization_mixin.dart';
 import 'package:neighbours/features/home/presentation/widgets/view_switcher.dart';
 import 'package:neighbours/features/chat/presentation/cubits/chat/chat_cubit.dart';
-import '../../../../core/cubits/property_form/property_form_cubit.dart';
+import 'package:neighbours/features/property/presentation/cubits/properties/properties_cubit.dart';
+import 'package:neighbours/features/property/presentation/cubits/property_form/property_form_cubit.dart';
 import '../../../../core/cubits/theme/theme_cubit.dart';
 import '../../data/services/notification_layer_service.dart';
 import '../cubits/home/home_cubit.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
-import 'package:neighbours/core/domain/entities/property/property_entity.dart';
 import 'package:neighbours/features/home/presentation/widgets/property_item.dart';
+import 'package:neighbours/features/property/domain/entities/property/property_entity.dart';
 
 class GenericListView<T> extends StatelessWidget {
   final List<T> items;

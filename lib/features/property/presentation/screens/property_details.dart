@@ -6,14 +6,14 @@ import 'package:neighbours/core/components/custom_outlined_button.dart';
 import 'package:neighbours/core/components/custom_svg.dart';
 import 'package:neighbours/core/components/default_app_bar.dart';
 import 'package:neighbours/core/components/default_loading_overlay.dart';
-import 'package:neighbours/core/cubits/properties/properties_cubit.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
 import 'package:neighbours/core/cubits/user_location/user_location_cubit.dart';
-import 'package:neighbours/core/domain/entities/property/property_entity.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/router/app_routes.dart';
 import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/core/themes/theme.dart';
+import 'package:neighbours/features/property/domain/entities/property/property_entity.dart';
+import 'package:neighbours/features/property/presentation/cubits/properties/properties_cubit.dart';
 import 'package:neighbours/features/property/presentation/cubits/resources/resources_cubit.dart';
 import 'package:neighbours/features/property/presentation/widgets/property_resources.dart';
 import '../../../../core/components/bottom_sheet_dialog.dart';
@@ -208,7 +208,8 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                             label: 'Состояние',
                             value:
                                 currentProperty.buildVerificationStatusText(),
-                            valueColor: currentProperty.verificationStatusColor(context),
+                            valueColor: currentProperty
+                                .verificationStatusColor(context),
                           ),
                           const VerticalGap(8),
                           LabelValueText(

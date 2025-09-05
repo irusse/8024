@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:neighbours/core/data/models/property/property_model.dart';
-import 'package:neighbours/core/domain/entities/user_verified_property/user_verified_property_entity.dart';
+import 'package:neighbours/features/property/data/models/property/property_model.dart';
+import 'package:neighbours/features/property/domain/entities/user_verified_property/user_verified_property_entity.dart';
 
 part 'user_verified_property_model.g.dart';
 

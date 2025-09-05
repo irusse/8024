@@ -4,8 +4,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/error/failures.dart';
 import 'package:neighbours/core/network/network_handler.dart';
-import '../models/property/property_model.dart';
-import '../models/user_verified_property/user_verified_property_model.dart';
+import 'package:neighbours/features/property/data/models/property/property_model.dart';
+import 'package:neighbours/features/property/data/models/user_verified_property/user_verified_property_model.dart';
 
 abstract class PropertyRemoteDataSource {
   Future<Either<Failure, PropertyModel>> addFirst({

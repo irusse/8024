@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:neighbours/core/components/default_loading_overlay.dart';
 import 'package:neighbours/core/state/api_state.dart';
-
-import '../../../../core/cubits/properties/properties_cubit.dart';
+import 'package:neighbours/features/property/presentation/cubits/properties/properties_cubit.dart';
 import '../../../../core/cubits/user/user_cubit.dart';
 import '../cubits/home/home_cubit.dart';
 
