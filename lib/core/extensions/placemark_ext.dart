@@ -19,4 +19,5 @@ extension PlacemarkFormat on Placemark {
 
     return parts.isNotEmpty ? parts.join(' / ') : '';
   }
+
 }

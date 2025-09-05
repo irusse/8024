@@ -93,14 +93,17 @@ import '../cubits/user_location/user_location_cubit.dart' as _i940;
 import '../data/datasources/community_remote_datasource.dart' as _i455;
 import '../data/datasources/event_remote_datasource.dart' as _i591;
 import '../data/datasources/property_remote_datasource.dart' as _i237;
+import '../data/datasources/user_location_local_datasource.dart' as _i392;
 import '../data/datasources/user_remote_datasource.dart' as _i293;
 import '../data/repositories/community_repository_impl.dart' as _i46;
 import '../data/repositories/event_repository_impl.dart' as _i687;
 import '../data/repositories/property_repository_impl.dart' as _i487;
+import '../data/repositories/user_location_repository_impl.dart' as _i247;
 import '../data/repositories/user_repository_impl.dart' as _i223;
 import '../domain/repositories/community_repository.dart' as _i248;
 import '../domain/repositories/event_repository.dart' as _i195;
 import '../domain/repositories/property_repository.dart' as _i201;
+import '../domain/repositories/user_location_repository.dart' as _i543;
 import '../domain/repositories/user_repository.dart' as _i544;
 import '../network/dio_client.dart' as _i667;
 import '../network/jwt_interceptor.dart' as _i260;
@@ -188,8 +191,9 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i35.DocumentRepositoryImpl(gh<_i609.DocumentDataSource>()));
     gh.factory<_i936.DocumentCubit>(
         () => _i936.DocumentCubit(gh<_i375.DocumentRepository>()));
-    gh.singleton<_i940.UserLocationCubit>(
-        () => _i940.UserLocationCubit(gh<_i569.MapService>()));
+    gh.singleton<_i392.UserLocationLocalDataSource>(() =>
+        _i392.UserLocationLocalDataSourceImpl(
+            gh<_i558.FlutterSecureStorage>()));
     gh.singleton<_i745.AuthService>(
         () => _i745.AuthService(gh<_i558.FlutterSecureStorage>()));
     gh.singleton<_i420.ChatRepository>(
@@ -211,6 +215,9 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i745.AuthService>(),
           gh<_i31.NavigationService>(),
         ));
+    gh.lazySingleton<_i543.UserLocationRepository>(() =>
+        _i247.UserLocationRepositoryImpl(
+            gh<_i392.UserLocationLocalDataSource>()));
     gh.singleton<_i221.VoteRepository>(
         () => _i630.VoteRepositoryImpl(gh<_i990.VoteRemoteDatasource>()));
     gh.singleton<_i882.NotificationCubit>(
@@ -219,6 +226,10 @@ extension GetItInjectableX on _i174.GetIt {
         _i46.CommunityRepositoryImpl(gh<_i455.CommunityRemoteDataSource>()));
     gh.lazySingleton<_i549.ResourcesCubit>(
         () => _i549.ResourcesCubit(gh<_i50.ResourceRepository>()));
+    gh.singleton<_i940.UserLocationCubit>(() => _i940.UserLocationCubit(
+          gh<_i569.MapService>(),
+          gh<_i543.UserLocationRepository>(),
+        ));
     gh.singleton<_i787.AuthRepository>(() => _i153.AuthRepositoryImpl(
           gh<_i107.AuthRemoteDataSource>(),
           gh<_i745.AuthService>(),

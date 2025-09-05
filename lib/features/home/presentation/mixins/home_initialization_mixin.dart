@@ -123,14 +123,8 @@ mixin HomeInitializationMixin<T extends StatefulWidget> on State<Home> {
         ]);
       }
 
-      final userLocation = await locationCubit.getPosition();
-      if (userLocation == null) return;
-
-      // await propertiesCubit.fetchUnverifiedOthersProperties(
-      //   latitude: userLocation.latitude,
-      //   longitude: userLocation.longitude,
-      //   radius: 5,
-      // );
+      await locationCubit.fetchLocalLocation();
+      await locationCubit.getPosition();
     } on NetworkException {
       if (!mounted) return;
       context.push(AppRoutePath.noInternet, extra: performDataFetch);

@@ -5,6 +5,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:injectable/injectable.dart';
+import 'package:neighbours/core/domain/repositories/user_location_repository.dart';
 import 'package:neighbours/core/services/map_service.dart';
 
 part 'user_location_cubit.freezed.dart';
@@ -13,9 +14,10 @@ part 'user_location_state.dart';
 
 @singleton
 class UserLocationCubit extends Cubit<UserLocationState> {
+  final UserLocationRepository _userLocationRepository;
   final MapService _mapService;
 
-  UserLocationCubit(this._mapService)
+  UserLocationCubit(this._mapService, this._userLocationRepository)
       : super(const UserLocationState.initial());
 
   Future<LatLng?> getPosition() async {
@@ -26,9 +28,9 @@ class UserLocationCubit extends Cubit<UserLocationState> {
       emit(const UserLocationState.loading());
 
       const LocationSettings locationSettings = LocationSettings(
-          accuracy: LocationAccuracy.high,
-          distanceFilter: 10,
-          timeLimit: Duration(seconds: 10));
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 10,
+      );
 
       Position position = await Geolocator.getCurrentPosition(
           locationSettings: locationSettings);
@@ -37,9 +39,6 @@ class UserLocationCubit extends Cubit<UserLocationState> {
       await _updateUserLocation(coordinates);
 
       return coordinates;
-    } on TimeoutException {
-      final lastKnownPosition = await getLastKnownPosition();
-      return lastKnownPosition;
     } on LocationServiceDisabledException {
       _serviceDisabled();
       return null;
@@ -49,14 +48,12 @@ class UserLocationCubit extends Cubit<UserLocationState> {
     }
   }
 
-  Future<LatLng?> getLastKnownPosition() async {
-    final Position? position = await Geolocator.getLastKnownPosition();
-    if (position != null) {
-      final coordinates = LatLng(position.latitude, position.longitude);
-      await _updateUserLocation(coordinates);
-      return coordinates;
-    }
-    return null;
+  Future<LatLng?> fetchLocalLocation() async {
+    final res = await _userLocationRepository.getSaved();
+    if (res == null) return null;
+    final coords = LatLng(res.lat, res.lng);
+    _updateUserLocation(coords);
+    return coords;
   }
 
   Future<void> _updateUserLocation(
@@ -69,7 +66,10 @@ class UserLocationCubit extends Cubit<UserLocationState> {
       emit(const UserLocationState.failedToResolvePlacemark());
       return;
     }
-
+    await _userLocationRepository.save(
+      lat: coordinates.latitude,
+      lng: coordinates.longitude,
+    );
     emit(UserLocationState.locationReceived(
       coordinates: coordinates,
       placemark: resolvedPlacemark,
