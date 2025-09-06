@@ -41,6 +41,10 @@ abstract class EventRemoteDataSource {
     int? limit,
   });
 
+  Future<Either<Failure, EventModel>> fetchEventById({
+    required String eventId,
+  });
+
   Future<Either<Failure, void>> deleteEvent({
     required String eventId,
   });
@@ -178,6 +182,16 @@ class EventRemoteDataSourceImpl implements EventRemoteDataSource {
       final response = await _dio.get('/events/community/$communityId',
           queryParameters: queryParams);
       return EventModel.fromJsonList(response.data);
+    });
+  }
+
+  @override
+  Future<Either<Failure, EventModel>> fetchEventById({
+    required String eventId,
+  }) async {
+    return NetworkHandler.handleRequest(() async {
+      final response = await _dio.get('/events/$eventId');
+      return EventModel.fromJson(response.data);
     });
   }
 

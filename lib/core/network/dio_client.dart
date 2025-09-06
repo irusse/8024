@@ -1,3 +1,4 @@
+import 'package:chucker_flutter/chucker_flutter.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:injectable/injectable.dart';
@@ -39,7 +40,7 @@ class DioClient {
         maxWidth: 80,
         logPrint: (obj) => debugPrint(obj.toString()),
       ),
-      // ChuckerDioInterceptor(),
+      ChuckerDioInterceptor(),
       _jwtInterceptor,
     ]);
   }

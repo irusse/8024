@@ -85,6 +85,15 @@ class EventRepositoryImpl implements EventRepository {
   }
 
   @override
+  Future<Either<Failure, EventEntity>> fetchEventById({
+    required String eventId,
+  }) async {
+    final result = await _remoteDataSource.fetchEventById(eventId: eventId);
+    return result.fold(
+        (error) => Left(error), (model) => Right(model.toEntity()));
+  }
+
+  @override
   Future<Either<Failure, void>> deleteEvent({
     required String eventId,
   }) async {

@@ -8,7 +8,9 @@ import 'package:neighbours/core/components/default_circle_avatar.dart';
 import 'package:neighbours/core/components/default_page_wrapper.dart';
 import 'package:neighbours/core/constants/default_constants.dart';
 import 'package:neighbours/core/cubits/events/events_cubit.dart';
+import 'package:neighbours/core/cubits/fcm/fcm_cubit.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
+import 'package:neighbours/core/di/injection.dart';
 import 'package:neighbours/core/domain/entities/user/user_entity.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/extensions/full_name_ext.dart';
@@ -68,10 +70,11 @@ class ProfileScreen extends StatelessWidget {
         listener: (context, state) {
           state.maybeWhen(
             error: (message) => context.snackbar.error(context, message),
-            logoutSuccess: () {
+            logoutSuccess: () async {
               context.read<PropertiesCubit>().onLogout();
               context.read<EventsCubit>().onLogout();
               context.read<NotificationCubit>().onLogout();
+              getIt<FcmCubit>().removeFcmToken();
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 context.go(AppRoutePath.authWelcome);
               });

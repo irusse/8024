@@ -36,6 +36,10 @@ abstract class EventRepository {
     int? limit,
   });
 
+  Future<Either<Failure, EventEntity>> fetchEventById({
+    required String eventId,
+  });
+
   Future<Either<Failure, void>> deleteEvent({
     required String eventId,
   });

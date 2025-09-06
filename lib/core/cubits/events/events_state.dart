@@ -16,6 +16,7 @@ class EventsState with _$EventsState {
     @Default(ApiState.initial()) ApiState<EventEntity> leaveEventState,
     @Default(ApiState.initial()) ApiState<EventEntity> updateNotificationState,
     @Default(ApiState.initial()) ApiState<EventEntity> updateEventState,
+    @Default(ApiState.initial()) ApiState<EventEntity> fetchEventByIdState,
     @Default(ApiState.initial())
     ApiState<List<EventCategoryEntity>> categoriesState,
   }) = _EventsState;
