@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' hide Error;
 import 'package:neighbours/core/components/bottom_sheet_dialog.dart';
+import 'package:neighbours/core/components/get_location_dialog.dart';
 import 'package:neighbours/core/components/my_location_btn.dart';
 import 'package:neighbours/core/cubits/events/events_cubit.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
@@ -129,6 +130,16 @@ class _HomeState extends State<Home>
     });
   }
 
+  void _showLocationDisabledDialog(BuildContext context) async {
+    await showBaseBottomSheet(
+        context: context,
+        title: 'Где вы находитесь',
+        child: BlocProvider.value(
+          value: context.read<UserLocationCubit>(),
+          child: const GetLocationDialog(),
+        ));
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
@@ -180,6 +191,22 @@ class _HomeState extends State<Home>
                   }
                 },
               ),
+              BlocListener<UserLocationCubit, UserLocationState>(
+                  listener: (context, locationState) {
+                locationState.maybeWhen(
+                    permissionDenied: () =>
+                        _showLocationDisabledDialog(context),
+                    permissionDeniedForever: () =>
+                        _showLocationDisabledDialog(context),
+                    orElse: () {},
+                    locationReceived: (coordinates, _) {
+                      MapCameraUtils.flyToPosition(
+                        mapboxMapController!,
+                        coordinates.latitude,
+                        coordinates.longitude,
+                      );
+                    });
+              }),
               BlocListener<UserCubit, UserState>(
                 listenWhen: (prev, curr) => prev.fetchState != curr.fetchState,
                 listener: (context, state) {
@@ -261,7 +288,6 @@ class _HomeState extends State<Home>
                       return const HomeLoadingOverlay();
                     }
                     return HomeMapView(
-                      mapboxMapController: mapboxMapController,
                       initialCameraOptions: initialCameraOptions,
                       onMapCreated: onMapCreated,
                       onMapTap: onMapTap,

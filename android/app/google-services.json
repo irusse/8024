@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "521005052290",
+    "project_id": "project-1532338643756643649",
+    "storage_bucket": "project-1532338643756643649.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:521005052290:android:e3e332cc491eaf53525f9b",
+        "android_client_info": {
+          "package_name": "ru.l8024.lokatlas"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKnFsochD97nWEW4kEkzvYdFghdM51jtA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

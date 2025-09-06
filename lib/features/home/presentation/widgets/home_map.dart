@@ -12,61 +12,33 @@ class HomeMapView extends StatelessWidget {
     super.key,
     required this.onMapCreated,
     required this.onStyleLoadedListener,
-    required this.mapboxMapController,
     this.onMapTap,
     this.initialCameraOptions,
   });
 
   final Function(MapboxMap) onMapCreated;
-  final MapboxMap? mapboxMapController;
   final Function(MapContentGestureContext)? onMapTap;
   final Function(StyleLoadedEventData)? onStyleLoadedListener;
   final CameraOptions? initialCameraOptions;
 
-  void _showLocationDisabledDialog(BuildContext context) async {
-    await showBaseBottomSheet(
-        context: context,
-        title: 'Где вы находитесь',
-        child: BlocProvider.value(
-          value: context.read<UserLocationCubit>(),
-          child: const GetLocationDialog(),
-        ));
-  }
-
   @override
   Widget build(BuildContext context) {
-    return BlocListener<UserLocationCubit, UserLocationState>(
-        listener: (context, locationState) {
-          locationState.maybeWhen(
-              permissionDenied: () => _showLocationDisabledDialog(context),
-              permissionDeniedForever: () =>
-                  _showLocationDisabledDialog(context),
-              orElse: () {},
-              locationReceived: (coordinates, _) {
-                MapCameraUtils.flyToPosition(
-                  mapboxMapController!,
-                  coordinates.latitude,
-                  coordinates.longitude,
-                );
-              });
-        },
-        child: MapWidget(
-          cameraOptions: initialCameraOptions,
-          styleUri: context.read<ThemeCubit>().getThemeMap,
-          onMapCreated: (controller) {
-            controller
-              ..scaleBar.updateSettings(ScaleBarSettings(enabled: false))
-              ..compass.updateSettings(CompassSettings(enabled: false))
-              ..logo.updateSettings(LogoSettings(enabled: false))
-              ..location
-                  .updateSettings(LocationComponentSettings(enabled: true));
-            onMapCreated(controller);
-          },
-          onStyleLoadedListener: onStyleLoadedListener,
-          onTapListener: onMapTap,
-          mapOptions: MapOptions(
-            pixelRatio: MediaQuery.of(context).devicePixelRatio,
-          ),
-        ));
+    return MapWidget(
+      cameraOptions: initialCameraOptions,
+      styleUri: context.read<ThemeCubit>().getThemeMap,
+      onMapCreated: (controller) {
+        controller
+          ..scaleBar.updateSettings(ScaleBarSettings(enabled: false))
+          ..compass.updateSettings(CompassSettings(enabled: false))
+          ..logo.updateSettings(LogoSettings(enabled: false))
+          ..location.updateSettings(LocationComponentSettings(enabled: true));
+        onMapCreated(controller);
+      },
+      onStyleLoadedListener: onStyleLoadedListener,
+      onTapListener: onMapTap,
+      mapOptions: MapOptions(
+        pixelRatio: MediaQuery.of(context).devicePixelRatio,
+      ),
+    );
   }
 }
