@@ -125,7 +125,6 @@ mixin StepSheetManager<T extends StatefulWidget> on State<Home> {
           child: NoCommunitiesDialog(onDataFetchRequired: onDataFetchRequired),
         );
       case Idle():
-        // Для состояния Idle ничего не показываем
         return;
       default:
         return;

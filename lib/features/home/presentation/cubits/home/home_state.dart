@@ -41,12 +41,12 @@ class NetworkError extends HomeState {
 
   final String message;
 }
+
 class GetStepError extends HomeState {
   const GetStepError({required this.message});
 
   final String message;
 }
-
 
 class ShowSetCoordinates extends HomeState {
   const ShowSetCoordinates();

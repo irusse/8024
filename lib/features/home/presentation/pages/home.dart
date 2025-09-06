@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' hide Error;
 import 'package:neighbours/core/components/bottom_sheet_dialog.dart';
-import 'package:neighbours/core/components/get_location_dialog.dart';
 import 'package:neighbours/core/components/my_location_btn.dart';
 import 'package:neighbours/core/cubits/events/events_cubit.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
@@ -136,16 +135,6 @@ class _HomeState extends State<Home>
     handleAppLifecycleStateChange(state);
   }
 
-  void _showLocationDisabledDialog(BuildContext context) async {
-    await showBaseBottomSheet(
-        context: context,
-        title: 'Где вы находитесь',
-        child: BlocProvider.value(
-          value: context.read<UserLocationCubit>(),
-          child: const GetLocationDialog(),
-        ));
-  }
-
   @override
   Widget build(BuildContext context) {
     final userId =
@@ -262,23 +251,6 @@ class _HomeState extends State<Home>
                       mapboxMapController, eventsState.events);
                 },
               ),
-              BlocListener<UserLocationCubit, UserLocationState>(
-                listener: (context, locationState) {
-                  locationState.maybeWhen(
-                      permissionDenied: () =>
-                          _showLocationDisabledDialog(context),
-                      permissionDeniedForever: () =>
-                          _showLocationDisabledDialog(context),
-                      orElse: () {},
-                      locationReceived: (coordinates, _) {
-                        MapCameraUtils.flyToPosition(
-                          mapboxMapController!,
-                          coordinates.latitude,
-                          coordinates.longitude,
-                        );
-                      });
-                },
-              )
             ],
             child: Stack(
               children: [
@@ -286,13 +258,10 @@ class _HomeState extends State<Home>
                   valueListenable: isMapReadyNotifier,
                   builder: (context, isReady, child) {
                     if (!isReady) {
-                      return Center(
-                        child: CircularProgressIndicator(
-                          color: context.color.primary,
-                        ),
-                      );
+                      return const HomeLoadingOverlay();
                     }
                     return HomeMapView(
+                      mapboxMapController: mapboxMapController,
                       initialCameraOptions: initialCameraOptions,
                       onMapCreated: onMapCreated,
                       onMapTap: onMapTap,
@@ -355,7 +324,6 @@ class _HomeState extends State<Home>
                       }
                     },
                   ),
-                const HomeLoadingOverlay(),
               ],
             ),
           );
