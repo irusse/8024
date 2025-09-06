@@ -6,6 +6,7 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' hide Error;
 import 'package:neighbours/core/components/bottom_sheet_dialog.dart';
 import 'package:neighbours/core/cubits/events/events_cubit.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
+import 'package:neighbours/core/cubits/user_location/user_location_cubit.dart';
 import 'package:neighbours/core/di/injection.dart';
 import 'package:neighbours/core/domain/entities/event/event_entity.dart';
 import 'package:neighbours/core/utils/map_camera_utils.dart';
@@ -32,8 +33,44 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
 
   NotificationLayerService get notificationLayerService;
 
+  // Camera preparation state
+  final ValueNotifier<bool> _isMapReadyNotifier = ValueNotifier<bool>(false);
+  CameraOptions? _initialCameraOptions;
+
+  /// Getter для состояния готовности карты
+  ValueNotifier<bool> get isMapReadyNotifier => _isMapReadyNotifier;
+
+  /// Getter для начальных опций камеры
+  CameraOptions? get initialCameraOptions => _initialCameraOptions;
+
   void onMapCreated(MapboxMap mapboxMap) async {
     mapboxMapController = mapboxMap;
+  }
+
+  /// Подготовка начальной камеры
+  Future<void> prepareInitialCamera() async {
+    // Сначала пытаемся загрузить кешированную позицию
+    final cachedPosition =
+        await context.read<UserLocationCubit>().fetchLocalLocation();
+
+    if (cachedPosition != null) {
+      _initialCameraOptions = MapCameraUtils.createCameraOptions(
+        lat: cachedPosition.latitude,
+        lng: cachedPosition.longitude,
+      );
+    } else {
+      // Если кешированной позиции нет, используем дефолтную
+      _initialCameraOptions = MapCameraUtils.defaultCameraOptions();
+    }
+
+    if (mounted) {
+      _isMapReadyNotifier.value = true;
+    }
+  }
+
+  /// Dispose resources
+  void disposeMapResources() {
+    _isMapReadyNotifier.dispose();
   }
 
   /// Публичный метод для пересоздания слоев
