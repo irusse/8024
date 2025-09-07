@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
+import 'package:neighbours/core/services/notification_service.dart';
 import 'package:neighbours/features/notification/domain/entities/notification/notification_entity.dart';
 import 'package:neighbours/features/notification/domain/repositories/notification_repository.dart';
 
@@ -14,7 +15,14 @@ part 'notification_state.dart';
 class NotificationCubit extends Cubit<NotificationState> {
   final NotificationRepository _repository;
 
-  NotificationCubit(this._repository) : super(const NotificationState());
+  NotificationCubit(this._repository, NotificationService service)
+      : super(const NotificationState()) {
+    service.stream.listen((notification) {
+      emit(state.copyWith(unreadCount: state.unreadCount + 1));
+    });
+  }
+
+  bool get hasUnreadNotifications => state.unreadCount > 0;
 
   Future<void> fetchNotifications({
     int page = 1,
@@ -89,8 +97,6 @@ class NotificationCubit extends Cubit<NotificationState> {
       }
       return notification;
     }).toList();
-
-    // Подсчитываем новое количество непрочитанных
 
     final newUnreadCount = state.unreadCount - 1;
 

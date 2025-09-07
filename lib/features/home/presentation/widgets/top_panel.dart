@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/router/app_routes.dart';
+import 'package:neighbours/features/notification/presentation/cubits/notification_cubit.dart';
 import '../../../../core/components/custom_button.dart';
 import '../../../../core/components/default_circle_avatar.dart';
 import '../../../../core/cubits/user/user_cubit.dart';
@@ -34,27 +35,40 @@ class TopPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasUnreadNotifications = context.select<NotificationCubit, bool>(
+        (cubit) => cubit.hasUnreadNotifications);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: [
-            GestureDetector(
-                onTap: () => _onProfileClick(context),
-                child: BlocBuilder<UserCubit, UserState>(
-                    buildWhen: (prev, curr) =>
-                        prev.user.avatar != curr.user.avatar ||
-                        prev.user.firstName != curr.user.firstName,
-                    builder: (context, state) {
-                      return DefaultCircleAvatar(
-                        radius: 25,
-                        id: state.user.id,
-                        name: state.user.firstName,
-                        url: state.user.avatar,
-                        textStyle: context.text.bodyLarge,
-                      );
-                    })),
-          ],
+        GestureDetector(
+          onTap: () => _onProfileClick(context),
+          child: BlocBuilder<UserCubit, UserState>(
+            buildWhen: (prev, curr) =>
+                prev.user.avatar != curr.user.avatar ||
+                prev.user.firstName != curr.user.firstName,
+            builder: (context, state) {
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: hasUnreadNotifications
+                        ? context.color.basicRed
+                        : Colors.transparent,
+                    width: 2,
+                  ),
+                ),
+                child: DefaultCircleAvatar(
+                  radius: 25,
+                  id: state.user.id,
+                  name: state.user.firstName,
+                  url: state.user.avatar,
+                  textStyle: context.text.bodyLarge,
+                ),
+              );
+            },
+          ),
         ),
         CustomButton(
           onPressed: () => _onCommunitiesClick(context),

@@ -50,7 +50,7 @@ class ProfileScreen extends StatelessWidget {
     final property = context.read<PropertiesCubit>().getUserProperty(user.id);
     final community = user.communities.firstOrNull;
     final hasUnreadNotifications = context.select<NotificationCubit, bool>(
-        (cubit) => cubit.state.unreadCount > 0);
+        (cubit) => cubit.hasUnreadNotifications);
     return Scaffold(
       appBar: DefaultAppBar(
         showBackButton: true,

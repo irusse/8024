@@ -219,6 +219,10 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i1037.AuthLocationCubit(gh<_i0.HomeRepository>()));
     gh.singleton<_i715.HomeCubit>(
         () => _i715.HomeCubit(gh<_i0.HomeRepository>()));
+    gh.singleton<_i882.NotificationCubit>(() => _i882.NotificationCubit(
+          gh<_i630.NotificationRepository>(),
+          gh<_i941.NotificationService>(),
+        ));
     gh.singleton<_i50.ResourceRepository>(() =>
         _i41.ResourceRepositoryImpl(gh<_i129.ResourceRemoteDataSource>()));
     gh.singleton<_i260.JWTInterceptor>(() => _i260.JWTInterceptor(
@@ -233,8 +237,6 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i292.PushLocalDataSourceImpl(gh<_i558.FlutterSecureStorage>()));
     gh.singleton<_i221.VoteRepository>(
         () => _i630.VoteRepositoryImpl(gh<_i990.VoteRemoteDatasource>()));
-    gh.singleton<_i882.NotificationCubit>(
-        () => _i882.NotificationCubit(gh<_i630.NotificationRepository>()));
     gh.singleton<_i248.CommunityRepository>(() =>
         _i46.CommunityRepositoryImpl(gh<_i455.CommunityRemoteDataSource>()));
     gh.singleton<_i189.PushRemoteDataSource>(

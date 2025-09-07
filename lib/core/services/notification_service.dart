@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -13,7 +14,12 @@ import 'package:neighbours/core/router/app_routes.dart';
 @singleton
 class NotificationService {
   final _notificationPlugin = FlutterLocalNotificationsPlugin();
+
   bool _isInitialized = false;
+
+  final _controller = StreamController<AppNotificationModel>.broadcast();
+
+  Stream<AppNotificationModel> get stream => _controller.stream;
 
   Future<void> init() async {
     if (_isInitialized) return;
@@ -71,6 +77,7 @@ class NotificationService {
         AppNotificationModel.fromRemoteMessage(message);
 
     _showBasicNotification(appNotificationModel);
+    _controller.add(appNotificationModel);
   }
 
   Future<void> _showBasicNotification(AppNotificationModel notification) {
