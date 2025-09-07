@@ -220,7 +220,7 @@ class PropertyLayerService extends LayerService {
       final String imageId = property.id.toString();
       try {
         if (property.photo.isEmpty) continue;
-        final bytes = await _mapIconService.loadCircularNetworkImage(
+        final bytes = await _mapIconService.loadNetworkAvatar(
           property.photo,
           size: pxSize.toDouble(),
           borderColor: property.verificationStatusColor(context),

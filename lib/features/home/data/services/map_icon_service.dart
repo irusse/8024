@@ -6,6 +6,8 @@ import 'package:vector_graphics/vector_graphics.dart' as vg;
 import 'package:http/http.dart' as http;
 import 'package:injectable/injectable.dart';
 
+enum AvatarShape { circle, rounded }
+
 @injectable
 class MapIconService {
   Future<Uint8List> _convertSvgToPng(
@@ -49,13 +51,13 @@ class MapIconService {
     return null;
   }
 
-  /// Загружает сетевое изображение и отрисовывает его в круглой форме
-  /// с указанной обводкой. Возвращает PNG-байты нужного размера.
-  Future<Uint8List?> loadCircularNetworkImage(
+  Future<Uint8List?> loadNetworkAvatar(
     String imageUrl, {
     double size = 96,
     Color borderColor = Colors.orange,
     double borderWidth = 4,
+    AvatarShape shape = AvatarShape.circle,
+    double borderRadius = 8, // для rounded
   }) async {
     try {
       final response = await http.get(Uri.parse(imageUrl));
@@ -67,40 +69,52 @@ class MapIconService {
 
       final Uint8List rawBytes = response.bodyBytes;
 
-      // Декодируем исходную картинку
+      // Декодируем картинку
       final ui.Codec codec = await ui.instantiateImageCodec(rawBytes);
       final ui.FrameInfo frame = await codec.getNextFrame();
       final ui.Image sourceImage = frame.image;
 
-      // Готовим целевое полотно
+      // Подготовка канваса
       final ui.PictureRecorder recorder = ui.PictureRecorder();
       final Canvas canvas = Canvas(recorder);
-      final double diameter = size;
-      final double radius = diameter / 2;
-      final Rect dstRect = Rect.fromLTWH(0, 0, diameter, diameter);
+      final Rect dstRect = Rect.fromLTWH(0, 0, size, size);
 
-      // Делаем фон полностью прозрачным
+      // Прозрачный фон
       final Paint clearPaint = Paint()..blendMode = BlendMode.clear;
       canvas.drawRect(dstRect, clearPaint);
 
-      // Клип по кругу (обрезаем всё вне круга)
-      final Path clipPath = Path()
-        ..addOval(
-            Rect.fromCircle(center: Offset(radius, radius), radius: radius));
-      canvas.saveLayer(dstRect, Paint());
-      canvas.clipPath(clipPath, doAntiAlias: true);
+      // Подготовка клипа
+      Path? clipPath;
+      RRect? clipRRect;
 
-      // Рассчитываем прямоугольник исходного изображения, чтобы покрыть круг без искажений (cover)
+      if (shape == AvatarShape.circle) {
+        final double radius = size / 2;
+        clipPath = Path()
+          ..addOval(
+              Rect.fromCircle(center: Offset(radius, radius), radius: radius));
+      } else {
+        clipRRect = RRect.fromRectAndRadius(
+          dstRect,
+          Radius.circular(borderRadius),
+        );
+      }
+
+      canvas.saveLayer(dstRect, Paint());
+      if (shape == AvatarShape.circle && clipPath != null) {
+        canvas.clipPath(clipPath, doAntiAlias: true);
+      } else if (shape == AvatarShape.rounded && clipRRect != null) {
+        canvas.clipRRect(clipRRect, doAntiAlias: true);
+      }
+
+      // Рассчитываем aspect-ratio crop (cover)
       final double srcAspect = sourceImage.width / sourceImage.height;
-      const double dstAspect = 1; // круг -> квадратный канвас
+      const double dstAspect = 1;
       Rect srcRect;
       if (srcAspect > dstAspect) {
-        // Источник шире — обрезаем по ширине
         final double newWidth = sourceImage.height * dstAspect;
         final double x = (sourceImage.width - newWidth) / 2;
         srcRect = Rect.fromLTWH(x, 0, newWidth, sourceImage.height.toDouble());
       } else {
-        // Источник уже/выше — обрезаем по высоте
         final double newHeight = sourceImage.width / dstAspect;
         final double y = (sourceImage.height - newHeight) / 2;
         srcRect = Rect.fromLTWH(0, y, sourceImage.width.toDouble(), newHeight);
@@ -114,19 +128,32 @@ class MapIconService {
 
       canvas.restore();
 
-      // Рисуем оранжевую обводку поверх (на прозрачном фоне)
+      // Рисуем обводку
       final Paint strokePaint = Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = borderWidth
         ..color = borderColor
         ..isAntiAlias = true;
-      // Немного уменьшаем радиус, чтобы обводка полностью помещалась
-      canvas.drawCircle(
-          Offset(radius, radius), radius - borderWidth / 2, strokePaint);
+
+      if (shape == AvatarShape.circle) {
+        final double radius = size / 2;
+        canvas.drawCircle(
+          Offset(radius, radius),
+          radius - borderWidth / 2,
+          strokePaint,
+        );
+      } else {
+        canvas.drawRRect(
+          RRect.fromRectAndRadius(
+            dstRect.deflate(borderWidth / 2),
+            Radius.circular(borderRadius),
+          ),
+          strokePaint,
+        );
+      }
 
       final ui.Picture picture = recorder.endRecording();
-      final ui.Image image =
-          await picture.toImage(diameter.toInt(), diameter.toInt());
+      final ui.Image image = await picture.toImage(size.toInt(), size.toInt());
       final ByteData? pngBytes =
           await image.toByteData(format: ui.ImageByteFormat.png);
       picture.dispose();
@@ -134,7 +161,7 @@ class MapIconService {
       if (pngBytes == null) return null;
       return pngBytes.buffer.asUint8List();
     } catch (e) {
-      debugPrint('Error loading circular image from $imageUrl: $e');
+      debugPrint('Error loading network avatar from $imageUrl: $e');
       return null;
     }
   }
