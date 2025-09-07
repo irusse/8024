@@ -15,4 +15,7 @@ abstract class NotificationRepository {
 
   /// Удалить все уведомления
   Future<Either<Failure, void>> deleteAllNotifications();
+
+  /// Отметить уведомление как прочитанное
+  Future<Either<Failure, void>> markAsRead(int notificationId);
 }

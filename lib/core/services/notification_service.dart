@@ -109,9 +109,9 @@ class NotificationService {
   }
 
   void handleNotificationTap(Map<String, dynamic> payload) {
-
     final type = payload["type"]!;
     switch (type) {
+      case NotificationConstants.eventCreated:
       case NotificationConstants.userLeftEvent:
       case NotificationConstants.userJoinedEvent:
         {

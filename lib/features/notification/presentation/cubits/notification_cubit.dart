@@ -77,6 +77,48 @@ class NotificationCubit extends Cubit<NotificationState> {
     );
   }
 
+  Future<void> markAsRead(int notificationId) async {
+    // Сохраняем текущее состояние для отката в случае ошибки
+    final currentNotifications = state.notifications;
+    final currentUnreadCount = state.unreadCount;
+
+    // Оптимистичное обновление: сразу отмечаем как прочитанное
+    final updatedNotifications = state.notifications.map((notification) {
+      if (notification.id == notificationId && !notification.isRead) {
+        return notification.copyWith(isRead: true);
+      }
+      return notification;
+    }).toList();
+
+    // Подсчитываем новое количество непрочитанных
+
+    final newUnreadCount = state.unreadCount - 1;
+
+    emit(state.copyWith(
+      markAsReadState: const ApiState.loading(),
+      notifications: updatedNotifications,
+      unreadCount: newUnreadCount,
+    ));
+
+    final result = await _repository.markAsRead(notificationId);
+
+    result.fold(
+      (failure) {
+        // Откатываем изменения в случае ошибки
+        emit(state.copyWith(
+          markAsReadState: ApiState.failure(failure.message),
+          notifications: currentNotifications,
+          unreadCount: currentUnreadCount,
+        ));
+      },
+      (_) {
+        emit(state.copyWith(
+          markAsReadState: const ApiState.success(null),
+        ));
+      },
+    );
+  }
+
   void onLogout() {
     emit(state.copyWith(notifications: [], unreadCount: 0));
   }
@@ -85,6 +127,7 @@ class NotificationCubit extends Cubit<NotificationState> {
     emit(state.copyWith(
       fetchState: const ApiState.initial(),
       deleteAllState: const ApiState.initial(),
+      markAsReadState: const ApiState.initial(),
     ));
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/constants/ui_constants.dart';
@@ -6,6 +7,7 @@ import 'package:neighbours/core/di/injection.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/services/notification_service.dart';
 import 'package:neighbours/features/notification/domain/entities/notification/notification_entity.dart';
+import 'package:neighbours/features/notification/presentation/cubits/notification_cubit.dart';
 
 class NotificationItem extends StatelessWidget {
   final NotificationEntity entity;
@@ -34,8 +36,13 @@ class NotificationItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        if (!entity.isRead) {
+          context.read<NotificationCubit>().markAsRead(entity.id);
+        }
         final newPayload = {...entity.payload, "type": entity.type};
+
         getIt<NotificationService>().handleNotificationTap(newPayload);
+
       },
       child: Container(
         decoration: BoxDecoration(
@@ -90,7 +97,7 @@ class NotificationItem extends StatelessWidget {
             ),
             const VerticalGap(8),
             Container(
-              margin: const EdgeInsets.only(left: 12),
+              margin: EdgeInsets.only(left: entity.isRead ? 0 : 12),
               child: Text(
                 entity.message,
                 style: context.text.bodyMedium
