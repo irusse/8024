@@ -262,11 +262,11 @@ class EventLayerService extends LayerService {
   }
 
   Map<String, dynamic> _createGeoJsonFromEvents(
-    Map<int, EventEntity> events,
+    List<EventEntity> events,
   ) {
     final features = <Map<String, dynamic>>[];
 
-    for (final event in events.values) {
+    for (final event in events) {
       final eventModel = EventModel.fromEntity(event);
       final feature = _createFeatureFromEvent(eventModel);
       features.add(feature);
@@ -280,7 +280,7 @@ class EventLayerService extends LayerService {
 
   Future<void> updateData(
     MapboxMap? mapboxMap,
-    Map<int, EventEntity> events,
+    List<EventEntity> events,
   ) async {
     if (mapboxMap == null) return;
     final style = mapboxMap.style;
@@ -303,11 +303,11 @@ class EventLayerService extends LayerService {
   /// Загружает иконки для уведомлений
   Future<void> _loadEventIcons(
     StyleManager style,
-    Map<int, EventEntity> events,
+    List<EventEntity> events,
   ) async {
     // Собираем уникальные иконки
     final uniqueIcons = <int, String>{};
-    for (final event in events.values) {
+    for (final event in events) {
       if (event.category.icon.isNotEmpty) {
         uniqueIcons[event.category.id] = event.category.icon;
       }

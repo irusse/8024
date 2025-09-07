@@ -63,7 +63,7 @@ class EventsTab extends StatelessWidget {
                       );
                     }
 
-                    final values = state.events.values.toList();
+                    final values = context.read<EventsCubit>().allFullEvents();
 
                     return SliverPadding(
                       padding: const EdgeInsets.symmetric(

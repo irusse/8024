@@ -8,9 +8,9 @@ part 'notification_form_cubit.freezed.dart';
 part 'notification_form_state.dart';
 
 class NotificationFormCubit extends Cubit<NotificationFormState> {
-  final NotificationEvent? _originalEvent;
+  final EventEntity? _originalEvent;
 
-  NotificationFormCubit({NotificationEvent? event})
+  NotificationFormCubit({EventEntity? event})
       : _originalEvent = event,
         super(NotificationFormState(
           id: event?.id ?? 0,

@@ -85,7 +85,7 @@ class AppRouter {
         GoRoute(
             path: AppRoutePath.eventDetails,
             pageBuilder: (context, state) {
-              final FullEvent event = state.extra as FullEvent;
+              final eventId = state.pathParameters['eventId'] as String;
               return CustomPageTransition.slideFromBottom(
                 child: MultiBlocProvider(providers: [
                   BlocProvider.value(value: getIt<EventsCubit>()),
@@ -94,7 +94,7 @@ class AppRouter {
                   BlocProvider<VoteCubit>(
                     create: (_) => getIt<VoteCubit>(),
                   ),
-                ], child: EventDetails(event: event)),
+                ], child: EventDetails(eventId: eventId)),
               );
             }),
         GoRoute(
@@ -245,7 +245,7 @@ class AppRouter {
         GoRoute(
           path: AppRoutePath.notificationForm,
           pageBuilder: (context, state) {
-            final notificationEvent = state.extra as NotificationEvent?;
+            final notificationEvent = state.extra as EventEntity?;
             return CustomPageTransition.slideFromBottom(
               child: MultiBlocProvider(providers: [
                 BlocProvider.value(value: getIt<UserLocationCubit>()),
@@ -261,7 +261,7 @@ class AppRouter {
         GoRoute(
           path: AppRoutePath.eventForm,
           pageBuilder: (context, state) {
-            final event = state.extra as FullEvent?;
+            final event = state.extra as EventEntity?;
             return CustomPageTransition.slideFromBottom(
               child: MultiBlocProvider(providers: [
                 BlocProvider.value(value: getIt<UserLocationCubit>()),

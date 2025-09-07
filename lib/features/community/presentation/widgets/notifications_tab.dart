@@ -38,26 +38,18 @@ class NotificationsTab extends StatelessWidget {
           );
         }
 
-        // данные
-        final List<EventEntity> items = state.notifications.values.toList();
-
         return DateGroupedList<EventEntity>(
-          items: items,
+          items: context.read<EventsCubit>().allNotifications(),
           dateOf: (e) => e.createdAt,
           itemBuilder: (ctx, e) => NotificationCard(event: e),
-          // новые сверху
           sortDescending: true,
-          // "Сегодня/Вчера"
           showTodayYesterday: true,
-          // локаль на формат даты
           dateLocale: 'ru_RU',
-          // как раньше: только горизонтальный паддинг
           padding: const EdgeInsets.symmetric(
             horizontal: UIConstants.defaultHorizontalPadding,
             vertical: 8,
           ),
           itemSpacing: 8,
-          // Кастомный заголовок как в исходнике (без Divider)
           headerBuilder: (ctx, date, title) => Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Text(

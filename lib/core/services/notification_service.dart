@@ -4,7 +4,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:injectable/injectable.dart';
+import 'package:neighbours/core/constants/notification_constants.dart';
 import 'package:neighbours/core/data/models/app_notification/app_notification_model.dart';
+import 'package:neighbours/core/di/injection.dart';
+import 'package:neighbours/core/router/app_router.dart';
+import 'package:neighbours/core/router/app_routes.dart';
 
 @singleton
 class NotificationService {
@@ -31,10 +35,7 @@ class NotificationService {
       initializationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
         if (response.payload != null) {
-          final data = jsonDecode(response.payload!);
-          print("Daaaaa");
-          print("================");
-          // _handleNotificationTap();
+          handleNotificationTap(jsonDecode(response.payload!));
         }
       },
     );
@@ -77,17 +78,20 @@ class NotificationService {
       return Future.value();
     }
 
-    Map<String, dynamic> payloadMap = {};
-    payloadMap = jsonDecode(notification.payload!) as Map<String, dynamic>;
-    payloadMap["type"] = notification.type;
-
     return _notificationPlugin.show(
       notification.hashCode,
       notification.title,
       notification.body,
       _chatNotificationDetails(),
-      payload: jsonEncode(payloadMap),
+      payload:
+          jsonEncode(buildPayloadMap(notification.payload!, notification.type)),
     );
+  }
+
+  Map<String, dynamic> buildPayloadMap(String payload, String type) {
+    final payloadMap = jsonDecode(payload) as Map<String, dynamic>;
+    payloadMap["type"] = type;
+    return payloadMap;
   }
 
   NotificationDetails _chatNotificationDetails() {
@@ -104,13 +108,17 @@ class NotificationService {
         ));
   }
 
-  void _handleNotificationTap(Map<String, dynamic> payload) {
+  void handleNotificationTap(Map<String, dynamic> payload) {
+
     final type = payload["type"]!;
-    // switch (type){
-    //   case NotificationConstants.userJoinedEvent
-    // }
-    // getIt<AppRouter>()
-    //     .router
-    //     .push(AppRouteBuilder.chatPage(int.parse(eventId), eventTitle));
+    switch (type) {
+      case NotificationConstants.userLeftEvent:
+      case NotificationConstants.userJoinedEvent:
+        {
+          int? eventId = payload['eventId'];
+          if (eventId == null) return;
+          getIt<AppRouter>().router.push(AppRouteBuilder.eventDetails(eventId));
+        }
+    }
   }
 }

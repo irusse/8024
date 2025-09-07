@@ -11,9 +11,9 @@ part 'event_form_cubit.freezed.dart';
 part 'event_form_state.dart';
 
 class EventFormCubit extends Cubit<EventFormState> {
-  final FullEvent? _originalEvent;
+  final EventEntity? _originalEvent;
 
-  EventFormCubit({FullEvent? event})
+  EventFormCubit({EventEntity? event})
       : _originalEvent = event,
         super(EventFormState(
           id: event?.id ?? 0,

@@ -12,7 +12,7 @@ import 'package:neighbours/features/event/presentation/widgets/poll_results.dart
 import '../../../../core/components/map_preview.dart';
 
 class EventInfoTab extends StatefulWidget {
-  final FullEvent event;
+  final EventEntity event;
 
   const EventInfoTab({super.key, required this.event});
 
@@ -88,7 +88,7 @@ class _EventInfoTabState extends State<EventInfoTab>
     );
   }
 
-  Widget _creatorInfo(BuildContext context, FullEvent event) {
+  Widget _creatorInfo(BuildContext context, EventEntity event) {
     final fullName = event.creator.fullName;
     final address = event.creator.address ?? '';
     return Padding(

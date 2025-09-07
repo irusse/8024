@@ -74,7 +74,7 @@ class NotificationLayerService extends LayerService {
   /// Обновляет данные уведомлений на карте
   Future<void> updateData(
     MapboxMap? mapboxMap,
-    Map<int, EventEntity> notifications,
+    List<EventEntity> notifications,
   ) async {
     if (mapboxMap == null) return;
     final style = mapboxMap.style;
@@ -160,10 +160,10 @@ class NotificationLayerService extends LayerService {
 
   Future<void> _loadNotificationIcons(
     StyleManager style,
-    Map<int, EventEntity> notifications,
+    List<EventEntity> notifications,
   ) async {
     final unique = <int, String>{};
-    for (final n in notifications.values) {
+    for (final n in notifications) {
       if (n.category.icon.isNotEmpty) unique[n.category.id] = n.category.icon;
     }
 
@@ -196,11 +196,11 @@ class NotificationLayerService extends LayerService {
 
   /// Создает GeoJSON из уведомлений
   Map<String, dynamic> _createGeoJsonFromNotifications(
-    Map<int, EventEntity> notifications,
+    List<EventEntity> notifications,
   ) {
     final features = <Map<String, dynamic>>[];
 
-    for (final notification in notifications.values) {
+    for (final notification in notifications) {
       final notificationModel = EventModel.fromEntity(notification);
       final feature = _createFeatureFromNotification(notificationModel);
       features.add(feature);

@@ -20,10 +20,7 @@ class EventsCubit extends Cubit<EventsState> {
   EventsCubit(this._eventRepository) : super(const EventsState());
 
   List<T> _sortedAllEvents<T>() {
-    final allEvents = [
-      ...state.notifications.values,
-      ...state.events.values,
-    ];
+    final allEvents = state.events.values.toList();
 
     allEvents.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return allEvents.cast<T>();
@@ -41,20 +38,28 @@ class EventsCubit extends Cubit<EventsState> {
         .toList();
   }
 
-  List<FullEvent> allUserFullEvents(int userId) {
+  List<EventEntity> allUserFullEvents(int userId) {
     return state.events.values
         .where((event) =>
             event.participants.any((p) => p.id == userId) ||
-            event.creator.id == userId)
+            event.creator.id == userId && event.isFullEvent)
         .toList();
   }
 
-  List<NotificationEvent> allUserNotifications(int userId) {
-    return state.notifications.values
-        .where((notification) =>
-            notification.participants.any((p) => p.id == userId) ||
-            notification.creator.id == userId)
+  List<EventEntity> allUserNotifications(int userId) {
+    return state.events.values
+        .where((event) =>
+            event.participants.any((p) => p.id == userId) ||
+            event.creator.id == userId && event.isNotification)
         .toList();
+  }
+
+  List<EventEntity> allFullEvents() {
+    return state.events.values.where((event) => event.isFullEvent).toList();
+  }
+
+  List<EventEntity> allNotifications() {
+    return state.events.values.where((event) => event.isNotification).toList();
   }
 
   Future<void> createNotification({
@@ -162,19 +167,10 @@ class EventsCubit extends Cubit<EventsState> {
         (failure) => emit(state.copyWith(
               fetchEventByIdState: ApiState.failure(failure.message),
             )), (entity) {
-      if (entity is FullEvent) {
-        final updated = state.events;
-        updated[entity.id] = entity;
-        emit(state.copyWith(
-            events: updated, fetchEventByIdState: ApiState.success(entity)));
-      }
-      if (entity is NotificationEvent) {
-        final updated = state.notifications;
-        updated[entity.id] = entity;
-        emit(state.copyWith(
-            notifications: updated,
-            fetchEventByIdState: ApiState.success(entity)));
-      }
+      final updated = {...state.events};
+      updated[entity.id] = entity;
+      emit(state.copyWith(
+          events: updated, fetchEventByIdState: ApiState.success(entity)));
     });
   }
 
@@ -331,18 +327,12 @@ class EventsCubit extends Cubit<EventsState> {
   }
 
   void onLogout() {
-    emit(state.copyWith(notifications: {}, events: {}));
+    emit(state.copyWith(events: {}));
   }
 
   void _removeEventOptimistically(int id) {
-    final updatedNotifications =
-        Map<int, NotificationEvent>.from(state.notifications);
-    final updatedEvents = Map<int, FullEvent>.from(state.events);
-
-    if (updatedNotifications.containsKey(id)) {
-      updatedNotifications.remove(id);
-      emit(state.copyWith(notifications: updatedNotifications));
-    } else if (updatedEvents.containsKey(id)) {
+    final updatedEvents = Map<int, EventEntity>.from(state.events);
+    if (updatedEvents.containsKey(id)) {
       updatedEvents.remove(id);
       emit(state.copyWith(events: updatedEvents));
     }
@@ -355,73 +345,39 @@ class EventsCubit extends Cubit<EventsState> {
   }
 
   void _handleEntitiesFetched(List<EventEntity> entities) {
-    final notifications = Map<int, NotificationEvent>.from(state.notifications);
-    final events = Map<int, FullEvent>.from(state.events);
+    final events = Map<int, EventEntity>.from(state.events);
 
     for (final entity in entities) {
-      if (entity is NotificationEvent) {
-        notifications[entity.id] = entity;
-      } else if (entity is FullEvent) {
-        events[entity.id] = entity;
-      }
+      events[entity.id] = entity;
     }
 
     emit(state.copyWith(
-      notifications: notifications,
       events: events,
       fetchState: ApiState.success(entities),
     ));
   }
 
   void _handleEntityCreated(EventEntity entity) {
-    if (entity is NotificationEvent) {
-      final updatedNotifications = {
-        entity.id: entity,
-        ...state.notifications,
-      };
-
-      emit(state.copyWith(
-        notifications: updatedNotifications,
-        createNotificationState: ApiState.success(entity),
-      ));
-    } else if (entity is FullEvent) {
-      final updatedEvents = {
-        entity.id: entity,
-        ...state.events,
-      };
-      emit(state.copyWith(
-        events: updatedEvents,
-        createEventState: ApiState.success(entity),
-      ));
-    }
+    final updatedEvents = {
+      entity.id: entity,
+      ...state.events,
+    };
+    emit(state.copyWith(
+      events: updatedEvents,
+      createEventState: ApiState.success(entity),
+    ));
   }
 
   void _handleEventUpdated(EventEntity entity, {bool? isJoin}) {
-    if (entity is NotificationEvent) {
-      final updatedNotifications = {...state.notifications};
-      updatedNotifications[entity.id] = entity;
-      emit(state.copyWith(
-        notifications: updatedNotifications,
-        updateNotificationState: ApiState.success(entity),
-        joinEventState:
-            isJoin == true ? ApiState.success(entity) : state.joinEventState,
-        leaveEventState:
-            isJoin == false ? ApiState.success(entity) : state.leaveEventState,
-      ));
-      return;
-    }
-    if (entity is FullEvent) {
-      final updatedEvents = {...state.events};
-      updatedEvents[entity.id] = entity;
-      emit(state.copyWith(
-        events: updatedEvents,
-        updateEventState: ApiState.success(entity),
-        joinEventState:
-            isJoin == true ? ApiState.success(entity) : state.joinEventState,
-        leaveEventState:
-            isJoin == false ? ApiState.success(entity) : state.leaveEventState,
-      ));
-      return;
-    }
+    final updatedEvents = {...state.events};
+    updatedEvents[entity.id] = entity;
+    emit(state.copyWith(
+      events: updatedEvents,
+      updateEventState: ApiState.success(entity),
+      joinEventState:
+          isJoin == true ? ApiState.success(entity) : state.joinEventState,
+      leaveEventState:
+          isJoin == false ? ApiState.success(entity) : state.leaveEventState,
+    ));
   }
 }

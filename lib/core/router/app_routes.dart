@@ -15,7 +15,7 @@ abstract class AppRoutePath {
   static const unexpectedError = '/unexpected-error';
   static const notificationForm = '/notification-form';
   static const eventForm = '/event-form';
-  static const eventDetails = '/event-details';
+  static const eventDetails = '/event-details/:eventId';
   static const fullMapPreview = '/full-map-preview';
   static const propertyVerifications = 'property-verifications';
   static const documentPage = 'document-page/:key';
@@ -47,6 +47,9 @@ abstract class AppRouteBuilder {
 
   static String propertyEdit(int propertyId) =>
       '/property-details/$propertyId/${AppRoutePath.propertyEdit}';
+
+  static String eventDetails(int eventId) =>
+      AppRoutePath.eventDetails.replaceAll(':eventId', eventId.toString());
 
   static String resourceForm(int propertyId) =>
       '/property-details/$propertyId/${AppRoutePath.resourceForm}';

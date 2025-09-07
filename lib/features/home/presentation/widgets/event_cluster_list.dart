@@ -4,7 +4,7 @@ import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/features/home/presentation/widgets/event_info_dialog.dart';
 
 class EventClusterList extends StatelessWidget {
-  final List<FullEvent> events;
+  final List<EventEntity> events;
 
   const EventClusterList({super.key, required this.events});
 

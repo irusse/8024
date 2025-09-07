@@ -30,7 +30,7 @@ class NotificationInfoDialog extends StatelessWidget {
           prev.joinEventState != curr.joinEventState ||
           prev.leaveEventState != curr.leaveEventState,
       builder: (context, state) {
-        final notification = state.notifications[eventId]!;
+        final notification = state.events[eventId]!;
         final isCreator = notification.isCreator(userId);
         final isParticipant = notification.isParticipant(userId);
 

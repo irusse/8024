@@ -84,24 +84,24 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
 
       // Обновляем данные на карте
       final propertiesState = context.read<PropertiesCubit>().state;
-      final eventsState = context.read<EventsCubit>().state;
+      final events = context.read<EventsCubit>().allFullEvents();
+      final notifications = context.read<EventsCubit>().allNotifications();
 
       if (propertiesState.properties.isNotEmpty) {
         propertyLayerService.updateData(
             context, mapboxMapController, propertiesState.properties);
       }
 
-      if (eventsState.notifications.isNotEmpty) {
-        await notificationLayerService.updateData(
-          mapboxMapController!,
-          eventsState.notifications,
-        );
-      }
-
-      if (eventsState.events.isNotEmpty) {
+      if (events.isNotEmpty) {
         await eventLayerService.updateData(
           mapboxMapController,
-          eventsState.events,
+          events,
+        );
+      }
+      if (events.isNotEmpty) {
+        await notificationLayerService.updateData(
+          mapboxMapController,
+          notifications,
         );
       }
     } catch (e) {
@@ -197,12 +197,12 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
           sourceId: EventLayerService.eventsSourceId,
           clusterFeature: feature.cast<String, Object?>(),
         );
-        final List<FullEvent> events = [];
+        final List<EventEntity> events = [];
         for (final l in leaves) {
           final event = eventLayerService.parseEventFromFeature(
               jsonDecode(jsonEncode(l)) as Map<String, dynamic>);
           if (event != null) {
-            events.add(event.toEntity() as FullEvent);
+            events.add(event.toEntity());
           }
         }
         if (!mounted) return;
@@ -307,7 +307,7 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
         showBaseBottomSheet(
           context: context,
           child: EventInfoDialog(
-            event: event.toEntity() as FullEvent,
+            event: event.toEntity(),
           ),
         );
       }

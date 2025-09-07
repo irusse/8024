@@ -9,7 +9,7 @@ import '../../../../core/components/custom_gap.dart';
 import '../../../event/presentation/widgets/location_address_view.dart';
 
 class EventInfoDialog extends StatelessWidget {
-  final FullEvent event;
+  final EventEntity event;
 
   const EventInfoDialog({super.key, required this.event});
 
@@ -33,7 +33,7 @@ class EventInfoDialog extends StatelessWidget {
           text: 'Подробнее',
           onPressed: () {
             context.pop();
-            context.push(AppRoutePath.eventDetails, extra: event);
+            context.push(AppRouteBuilder.eventDetails(event.id));
           },
           verticalPadding: 10,
         ),

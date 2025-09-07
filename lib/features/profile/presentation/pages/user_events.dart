@@ -68,9 +68,9 @@ class _UserEventsState extends State<UserEvents> {
     return DateGroupedList<EventEntity>(
       items: myEvents,
       dateOf: (obj) => obj.createdAt,
-      itemBuilder: (context, obj) {
-        if (obj is FullEvent) return EventCard(event: obj);
-        if (obj is NotificationEvent) return NotificationCard(event: obj);
+      itemBuilder: (context, event) {
+        if (event.isFullEvent) return EventCard(event: event);
+        if (event.isNotification) return NotificationCard(event: event);
         return const SizedBox.shrink();
       },
       // Опционально можно кастомизировать вид заголовка:
@@ -91,9 +91,9 @@ class _UserEventsState extends State<UserEvents> {
     return DateGroupedList<EventEntity>(
       items: userParticipantEvents,
       dateOf: (obj) => obj.createdAt,
-      itemBuilder: (context, obj) {
-        if (obj is FullEvent) return EventCard(event: obj);
-        if (obj is NotificationEvent) return NotificationCard(event: obj);
+      itemBuilder: (context, event) {
+        if (event.isFullEvent) return EventCard(event: event);
+        if (event.isNotification) return NotificationCard(event: event);
         return const SizedBox.shrink();
       },
       headerBuilder: (context, date, title) => Center(

@@ -3,8 +3,7 @@ part of 'events_cubit.dart';
 @freezed
 class EventsState with _$EventsState {
   const factory EventsState({
-    @Default({}) Map<int, NotificationEvent> notifications,
-    @Default({}) Map<int, FullEvent> events,
+    @Default({}) Map<int, EventEntity> events,
     @Default([]) List<EventCategoryEntity> categories,
     @Default(ApiState.initial()) ApiState<EventEntity> createEventState,
     @Default(ApiState.initial()) ApiState<EventEntity> createNotificationState,

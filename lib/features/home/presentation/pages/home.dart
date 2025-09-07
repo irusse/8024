@@ -194,18 +194,18 @@ class _HomeState extends State<Home>
               BlocListener<UserLocationCubit, UserLocationState>(
                   listener: (context, locationState) {
                 locationState.maybeWhen(
-                    permissionDenied: () =>
-                        _showLocationDisabledDialog(context),
-                    permissionDeniedForever: () =>
-                        _showLocationDisabledDialog(context),
-                    orElse: () {},
-                    locationReceived: (coordinates, _) {
-                      MapCameraUtils.flyToPosition(
-                        mapboxMapController!,
-                        coordinates.latitude,
-                        coordinates.longitude,
-                      );
-                    });
+                  permissionDenied: () => _showLocationDisabledDialog(context),
+                  permissionDeniedForever: () =>
+                      _showLocationDisabledDialog(context),
+                  locationReceived: (coordinates, _) {
+                    MapCameraUtils.flyToPosition(
+                      mapboxMapController!,
+                      coordinates.latitude,
+                      coordinates.longitude,
+                    );
+                  },
+                  orElse: () {},
+                );
               }),
               BlocListener<UserCubit, UserState>(
                 listenWhen: (prev, curr) => prev.fetchState != curr.fetchState,
@@ -264,18 +264,14 @@ class _HomeState extends State<Home>
                 },
               ),
               BlocListener<EventsCubit, EventsState>(
-                listenWhen: (prev, curr) =>
-                    prev.notifications != curr.notifications,
-                listener: (context, eventsState) {
-                  notificationLayerService.updateData(
-                      mapboxMapController, eventsState.notifications);
-                },
-              ),
-              BlocListener<EventsCubit, EventsState>(
                 listenWhen: (prev, curr) => prev.events != curr.events,
                 listener: (context, eventsState) {
-                  eventLayerService.updateData(
-                      mapboxMapController, eventsState.events);
+                  final events = context.read<EventsCubit>().allFullEvents();
+                  final notifications =
+                      context.read<EventsCubit>().allNotifications();
+                  eventLayerService.updateData(mapboxMapController, events);
+                  notificationLayerService.updateData(
+                      mapboxMapController, notifications);
                 },
               ),
             ],
