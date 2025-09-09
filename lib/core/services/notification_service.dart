@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:injectable/injectable.dart';
+import 'package:neighbours/core/constants/default_constants.dart';
 import 'package:neighbours/core/constants/notification_constants.dart';
 import 'package:neighbours/core/cubits/events/events_cubit.dart';
 import 'package:neighbours/core/data/models/app_notification/app_notification_model.dart';
@@ -121,6 +122,15 @@ class NotificationService {
   void handleNotificationTap(Map<String, dynamic> payload) {
     final type = payload["type"]!;
     switch (type) {
+      case NotificationConstants.messageReceived:
+        {
+          int? eventId = payload['eventId'];
+          if (eventId == null) return;
+          getIt<AppRouter>()
+              .router
+              .push(AppRouteBuilder.chatPage(eventId, payload['eventTitle']));
+          break;
+        }
       case NotificationConstants.eventCreated:
       case NotificationConstants.userLeftEvent:
       case NotificationConstants.userJoinedEvent:
@@ -128,6 +138,7 @@ class NotificationService {
           int? eventId = payload['eventId'];
           if (eventId == null) return;
           getIt<AppRouter>().router.push(AppRouteBuilder.eventDetails(eventId));
+          break;
         }
     }
   }
@@ -149,8 +160,9 @@ class NotificationService {
       body,
       _chatNotificationDetails(),
       payload: jsonEncode({
-        "eventId": message.eventId.toString(),
+        "eventId": message.eventId,
         "eventTitle": eventTitle,
+        "type": NotificationConstants.messageReceived
       }),
     );
   }
