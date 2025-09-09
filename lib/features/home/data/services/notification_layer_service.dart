@@ -27,7 +27,7 @@ class NotificationLayerService extends LayerService {
   // Минимальный зум при котором видны точки/кластеры
   static const double minZoom = 14;
 
-  static const double targetDp = 48; // целевой размер иконки на экране
+  static const double targetDp = 20; // целевой размер иконки на экране
 
   double get _dpr =>
       WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
@@ -122,7 +122,7 @@ class NotificationLayerService extends LayerService {
           ],
           iconImageExpression: ["get", "category_icon_id"],
           iconColor: iconColor,
-          iconSize: 0.45,
+          iconSize: 1,
           iconAllowOverlap: true,
           iconIgnorePlacement: true,
           iconAnchor: IconAnchor.CENTER),
@@ -162,53 +162,40 @@ class NotificationLayerService extends LayerService {
     StyleManager style,
     List<EventEntity> notifications,
   ) async {
-    final unique = <int, String>{};
-    for (final n in notifications) {
-      if (n.category.icon.isNotEmpty) unique[n.category.id] = n.category.icon;
-    }
+    final unique = {
+      for (final n in notifications)
+        if (n.category.icon.isNotEmpty) n.category.id: n.category.icon,
+    };
 
-    for (final entry in unique.entries) {
+    await Future.wait(unique.entries.map((entry) async {
       final id = 'icon_${entry.key}';
-
       try {
+        final imageExists = await style.hasStyleImage(id);
+        if (imageExists) return;
+
         final bytes = await _mapIconService.loadSvgIcon(
           entry.value,
-          size: _iconPx.toDouble(), // растр под DPR
+          size: _iconPx.toDouble(),
         );
-        if (bytes == null) continue; // важно: continue, а не return
+        if (bytes == null) return;
 
         final img = MbxImage(width: _iconPx, height: _iconPx, data: bytes);
-
-        await style.addStyleImage(
-          id,
-          _dpr,
-          img,
-          true,
-          [],
-          [],
-          null,
-        );
+        style.addStyleImage(id, _dpr, img, true, [], [], null);
       } catch (e) {
         debugPrint('Icon load failed for ${entry.key}: $e');
       }
-    }
+    }));
   }
 
   /// Создает GeoJSON из уведомлений
   Map<String, dynamic> _createGeoJsonFromNotifications(
     List<EventEntity> notifications,
   ) {
-    final features = <Map<String, dynamic>>[];
-
-    for (final notification in notifications) {
-      final notificationModel = EventModel.fromEntity(notification);
-      final feature = _createFeatureFromNotification(notificationModel);
-      features.add(feature);
-    }
-
     return {
       "type": "FeatureCollection",
-      "features": features,
+      "features": notifications
+          .map((e) => _createFeatureFromNotification(EventModel.fromEntity(e)))
+          .toList(),
     };
   }
 

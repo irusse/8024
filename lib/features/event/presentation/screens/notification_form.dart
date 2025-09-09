@@ -121,8 +121,7 @@ class _NotificationFormState extends State<NotificationForm> {
               },
               onError: (error) => context.snackbar.show(context, error));
         },
-        builder: (context, state) => state.categoriesState.isLoading ||
-                state.updateNotificationState.isLoading
+        builder: (context, state) => state.categoriesState.isLoading
             ? const DefaultLoadingOverlay()
             : Column(
                 children: [
@@ -199,6 +198,7 @@ class _NotificationFormState extends State<NotificationForm> {
                           );
                         }),
                         const Spacer(),
+                        const VerticalGap(16),
                         BlocBuilder<NotificationFormCubit,
                                 NotificationFormState>(
                             builder: (context, notificationFormState) {

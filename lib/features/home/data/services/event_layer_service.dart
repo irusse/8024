@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
+import 'package:neighbours/core/themes/theme.dart';
 import 'package:neighbours/features/home/data/services/layer_service.dart';
 
 import '../../../../core/constants/assets.dart';
@@ -29,8 +30,8 @@ class EventLayerService extends LayerService {
   // Минимальный зум при котором видны точки/кластеры
   static const double minZoom = 14;
 
-  static const double targetIconDp = 40; // целевой размер иконки на экране
-  static const double targetImageDp = 64; // целевой размер иконки на экране
+  static const double targetIconDp = 24; // целевой размер иконки на экране
+  static const double targetImageDp = 72; // целевой размер иконки на экране
 
   double get _dpr =>
       WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
@@ -286,29 +287,19 @@ class EventLayerService extends LayerService {
           ],
           iconImageExpression: ["get", "category_icon_id"],
           iconColor: iconColor,
-          iconSize: 0.7,
+          iconSize: 1,
           iconAllowOverlap: true,
           iconIgnorePlacement: true,
           iconAnchor: IconAnchor.CENTER),
     );
   }
 
-  Map<String, dynamic> _createGeoJsonFromEvents(
-    List<EventEntity> events,
-  ) {
-    final features = <Map<String, dynamic>>[];
-
-    for (final event in events) {
-      final eventModel = EventModel.fromEntity(event);
-      final feature = _createFeatureFromEvent(eventModel);
-      features.add(feature);
-    }
-
-    return {
-      "type": "FeatureCollection",
-      "features": features,
-    };
-  }
+  Map<String, dynamic> _createGeoJsonFromEvents(List<EventEntity> events) => {
+        "type": "FeatureCollection",
+        "features": events
+            .map((e) => _createFeatureFromEvent(EventModel.fromEntity(e)))
+            .toList(),
+      };
 
   Future<void> updateData(
     MapboxMap? mapboxMap,
@@ -337,44 +328,67 @@ class EventLayerService extends LayerService {
     StyleManager style,
     List<EventEntity> events,
   ) async {
-    // Собираем уникальные иконки категорий
-    final uniqueIcons = <int, String>{};
-    for (final event in events) {
-      if (event.category.icon.isNotEmpty) {
-        uniqueIcons[event.category.id] = event.category.icon;
-      }
-    }
+    final uniqueIcons = <int, String>{
+      for (final e in events)
+        if (e.category.icon.isNotEmpty) e.category.id: e.category.icon,
+    };
 
-    // Загружаем каждую уникальную иконку категории
-    for (final entry in uniqueIcons.entries) {
-      final categoryId = entry.key;
-      final iconUrl = entry.value;
-      final iconImageId = 'icon_$categoryId';
+    // Иконки категорий
+    final iconFutures = uniqueIcons.entries.map((entry) async {
+      final id = 'icon_${entry.key}';
+      if (await style.hasStyleImage(id)) return;
+
+      final bytes = await _mapIconService.loadSvgIcon(
+        entry.value,
+        size: _iconPx.toDouble(),
+      );
+      if (bytes == null) return;
+
+      final img = MbxImage(width: _iconPx, height: _iconPx, data: bytes);
+      await style.addStyleImage(id, _dpr, img, true, [], [], null);
+    });
+
+    // Картинки событий
+    final imageFutures = events
+        .where((e) => e.image?.isNotEmpty == true)
+        .map((e) => _loadEventImages(style, e));
+
+    await Future.wait([...iconFutures, ...imageFutures]);
+  }
+
+  Future<void> _loadEventImages(StyleManager style, EventEntity event) async {
+    if (event.image != null && event.image!.isNotEmpty) {
+      final eventImageId = 'event_image_${event.id}';
 
       try {
-        // Проверяем, не загружена ли уже иконка
-        final imageExists = await style.hasStyleImage(iconImageId);
-        if (imageExists) continue;
+        // Проверяем, не загружено ли уже изображение
+        final imageExists = await style.hasStyleImage(eventImageId);
+        if (imageExists) return;
 
-        // Загружаем SVG иконку
-        final iconBytes = await _mapIconService.loadSvgIcon(iconUrl,
-            size: _iconPx.toDouble());
-        if (iconBytes != null) {
+        // Загружаем изображение события с зеленой обводкой
+        final imageBytes = await _mapIconService.loadNetworkAvatar(event.image!,
+            size: _imagePx.toDouble(),
+            shape: AvatarShape.rounded,
+            borderColor: CommonModeColors.green,
+            borderWidth: 5 * _dpr,
+            borderRadius: 2 * _dpr);
+
+        if (imageBytes != null) {
           // Создаем MbxImage для Mapbox
           final mbxImage = MbxImage(
-            width: _iconPx,
-            height: _iconPx,
-            data: iconBytes,
+            width: _imagePx,
+            height: _imagePx,
+            data: imageBytes,
           );
 
-          // Добавляем иконку в стиль карты
+          // Добавляем изображение в стиль карты
           await style.addStyleImage(
-            iconImageId,
+            eventImageId,
             _dpr,
             // scale
             mbxImage,
-            true,
-            // sdf
+            false,
+            // sdf = false для растровых изображений
             [],
             // stretchX
             [],
@@ -383,54 +397,7 @@ class EventLayerService extends LayerService {
           );
         }
       } catch (e) {
-        debugPrint('Error loading icon for category $categoryId: $e');
-      }
-    }
-
-    // Загружаем изображения событий
-    for (final event in events) {
-      if (event.image != null && event.image!.isNotEmpty) {
-        final eventImageId = 'event_image_${event.id}';
-
-        try {
-          // Проверяем, не загружено ли уже изображение
-          final imageExists = await style.hasStyleImage(eventImageId);
-          if (imageExists) continue;
-
-          // Загружаем изображение события с зеленой обводкой
-          final imageBytes = await _mapIconService.loadNetworkAvatar(
-            event.image!,
-            size: _imagePx.toDouble(),
-            shape: AvatarShape.rounded,
-            borderWidth: 4 * _dpr,
-          );
-
-          if (imageBytes != null) {
-            // Создаем MbxImage для Mapbox
-            final mbxImage = MbxImage(
-              width: _imagePx,
-              height: _imagePx,
-              data: imageBytes,
-            );
-
-            // Добавляем изображение в стиль карты
-            await style.addStyleImage(
-              eventImageId,
-              _dpr,
-              // scale
-              mbxImage,
-              false,
-              // sdf = false для растровых изображений
-              [],
-              // stretchX
-              [],
-              // stretchY
-              null, // content
-            );
-          }
-        } catch (e) {
-          debugPrint('Error loading image for event ${event.id}: $e');
-        }
+        debugPrint('Error loading image for event ${event.id}: $e');
       }
     }
   }

@@ -40,11 +40,16 @@ class _CenteredMapPickerState extends State<CenteredMapPicker> {
 
   Future<void> _prepareInitialCamera() async {
     LatLng? target = widget.initialCoordinates;
-
+    _initialCamera = MapCameraUtils.defaultCameraOptions();
+    final userLocationCubit = context.read<UserLocationCubit>();
     if (target == null) {
-      final position = await context.read<UserLocationCubit>().getPosition();
+      // Получаем координаты пользователя
+      final position = await userLocationCubit.getPosition();
       if (position != null) {
         target = LatLng(position.latitude, position.longitude);
+      } else {
+        // Если не удадлось получить то берем из кэша
+        target = await userLocationCubit.fetchLocalLocation();
       }
     }
     if (target != null) {

@@ -365,6 +365,7 @@ class EventsCubit extends Cubit<EventsState> {
     emit(state.copyWith(
       events: updatedEvents,
       createEventState: ApiState.success(entity),
+      createNotificationState: ApiState.success(entity),
     ));
   }
 
@@ -374,6 +375,7 @@ class EventsCubit extends Cubit<EventsState> {
     emit(state.copyWith(
       events: updatedEvents,
       updateEventState: ApiState.success(entity),
+      updateNotificationState: ApiState.success(entity),
       joinEventState:
           isJoin == true ? ApiState.success(entity) : state.joinEventState,
       leaveEventState:

@@ -91,7 +91,7 @@ class ChatCubit extends Cubit<ChatState> {
 
       // Показываем уведомление только если сообщение не из текущего открытого чата
       if (_currentOpenChatId == null || message.eventId != _currentOpenChatId) {
-        // _notificationService.showEventMessageNotification(message);
+        _notificationService.showEventMessageNotification(message);
         _incrementUnreadCount(message.eventId);
       }
     });

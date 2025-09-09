@@ -17,13 +17,14 @@ class ViewSwitcher extends StatelessWidget {
       valueListenable: notifier,
       builder: (context, selectedIndex, child) {
         return Container(
-          width: 96,
-          height: 48,
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          width: 48,
+          height: 80,
           decoration: BoxDecoration(
             color: context.color.secondary,
             borderRadius: BorderRadius.circular(90),
           ),
-          child: Row(
+          child: Column(
             children: [
               Expanded(
                 child: _button(

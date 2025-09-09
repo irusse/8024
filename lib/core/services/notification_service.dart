@@ -6,10 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/constants/notification_constants.dart';
+import 'package:neighbours/core/cubits/events/events_cubit.dart';
 import 'package:neighbours/core/data/models/app_notification/app_notification_model.dart';
 import 'package:neighbours/core/di/injection.dart';
+import 'package:neighbours/core/domain/entities/event/event_entity.dart';
 import 'package:neighbours/core/router/app_router.dart';
 import 'package:neighbours/core/router/app_routes.dart';
+import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
 
 @singleton
 class NotificationService {
@@ -127,5 +130,28 @@ class NotificationService {
           getIt<AppRouter>().router.push(AppRouteBuilder.eventDetails(eventId));
         }
     }
+  }
+
+  Future<void> showEventMessageNotification(MessageEntity message) async {
+    final eventsCubit = getIt<EventsCubit>();
+    final event = eventsCubit.state.events[message.eventId];
+    if (event == null) return;
+    String eventTitle = "Чат";
+
+    final title = event.isFullEvent
+        ? 'Мероприятие "$eventTitle"'
+        : 'Оповещение "$eventTitle"';
+    final body =
+        '${message.user.firstName}: ${message.text.length > 25 ? "${message.text.substring(0, 25)}..." : message.text}';
+    return _notificationPlugin.show(
+      message.id.hashCode,
+      title,
+      body,
+      _chatNotificationDetails(),
+      payload: jsonEncode({
+        "eventId": message.eventId.toString(),
+        "eventTitle": eventTitle,
+      }),
+    );
   }
 }
