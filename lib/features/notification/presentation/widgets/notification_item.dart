@@ -42,7 +42,6 @@ class NotificationItem extends StatelessWidget {
         final newPayload = {...entity.payload, "type": entity.type};
 
         getIt<NotificationService>().handleNotificationTap(newPayload);
-
       },
       child: Container(
         decoration: BoxDecoration(

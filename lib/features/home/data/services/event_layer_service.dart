@@ -29,12 +29,15 @@ class EventLayerService extends LayerService {
   // Минимальный зум при котором видны точки/кластеры
   static const double minZoom = 14;
 
-  static const double targetDp = 40; // целевой размер иконки на экране
+  static const double targetIconDp = 40; // целевой размер иконки на экране
+  static const double targetImageDp = 64; // целевой размер иконки на экране
 
   double get _dpr =>
       WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-  int get _iconPx => (targetDp * _dpr).round();
+  int get _iconPx => (targetIconDp * _dpr).round();
+
+  int get _imagePx => (targetImageDp * _dpr).round();
 
   @override
   Future<void> initializeLayers(
@@ -184,6 +187,8 @@ class EventLayerService extends LayerService {
   Map<String, dynamic> _createFeatureFromEvent(EventModel event) {
     final categoryColorHex = event.category.color;
     final iconImageId = 'icon_${event.category.id}';
+    final hasEventImage = event.image != null && event.image!.isNotEmpty;
+    final eventImageId = hasEventImage ? 'event_image_${event.id}' : null;
 
     final properties = {
       ...event.toJson(),
@@ -191,6 +196,8 @@ class EventLayerService extends LayerService {
       "category_icon": event.category.icon,
       "image": event.image,
       "category_icon_id": iconImageId,
+      "event_image_id": eventImageId,
+      "has_event_image": hasEventImage,
       "square_image": squareImage,
       "short_title": event.title.length > 20
           ? "${event.title.substring(0, 17)}…"
@@ -211,7 +218,17 @@ class EventLayerService extends LayerService {
       id: eventsUnclusteredLayerId,
       sourceId: eventsSourceId,
       minZoom: minZoom,
-      iconImage: squareImage,
+      // Условное отображение: если есть изображение события - показываем его, иначе - квадратный фон
+      iconImageExpression: [
+        'case',
+        [
+          '==',
+          ['get', 'has_event_image'],
+          true
+        ],
+        ['get', 'event_image_id'],
+        squareImage
+      ],
       filter: [
         "all",
         [
@@ -230,14 +247,23 @@ class EventLayerService extends LayerService {
         21,
         0.8,
       ],
-      // Масштаб при необходимости
       iconAllowOverlap: true,
       iconIgnorePlacement: true,
+      // Цвет применяется только для квадратного фона (когда нет изображения события)
       iconColorExpression: [
         'case',
-        ['has', 'category_color'],
-        ['get', 'category_color'],
-        '#FF5722'
+        [
+          '==',
+          ['get', 'has_event_image'],
+          true
+        ],
+        'rgba(255, 255, 255, 0)', // прозрачный для изображений
+        [
+          'case',
+          ['has', 'category_color'],
+          ['get', 'category_color'],
+          '#FF5722'
+        ]
       ],
     ));
   }
@@ -251,6 +277,12 @@ class EventLayerService extends LayerService {
           filter: [
             "all",
             ["has", "category_icon_id"],
+            // Показываем иконку только если нет изображения события
+            [
+              "!=",
+              ["get", "has_event_image"],
+              true
+            ],
           ],
           iconImageExpression: ["get", "category_icon_id"],
           iconColor: iconColor,
@@ -300,12 +332,12 @@ class EventLayerService extends LayerService {
     }
   }
 
-  /// Загружает иконки для уведомлений
+  /// Загружает иконки и изображения для событий
   Future<void> _loadEventIcons(
     StyleManager style,
     List<EventEntity> events,
   ) async {
-    // Собираем уникальные иконки
+    // Собираем уникальные иконки категорий
     final uniqueIcons = <int, String>{};
     for (final event in events) {
       if (event.category.icon.isNotEmpty) {
@@ -313,7 +345,7 @@ class EventLayerService extends LayerService {
       }
     }
 
-    // Загружаем каждую уникальную иконку
+    // Загружаем каждую уникальную иконку категории
     for (final entry in uniqueIcons.entries) {
       final categoryId = entry.key;
       final iconUrl = entry.value;
@@ -352,6 +384,53 @@ class EventLayerService extends LayerService {
         }
       } catch (e) {
         debugPrint('Error loading icon for category $categoryId: $e');
+      }
+    }
+
+    // Загружаем изображения событий
+    for (final event in events) {
+      if (event.image != null && event.image!.isNotEmpty) {
+        final eventImageId = 'event_image_${event.id}';
+
+        try {
+          // Проверяем, не загружено ли уже изображение
+          final imageExists = await style.hasStyleImage(eventImageId);
+          if (imageExists) continue;
+
+          // Загружаем изображение события с зеленой обводкой
+          final imageBytes = await _mapIconService.loadNetworkAvatar(
+            event.image!,
+            size: _imagePx.toDouble(),
+            shape: AvatarShape.rounded,
+            borderWidth: 4 * _dpr,
+          );
+
+          if (imageBytes != null) {
+            // Создаем MbxImage для Mapbox
+            final mbxImage = MbxImage(
+              width: _imagePx,
+              height: _imagePx,
+              data: imageBytes,
+            );
+
+            // Добавляем изображение в стиль карты
+            await style.addStyleImage(
+              eventImageId,
+              _dpr,
+              // scale
+              mbxImage,
+              false,
+              // sdf = false для растровых изображений
+              [],
+              // stretchX
+              [],
+              // stretchY
+              null, // content
+            );
+          }
+        } catch (e) {
+          debugPrint('Error loading image for event ${event.id}: $e');
+        }
       }
     }
   }
