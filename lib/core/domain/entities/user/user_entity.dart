@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:neighbours/core/domain/entities/community/community_entity.dart';
 import 'package:neighbours/core/mixins/has_name_mixin.dart';
+import 'package:neighbours/features/community/domain/entities/community/community_entity.dart';
 
 part 'user_entity.freezed.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:neighbours/core/cubits/fcm/fcm_cubit.dart';
+import 'package:neighbours/core/services/fcm_service.dart';
 import 'package:neighbours/features/chat/presentation/cubits/chat/chat_cubit.dart';
 import 'dart:async';
 import 'package:neighbours/core/cubits/events/events_cubit.dart';
@@ -104,7 +104,8 @@ mixin HomeInitializationMixin<T extends StatefulWidget> on State<Home> {
       ]);
       if (firstInit) {
         chatCubit.fetchUnreadMessageCounts(userCubit.state.user.id);
-        getIt<FcmCubit>().updateFcmToken();
+        await getIt<FCMService>().init();
+
         notificationCubit.fetchUnreadCount();
         await chatCubit.initializeSocket().then((_) {
           chatCubit.listenEventMessages();

@@ -15,42 +15,8 @@ class FcmCubit extends Cubit<FcmState> {
 
   FcmCubit(this._pushRepository) : super(const FcmState());
 
-  /// Обновить FCM токен
-  Future<void> updateFcmToken() async {
-    emit(state.copyWith(updateTokenState: const ApiState.loading()));
-    final result = await _pushRepository.updateFcmToken();
-    result.fold(
-      (failure) => emit(state.copyWith(
-        updateTokenState: ApiState.failure(failure.message),
-      )),
-      (_) => emit(state.copyWith(
-        updateTokenState: const ApiState.success(null),
-      )),
-    );
-  }
-
-  /// Обновить FCM токен из кэша
-  Future<void> updateCachedFcmToken() async {
-    emit(state.copyWith(updateTokenState: const ApiState.loading()));
-    final result = await _pushRepository.updateCachedFcmToken();
-    result.fold(
-      (failure) => emit(state.copyWith(
-        updateTokenState: ApiState.failure(failure.message),
-      )),
-      (_) => emit(state.copyWith(
-        updateTokenState: const ApiState.success(null),
-      )),
-    );
-  }
-
-  /// Сохранить FCM токен в локальное хранилище
   Future<void> saveFcmToken(String fcmToken) async {
     await _pushRepository.saveFcmToken(fcmToken);
-  }
-
-  /// Получить FCM токен из локального хранилища
-  Future<String?> getCachedFcmToken() async {
-    return await _pushRepository.getCachedFcmToken();
   }
 
   /// Обновить настройки push-уведомлений

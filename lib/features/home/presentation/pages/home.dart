@@ -300,7 +300,7 @@ class _HomeState extends State<Home>
                   child: const TopPanel(),
                 ),
                 Positioned(
-                    bottom: MediaQuery.of(context).size.height/4,
+                    bottom: MediaQuery.of(context).size.height / 4,
                     right: 16,
                     child: ViewSwitcher(notifier: _viewSwitcherNotifier)),
                 const Positioned(

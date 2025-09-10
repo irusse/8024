@@ -10,7 +10,6 @@ import 'package:neighbours/features/chat/presentation/cubits/chat/chat_cubit.dar
 import 'package:neighbours/core/cubits/events/events_cubit.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
 import 'package:neighbours/core/cubits/user_location/user_location_cubit.dart';
-import 'package:neighbours/core/domain/entities/community/community_entity.dart';
 import 'package:neighbours/core/domain/entities/event/event_entity.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/router/custom_page_transition.dart';
@@ -21,6 +20,7 @@ import 'package:neighbours/features/auth/presentation/cubits/otp/otp_cubit.dart'
 import 'package:neighbours/features/auth/presentation/pages/auth_welcome_page.dart';
 import 'package:neighbours/features/auth/presentation/pages/country_code_select.dart';
 import 'package:neighbours/features/chat/presentation/screens/chat_list.dart';
+import 'package:neighbours/features/community/domain/entities/community/community_entity.dart';
 import 'package:neighbours/features/community/presentation/cubits/community/community_cubit.dart';
 import 'package:neighbours/features/community/presentation/screens/community.dart';
 import 'package:neighbours/features/event/presentation/cubits/event_form/event_form_cubit.dart';

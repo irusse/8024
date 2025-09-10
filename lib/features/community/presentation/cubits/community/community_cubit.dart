@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/domain/entities/event/participant_entity.dart';
-import 'package:neighbours/core/domain/repositories/community_repository.dart';
+import 'package:neighbours/features/community/domain/repositories/community_repository.dart';
 
 part 'community_cubit.freezed.dart';
 

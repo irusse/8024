@@ -11,13 +11,20 @@ class FCMService {
   Future<void> init() async {
     await _firebaseMessaging.requestPermission();
     final fcmToken = await _firebaseMessaging.getToken();
+
     if (fcmToken == null) return;
     getIt<FcmCubit>().saveFcmToken(fcmToken);
+    _firebaseMessaging.onTokenRefresh.listen((token) {
+      getIt<FcmCubit>().saveFcmToken(token);
+    });
+
     _initPushNotifications();
   }
 
   void _initPushNotifications() {
-    // FirebaseMessaging.instance.getInitialMessage().then(handleMessage);
+    FirebaseMessaging.instance
+        .getInitialMessage()
+        .then(getIt<NotificationService>().onNewNotification);
     // FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
     FirebaseMessaging.onMessage
         .listen(getIt<NotificationService>().onNewNotification);

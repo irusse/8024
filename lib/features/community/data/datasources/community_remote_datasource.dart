@@ -4,7 +4,7 @@ import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/error/failures.dart';
 import 'package:neighbours/core/data/models/event/participant_model.dart';
 import 'package:neighbours/core/network/network_handler.dart';
-import '../models/user/user_model.dart';
+import '../../../../core/data/models/user/user_model.dart';
 
 abstract class CommunityRemoteDataSource {
   Future<Either<Failure, UserModel>> createCommunity({

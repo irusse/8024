@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
 
-import '../../error/failures.dart';
-import '../entities/event/participant_entity.dart';
-import '../entities/user/user_entity.dart';
+import '../../../../core/error/failures.dart';
+import '../../../../core/domain/entities/event/participant_entity.dart';
+import '../../../../core/domain/entities/user/user_entity.dart';
 
 abstract class CommunityRepository {
   Future<Either<Failure, UserEntity>> createCommunity({

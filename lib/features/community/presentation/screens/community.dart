@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/components/default_app_bar.dart';
-import 'package:neighbours/core/domain/entities/community/community_entity.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
+import 'package:neighbours/features/community/domain/entities/community/community_entity.dart';
 
 import '../../../../core/services/snackbar_service.dart';
 import '../cubits/community/community_cubit.dart';

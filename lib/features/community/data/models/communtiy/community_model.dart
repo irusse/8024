@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
-import '../../../domain/entities/community/community_entity.dart';
-import '../../../utils/date_time_converter.dart';
+import 'package:neighbours/core/utils/date_time_converter.dart';
+import 'package:neighbours/features/community/domain/entities/community/community_entity.dart';
 
 part 'community_model.g.dart';
 
