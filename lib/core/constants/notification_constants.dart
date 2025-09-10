@@ -15,4 +15,5 @@ class NotificationConstants {
   static const userJoinedCommunity = "USER_JOINED_COMMUNITY";
   static const systemMaintenance = "SYSTEM_MAINTENANCE";
   static const systemUpdate = "SYSTEM_UPDATE";
+  static const propertyVerified = "PROPERTY_VERIFIED";
 }

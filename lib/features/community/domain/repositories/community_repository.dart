@@ -21,5 +21,5 @@ abstract class CommunityRepository {
   Future<Either<Failure, List<ParticipantEntity>>> getCommunityParticipants(
       int communityId);
 
-  Future<Either<Failure, CommunityEntity>> getCommunityById(String id);
+  Future<Either<Failure, CommunityEntity>> getCommunityById(int id);
 }

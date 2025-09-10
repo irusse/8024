@@ -5,7 +5,7 @@ abstract class AppRoutePath {
   static const login = '/login';
   static const propertyDetails = '/property-details/:propertyId';
   static const propertyEdit = 'edit';
-  static const communityInfo = '/community-info';
+  static const community = '/community/:communityId';
   static const resourceForm = 'resource-form';
   static const sms = '/sms/:phone';
   static const profile = '/profile';
@@ -55,4 +55,7 @@ abstract class AppRouteBuilder {
       '/property-details/$propertyId/${AppRoutePath.resourceForm}';
 
   static String sms(String phone) => '/sms/$phone';
+
+  static String community(int communityId) =>
+      AppRoutePath.community.replaceAll(':communityId', communityId.toString());
 }

@@ -130,6 +130,23 @@ class NotificationService {
               .push(AppRouteBuilder.chatPage(eventId, payload['eventTitle']));
           break;
         }
+      case NotificationConstants.userJoinedCommunity:
+        {
+          int? communityId = payload['communityId'];
+          if (communityId == null) return;
+          getIt<AppRouter>().router.push(
+              AppRouteBuilder.chatPage(communityId, payload['eventTitle']));
+          break;
+        }
+      case NotificationConstants.propertyVerified:
+        {
+          int? propertyId = payload['propertyId'];
+          if (propertyId == null) return;
+          getIt<AppRouter>()
+              .router
+              .push(AppRouteBuilder.propertyDetails(propertyId));
+          break;
+        }
       case NotificationConstants.eventCreated:
       case NotificationConstants.userLeftEvent:
       case NotificationConstants.userJoinedEvent:

@@ -98,19 +98,26 @@ class AppRouter {
               );
             }),
         GoRoute(
-            path: AppRoutePath.communityInfo,
+            path: AppRoutePath.community,
             pageBuilder: (context, state) {
-              final CommunityEntity communityEntity =
-                  state.extra as CommunityEntity;
+              final communityId =
+                  int.parse(state.pathParameters['communityId']!);
+              final CommunityEntity? communityEntity =
+                  state.extra as CommunityEntity?;
               return CustomPageTransition.slideFromRight(
                 key: state.pageKey,
-                child: MultiBlocProvider(providers: [
-                  BlocProvider.value(value: getIt<EventsCubit>()),
-                  BlocProvider.value(value: getIt<UserCubit>()),
-                  BlocProvider(
-                    create: (_) => getIt<CommunityCubit>(),
-                  ),
-                ], child: Community(communityEntity: communityEntity)),
+                child: MultiBlocProvider(
+                    providers: [
+                      BlocProvider.value(value: getIt<EventsCubit>()),
+                      BlocProvider.value(value: getIt<UserCubit>()),
+                      BlocProvider(
+                        create: (_) => getIt<CommunityCubit>(),
+                      ),
+                    ],
+                    child: Community(
+                      communityId: communityId,
+                      communityEntity: communityEntity,
+                    )),
               );
             }),
         GoRoute(

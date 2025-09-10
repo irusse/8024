@@ -241,7 +241,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                       ),
                     ),
                   )),
-              if (isDeleting || isUpdating || isVerifying || isGettingPosition)
+              if (isDeleting || isUpdating || isVerifying)
                 const DefaultLoadingOverlay()
             ],
           );

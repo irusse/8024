@@ -14,9 +14,14 @@ import '../widgets/events_tab.dart';
 import '../widgets/users_tab.dart';
 
 class Community extends StatefulWidget {
-  final CommunityEntity communityEntity;
+  final int communityId;
+  final CommunityEntity? communityEntity;
 
-  const Community({super.key, required this.communityEntity});
+  const Community({
+    super.key,
+    required this.communityId,
+    this.communityEntity,
+  });
 
   @override
   State<Community> createState() => _CommunityState();
@@ -26,105 +31,168 @@ class _CommunityState extends State<Community> {
   @override
   void initState() {
     super.initState();
-    context
-        .read<CommunityCubit>()
-        .fetchCommunityParticipants(widget.communityEntity.id);
+    final cubit = context.read<CommunityCubit>();
+
+    // Если есть переданное сообщество, устанавливаем его сразу
+    if (widget.communityEntity != null) {
+      cubit.updateCommunity(widget.communityEntity!);
+    } else {
+      cubit.getCommunityById(widget.communityId);
+    }
+
+    // Всегда загружаем свежие данные с сервера в фоне
+    cubit.fetchCommunityParticipants(widget.communityId);
   }
 
   @override
   Widget build(BuildContext context) {
-    final communityEntity = widget.communityEntity;
-    final numberOfParticipants = context.select<CommunityCubit, int>(
-        (cubit) => cubit.state.participants.length);
-    final state = context.watch<CommunityCubit>().state;
-    String usersTabTitle;
-    if (state.participantsState.isLoading ||
-        state.participantsState.isFailure) {
-      usersTabTitle = 'Участники';
-    } else {
-      usersTabTitle = 'Участники $numberOfParticipants';
-    }
-    return Scaffold(
-      appBar: DefaultAppBar(
-        height: 72,
-        showBackButton: true,
-        titleWidget: Expanded(
-            child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-                child: Text(
-              communityEntity.name,
-              overflow: TextOverflow.ellipsis,
-              style: context.text.titleSmall,
-            )),
-            const VerticalGap(4),
-            Text(
-              'ID: ${communityEntity.id.toString()}',
-              style: context.text.bodySmall
-                  .copyWith(color: context.color.secondaryText),
+    return BlocBuilder<CommunityCubit, CommunityState>(
+      builder: (context, state) {
+        final communityEntity = state.community;
+        final shouldShowFullScreenLoading = widget.communityEntity == null &&
+            state.fetchCommunityState.isLoading;
+
+        if (shouldShowFullScreenLoading) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Загрузка...'),
+              backgroundColor: Colors.transparent,
+              elevation: 0,
             ),
-          ],
-        )),
-        actions: [
-          GestureDetector(
-            child: Text(
-              communityEntity.joinCode,
-              style: context.text.bodyMedium.copyWith(
-                  color: context.color.primary, fontWeight: FontWeight.w500),
+            body: const Center(
+              child: CircularProgressIndicator(),
             ),
-            onTap: () {
-              Clipboard.setData(ClipboardData(text: communityEntity.joinCode))
-                  .then((_) {
-                if (context.mounted) {
-                  context.snackbar.info(context, 'Скопировано в буфер обмена',
-                      position: SnackBarPosition.bottom);
-                }
-              });
-            },
-          )
-        ],
-      ),
-      body: DefaultTabController(
-        length: 3,
-        child: Column(
-          children: [
-            TabBar(
-              tabs: [
-                const Tab(text: 'Оповещения'),
-                const Tab(text: 'Мероприятия'),
-                Tab(text: usersTabTitle),
-              ],
-              labelStyle:
-                  context.text.bodyMedium.copyWith(fontWeight: FontWeight.w500),
-              unselectedLabelStyle: context.text.bodyMedium.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: context.color.secondaryText),
-              indicatorPadding: EdgeInsets.zero,
-              indicatorColor: context.color.primary,
-              padding: EdgeInsets.zero,
-              labelPadding: EdgeInsets.zero,
-              dividerColor: context.color.secondary,
+          );
+        }
+
+        // Если произошла ошибка и нет данных для отображения
+        if (state.fetchCommunityState.isFailure && communityEntity.id == 0) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Ошибка'),
+              backgroundColor: Colors.transparent,
+              elevation: 0,
             ),
-            Expanded(
-              child: TabBarView(
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  NotificationsTab(
-                    communityDescription: communityEntity.description,
-                    communityId: communityEntity.id,
+                  Text(
+                    'Не удалось загрузить данные сообщества',
+                    style: context.text.bodyLarge,
+                    textAlign: TextAlign.center,
                   ),
-                  EventsTab(
-                    communityId: communityEntity.id,
-                  ),
-                  UsersTab(
-                    communityId: communityEntity.id,
+                  const VerticalGap(16),
+                  ElevatedButton(
+                    onPressed: () {
+                      context
+                          .read<CommunityCubit>()
+                          .getCommunityById(widget.communityId);
+                    },
+                    child: const Text('Повторить'),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
+          );
+        }
+
+        final numberOfParticipants = state.participants.length;
+        String usersTabTitle;
+        if (state.participantsState.isLoading ||
+            state.participantsState.isFailure) {
+          usersTabTitle = 'Участники';
+        } else {
+          usersTabTitle = 'Участники $numberOfParticipants';
+        }
+
+        // Основной UI с данными сообщества
+        return Scaffold(
+          appBar: DefaultAppBar(
+            height: 72,
+            showBackButton: true,
+            titleWidget: Expanded(
+                child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                    child: Text(
+                  communityEntity.name,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.text.titleSmall,
+                )),
+                const VerticalGap(4),
+                Text(
+                  'ID: ${communityEntity.id.toString()}',
+                  style: context.text.bodySmall
+                      .copyWith(color: context.color.secondaryText),
+                ),
+              ],
+            )),
+            actions: [
+              GestureDetector(
+                child: Text(
+                  communityEntity.joinCode,
+                  style: context.text.bodyMedium.copyWith(
+                      color: context.color.primary,
+                      fontWeight: FontWeight.w500),
+                ),
+                onTap: () {
+                  Clipboard.setData(
+                          ClipboardData(text: communityEntity.joinCode))
+                      .then((_) {
+                    if (context.mounted) {
+                      context.snackbar.info(
+                          context, 'Скопировано в буфер обмена',
+                          position: SnackBarPosition.bottom);
+                    }
+                  });
+                },
+              )
+            ],
+          ),
+          body: DefaultTabController(
+            length: 3,
+            child: Column(
+              children: [
+                TabBar(
+                  tabs: [
+                    const Tab(text: 'Оповещения'),
+                    const Tab(text: 'Мероприятия'),
+                    Tab(text: usersTabTitle),
+                  ],
+                  labelStyle: context.text.bodyMedium
+                      .copyWith(fontWeight: FontWeight.w500),
+                  unselectedLabelStyle: context.text.bodyMedium.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: context.color.secondaryText),
+                  indicatorPadding: EdgeInsets.zero,
+                  indicatorColor: context.color.primary,
+                  padding: EdgeInsets.zero,
+                  labelPadding: EdgeInsets.zero,
+                  dividerColor: context.color.secondary,
+                ),
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      NotificationsTab(
+                        communityDescription: communityEntity.description,
+                        communityId: communityEntity.id,
+                      ),
+                      EventsTab(
+                        communityId: communityEntity.id,
+                      ),
+                      UsersTab(
+                        communityId: communityEntity.id,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

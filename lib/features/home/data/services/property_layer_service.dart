@@ -221,7 +221,6 @@ class PropertyLayerService extends LayerService {
       if (property.photo.isEmpty) return;
 
       final imageId = property.id.toString();
-      if (await style.hasStyleImage(imageId)) return;
 
       try {
         final bytes = await _mapIconService.loadNetworkAvatar(

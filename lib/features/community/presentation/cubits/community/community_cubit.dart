@@ -33,7 +33,7 @@ class CommunityCubit extends Cubit<CommunityState> {
     );
   }
 
-  Future<void> getCommunityById(String id) async {
+  Future<void> getCommunityById(int id) async {
     emit(state.copyWith(
       fetchCommunityState: const ApiState.loading(),
     ));

@@ -23,7 +23,7 @@ abstract class CommunityRemoteDataSource {
   Future<Either<Failure, List<ParticipantModel>>> getCommunityParticipants(
       int communityId);
 
-  Future<Either<Failure, CommunityModel>> getCommunityById(String id);
+  Future<Either<Failure, CommunityModel>> getCommunityById(int id);
 }
 
 @Singleton(as: CommunityRemoteDataSource)
@@ -99,9 +99,9 @@ class CommunityRemoteDataSourceImpl implements CommunityRemoteDataSource {
   }
 
   @override
-  Future<Either<Failure, CommunityModel>> getCommunityById(String id) {
+  Future<Either<Failure, CommunityModel>> getCommunityById(int id) {
     return NetworkHandler.handleRequest(() async {
-      final response = await _dio.get('/api/communities/$id');
+      final response = await _dio.get('/communities/$id');
       return CommunityModel.fromJson(response.data);
     });
   }

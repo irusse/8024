@@ -58,7 +58,7 @@ class CommunityRepositoryImpl implements CommunityRepository {
   }
 
   @override
-  Future<Either<Failure, CommunityEntity>> getCommunityById(String id) async {
+  Future<Either<Failure, CommunityEntity>> getCommunityById(int id) async {
     final result = await _remoteDataSource.getCommunityById(id);
     return result.fold(
       (failure) => Left(failure),

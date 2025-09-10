@@ -118,8 +118,9 @@ class ProfileScreen extends StatelessWidget {
             if (community != null)
               MenuListItem(
                 text: 'Мое сообщество',
-                onTap: () =>
-                    context.push(AppRoutePath.communityInfo, extra: community),
+                onTap: () => context.push(
+                    AppRouteBuilder.community(community.id),
+                    extra: community),
                 showArrow: true,
               ),
             MenuListItem(

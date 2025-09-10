@@ -25,7 +25,7 @@ class FCMService {
     FirebaseMessaging.instance
         .getInitialMessage()
         .then(getIt<NotificationService>().onNewNotification);
-    // FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
+
     FirebaseMessaging.onMessage
         .listen(getIt<NotificationService>().onNewNotification);
   }
