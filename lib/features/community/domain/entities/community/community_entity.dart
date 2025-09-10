@@ -7,7 +7,6 @@ class CommunityEntity with _$CommunityEntity {
   const factory CommunityEntity({
     required int id,
     required String name,
-    required int numberOfUsers,
     required String status,
     required String joinCode,
     required String createdBy,

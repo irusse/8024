@@ -5,6 +5,7 @@ import 'package:neighbours/core/error/failures.dart';
 import 'package:neighbours/core/data/models/event/participant_model.dart';
 import 'package:neighbours/core/network/network_handler.dart';
 import '../../../../core/data/models/user/user_model.dart';
+import '../models/communtiy/community_model.dart';
 
 abstract class CommunityRemoteDataSource {
   Future<Either<Failure, UserModel>> createCommunity({
@@ -21,6 +22,8 @@ abstract class CommunityRemoteDataSource {
 
   Future<Either<Failure, List<ParticipantModel>>> getCommunityParticipants(
       int communityId);
+
+  Future<Either<Failure, CommunityModel>> getCommunityById(String id);
 }
 
 @Singleton(as: CommunityRemoteDataSource)
@@ -92,6 +95,14 @@ class CommunityRemoteDataSourceImpl implements CommunityRemoteDataSource {
           .toList();
 
       return participants;
+    });
+  }
+
+  @override
+  Future<Either<Failure, CommunityModel>> getCommunityById(String id) {
+    return NetworkHandler.handleRequest(() async {
+      final response = await _dio.get('/api/communities/$id');
+      return CommunityModel.fromJson(response.data);
     });
   }
 }

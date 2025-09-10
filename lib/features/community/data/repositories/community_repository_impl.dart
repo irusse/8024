@@ -5,6 +5,7 @@ import 'package:neighbours/core/error/failures.dart';
 
 import '../../../../core/domain/entities/event/participant_entity.dart';
 import '../../../../core/domain/entities/user/user_entity.dart';
+import '../../domain/entities/community/community_entity.dart';
 import '../../domain/repositories/community_repository.dart';
 
 @Singleton(as: CommunityRepository)
@@ -53,6 +54,15 @@ class CommunityRepositoryImpl implements CommunityRepository {
       (models) => Right(
         models.map((model) => model.toEntity()).toList(),
       ),
+    );
+  }
+
+  @override
+  Future<Either<Failure, CommunityEntity>> getCommunityById(String id) async {
+    final result = await _remoteDataSource.getCommunityById(id);
+    return result.fold(
+      (failure) => Left(failure),
+      (communityModel) => Right(communityModel.toEntity()),
     );
   }
 }

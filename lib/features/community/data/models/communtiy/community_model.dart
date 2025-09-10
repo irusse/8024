@@ -9,7 +9,6 @@ class CommunityModel {
   final int id;
   final String name;
   final String? description;
-  final int numberOfUsers;
   final String status;
   final String joinCode;
   final String createdBy;
@@ -20,7 +19,6 @@ class CommunityModel {
     required this.id,
     required this.name,
     this.description,
-    required this.numberOfUsers,
     required this.status,
     required this.createdBy,
     required this.joinCode,
@@ -36,7 +34,6 @@ class CommunityModel {
         id: id,
         name: name,
         description: description,
-        numberOfUsers: numberOfUsers,
         status: status,
         joinCode: joinCode,
         createdBy: createdBy,
@@ -47,7 +44,6 @@ class CommunityModel {
         id: entity.id,
         name: entity.name,
         description: entity.description,
-        numberOfUsers: entity.numberOfUsers,
         joinCode: entity.joinCode,
         status: entity.status,
         createdBy: entity.createdBy,

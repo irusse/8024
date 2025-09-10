@@ -3,8 +3,22 @@ part of 'community_cubit.dart';
 @freezed
 class CommunityState with _$CommunityState {
   const factory CommunityState({
-    @Default(false) bool isParticipantsLoading,
+    required CommunityEntity community,
     @Default([]) List<ParticipantEntity> participants,
-    String? participantsError,
+    @Default(ApiState<List<ParticipantEntity>>.initial())
+    ApiState<List<ParticipantEntity>> participantsState,
+    @Default(ApiState<CommunityEntity>.initial())
+    ApiState<CommunityEntity> fetchCommunityState,
   }) = _CommunityState;
+
+  factory CommunityState.initial() => CommunityState(
+        community: CommunityEntity(
+          id: 0,
+          name: '',
+          status: '',
+          joinCode: '',
+          createdBy: '',
+          createdAt: DateTime.now(),
+        ),
+      );
 }
