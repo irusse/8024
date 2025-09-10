@@ -105,6 +105,10 @@ class _PropertyDetailsState extends State<PropertyDetails> {
         (cubit) => cubit.state.updateState.isLoading);
     final isVerifying = context.select<PropertiesCubit, bool>(
         (cubit) => cubit.state.verifyState.isLoading);
+
+    final isGettingPosition = context
+        .select<UserLocationCubit, bool>((cubit) => cubit.state.isLoading);
+
     return BlocConsumer<PropertiesCubit, PropertiesState>(
         listener: (context, state) {
           state.deleteState.handleApiState(
@@ -173,6 +177,10 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                           userLatitude: userLocation.latitude,
                                           userLongitude:
                                               userLocation.longitude);
+                                } else {
+                                  if (!context.mounted) return;
+                                  context.snackbar.info(context,
+                                      "Не удалось получить геопозицию пользователя.\nПопробуйте позже");
                                 }
                               },
                               text: 'Подтвердить'))
@@ -233,7 +241,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                       ),
                     ),
                   )),
-              if (isDeleting || isUpdating || isVerifying)
+              if (isDeleting || isUpdating || isVerifying || isGettingPosition)
                 const DefaultLoadingOverlay()
             ],
           );

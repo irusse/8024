@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/components/default_app_bar.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
+import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/features/community/domain/entities/community/community_entity.dart';
 
 import '../../../../core/services/snackbar_service.dart';
@@ -33,6 +34,16 @@ class _CommunityState extends State<Community> {
   @override
   Widget build(BuildContext context) {
     final communityEntity = widget.communityEntity;
+    final numberOfParticipants = context.select<CommunityCubit, int>(
+        (cubit) => cubit.state.participants.length);
+    final state = context.watch<CommunityCubit>().state;
+    String usersTabTitle;
+    if (state.participantsState.isLoading ||
+        state.participantsState.isFailure) {
+      usersTabTitle = 'Участники';
+    } else {
+      usersTabTitle = 'Участники $numberOfParticipants';
+    }
     return Scaffold(
       appBar: DefaultAppBar(
         height: 72,
@@ -79,10 +90,10 @@ class _CommunityState extends State<Community> {
         child: Column(
           children: [
             TabBar(
-              tabs: const [
-                Tab(text: 'Оповещения'),
-                Tab(text: 'Мероприятия'),
-                Tab(text: 'Участники'),
+              tabs: [
+                const Tab(text: 'Оповещения'),
+                const Tab(text: 'Мероприятия'),
+                Tab(text: usersTabTitle),
               ],
               labelStyle:
                   context.text.bodyMedium.copyWith(fontWeight: FontWeight.w500),
