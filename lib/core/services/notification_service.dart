@@ -83,12 +83,12 @@ class NotificationService {
     _controller.add(appNotificationModel);
   }
 
-  Future<void> _showBasicNotification(AppNotificationModel notification) {
+  Future<void> _showBasicNotification(AppNotificationModel notification) async {
     if (notification.payload == null || notification.payload!.isEmpty) {
       return Future.value();
     }
 
-    return _notificationPlugin.show(
+    await _notificationPlugin.show(
       notification.hashCode,
       notification.title,
       notification.body,
@@ -159,28 +159,28 @@ class NotificationService {
         }
     }
   }
-
-  Future<void> showEventMessageNotification(MessageEntity message) async {
-    final eventsCubit = getIt<EventsCubit>();
-    final event = eventsCubit.state.events[message.eventId];
-    if (event == null) return;
-    String eventTitle = "Чат";
-
-    final title = event.isFullEvent
-        ? 'Мероприятие "$eventTitle"'
-        : 'Оповещение "$eventTitle"';
-    final body =
-        '${message.user.firstName}: ${message.text.length > 25 ? "${message.text.substring(0, 25)}..." : message.text}';
-    return _notificationPlugin.show(
-      message.id.hashCode,
-      title,
-      body,
-      _chatNotificationDetails(),
-      payload: jsonEncode({
-        "eventId": message.eventId,
-        "eventTitle": eventTitle,
-        "type": NotificationConstants.messageReceived
-      }),
-    );
-  }
+//
+// Future<void> showEventMessageNotification(MessageEntity message) async {
+//   final eventsCubit = getIt<EventsCubit>();
+//   final event = eventsCubit.state.events[message.eventId];
+//   if (event == null) return;
+//   String eventTitle = "Чат";
+//
+//   final title = event.isFullEvent
+//       ? 'Мероприятие "$eventTitle"'
+//       : 'Оповещение "$eventTitle"';
+//   final body =
+//       '${message.user.firstName}: ${message.text.length > 25 ? "${message.text.substring(0, 25)}..." : message.text}';
+//   return _notificationPlugin.show(
+//     message.id.hashCode,
+//     title,
+//     body,
+//     _chatNotificationDetails(),
+//     payload: jsonEncode({
+//       "eventId": message.eventId,
+//       "eventTitle": eventTitle,
+//       "type": NotificationConstants.messageReceived
+//     }),
+//   );
+// }
 }

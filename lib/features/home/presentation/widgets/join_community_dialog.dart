@@ -37,6 +37,8 @@ class _JoinCommunityDialogState extends State<JoinCommunityDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final isUserLocationLoading = context
+        .select<UserLocationCubit, bool>((cubit) => cubit.state.isLoading);
     return BlocConsumer<CreateCommunityFormCubit, CreateCommunityFormState>(
       listenWhen: (previous, current) =>
           previous.error != current.error && current.error != null,
@@ -58,7 +60,7 @@ class _JoinCommunityDialogState extends State<JoinCommunityDialog> {
               text: 'Вступить',
               isEnabled:
                   context.read<CreateCommunityFormCubit>().isJoinEnabled(),
-              isLoading: state.isJoining,
+              isLoading: state.isJoining || isUserLocationLoading,
               onPressed: _onConfirm,
             ),
           ],

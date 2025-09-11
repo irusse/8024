@@ -42,7 +42,7 @@ abstract class AppRouteBuilder {
           )
           .replaceAll(
             ':eventTitle',
-            eventTitle,
+            Uri.encodeComponent(eventTitle),
           );
 
   static String propertyEdit(int propertyId) =>
