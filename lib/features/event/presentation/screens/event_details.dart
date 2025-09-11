@@ -44,9 +44,9 @@ class _EventDetailsState extends State<EventDetails> {
   @override
   void initState() {
     super.initState();
-    // всегда пытаемся обновить данные
     context.read<EventsCubit>().fetchEventById(eventId: widget.eventId);
   }
+
 
   Future<void> _onDeleteClick(BuildContext context, int eventId) async {
     final deleteConfirm = await showDialog<bool>(
@@ -229,8 +229,7 @@ class _EventDetailsState extends State<EventDetails> {
                   ],
                 ),
               ),
-              if (state.deleteState.isLoading)
-                const DefaultLoadingOverlay(),
+              if (state.deleteState.isLoading) const DefaultLoadingOverlay(),
             ],
           ),
         );

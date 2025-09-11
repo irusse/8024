@@ -23,12 +23,18 @@ class ErrorWithTryBtn extends StatelessWidget {
           children: [
             Text(
               error,
-              style: context.text.bodyMedium
+              style: context.text.bodyLarge
                   .copyWith(color: context.color.basicRed),
+              textAlign: TextAlign.center,
             ),
             const VerticalGap(16),
-            CustomOutlinedButton(
-                onPressed: onErrorClick, text: "Попробовать ещё раз")
+            SizedBox(
+              width: 220,
+              child: CustomOutlinedButton(
+                  verticalPadding: 12,
+                  onPressed: onErrorClick,
+                  text: "Попробовать ещё раз"),
+            )
           ],
         ),
       ),

@@ -124,7 +124,6 @@ import '../services/fcm_service.dart' as _i928;
 import '../services/image_service.dart' as _i768;
 import '../services/map_service.dart' as _i569;
 import '../services/marker_service.dart' as _i45;
-import '../services/navigation_service.dart' as _i31;
 import '../services/notification_service.dart' as _i941;
 import '../services/snackbar_service.dart' as _i342;
 import 'register_module.dart' as _i291;
@@ -186,8 +185,6 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i609.DocumentDataSourceImpl(gh<_i361.Dio>()));
     gh.singleton<_i107.AuthRemoteDataSource>(
         () => _i107.AuthRemoteDataSourceImpl(gh<_i361.Dio>()));
-    gh.factory<_i31.NavigationService>(
-        () => _i31.NavigationService(gh<_i81.AppRouter>()));
     gh.singleton<_i637.PushRepository>(
         () => _i1041.PushRepositoryImpl(gh<_i189.PushRemoteDataSource>()));
     gh.singleton<_i630.NotificationRepository>(() =>
@@ -233,17 +230,17 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i630.NotificationRepository>(),
           gh<_i941.NotificationService>(),
         ));
+    gh.singleton<_i260.JWTInterceptor>(() => _i260.JWTInterceptor(
+          gh<_i361.Dio>(),
+          gh<_i745.AuthService>(),
+          gh<_i81.AppRouter>(),
+        ));
     gh.singleton<_i50.ResourceRepository>(() =>
         _i41.ResourceRepositoryImpl(gh<_i129.ResourceRemoteDataSource>()));
     gh.factory<_i322.CreateCommunityFormCubit>(
         () => _i322.CreateCommunityFormCubit(gh<_i121.CommunityRepository>()));
     gh.factory<_i491.CommunityCubit>(
         () => _i491.CommunityCubit(gh<_i121.CommunityRepository>()));
-    gh.singleton<_i260.JWTInterceptor>(() => _i260.JWTInterceptor(
-          gh<_i361.Dio>(),
-          gh<_i745.AuthService>(),
-          gh<_i31.NavigationService>(),
-        ));
     gh.lazySingleton<_i543.UserLocationRepository>(() =>
         _i247.UserLocationRepositoryImpl(
             gh<_i392.UserLocationLocalDataSource>()));

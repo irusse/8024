@@ -42,8 +42,8 @@ class EventsCubit extends Cubit<EventsState> {
     return state.events.values
         .where((event) =>
             event.isFullEvent &&
-                event.participants.any((p) => p.id == userId) ||
-            event.creator.id == userId)
+            (event.participants.any((p) => p.id == userId) ||
+                event.creator.id == userId))
         .toList();
   }
 
@@ -51,8 +51,8 @@ class EventsCubit extends Cubit<EventsState> {
     return state.events.values
         .where((event) =>
             event.isNotification &&
-                event.participants.any((p) => p.id == userId) ||
-            event.creator.id == userId)
+            (event.participants.any((p) => p.id == userId) ||
+                event.creator.id == userId))
         .toList();
   }
 

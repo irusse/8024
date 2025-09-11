@@ -1,17 +1,18 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:injectable/injectable.dart';
+import 'package:neighbours/core/router/app_router.dart';
+import 'package:neighbours/core/router/app_routes.dart';
 import 'dart:async';
 
 import '../../features/auth/data/models/verify_sms_response_model.dart';
 import '../services/auth_service.dart';
-import '../services/navigation_service.dart';
 
 @singleton
 class JWTInterceptor extends Interceptor {
   final Dio _dio;
   final AuthService _authService;
-  final NavigationService _navigationService;
+  final AppRouter _appRouter;
 
   // Защита от бесконечных циклов
   static const int _maxRefreshAttempts = 3;
@@ -25,7 +26,7 @@ class JWTInterceptor extends Interceptor {
   JWTInterceptor(
     this._dio,
     this._authService,
-    this._navigationService,
+    this._appRouter,
   );
 
   @override
@@ -215,6 +216,6 @@ class JWTInterceptor extends Interceptor {
     debugPrint('[JWTInterceptor] Handling logout');
     reset();
     await _authService.clearTokens();
-    _navigationService.goToLogin();
+    _appRouter.router.push(AppRoutePath.login);
   }
 }

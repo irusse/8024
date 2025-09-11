@@ -10,6 +10,7 @@ import 'package:neighbours/core/cubits/events/events_cubit.dart';
 import 'package:neighbours/core/data/models/app_notification/app_notification_model.dart';
 import 'package:neighbours/core/di/injection.dart';
 import 'package:neighbours/core/domain/entities/event/event_entity.dart';
+import 'package:neighbours/core/extensions/router_ext.dart';
 import 'package:neighbours/core/router/app_router.dart';
 import 'package:neighbours/core/router/app_routes.dart';
 import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
@@ -125,9 +126,9 @@ class NotificationService {
         {
           int? eventId = payload['eventId'];
           if (eventId == null) return;
-          getIt<AppRouter>()
-              .router
-              .push(AppRouteBuilder.chatPage(eventId, payload['eventTitle']));
+          getIt<AppRouter>().router.navigateUnique(
+              AppRouteBuilder.chatPage(eventId, payload['eventTitle']));
+
           break;
         }
       case NotificationConstants.userJoinedCommunity:
@@ -136,16 +137,18 @@ class NotificationService {
           if (communityId == null) return;
           getIt<AppRouter>()
               .router
-              .push(AppRouteBuilder.community(communityId));
+              .navigateUnique(AppRouteBuilder.community(communityId));
           break;
         }
       case NotificationConstants.propertyVerified:
         {
           int? propertyId = payload['propertyId'];
           if (propertyId == null) return;
+
           getIt<AppRouter>()
               .router
-              .push(AppRouteBuilder.propertyDetails(propertyId));
+              .navigateUnique(AppRouteBuilder.propertyDetails(propertyId));
+
           break;
         }
       case NotificationConstants.eventCreated:
@@ -154,7 +157,10 @@ class NotificationService {
         {
           int? eventId = payload['eventId'];
           if (eventId == null) return;
-          getIt<AppRouter>().router.push(AppRouteBuilder.eventDetails(eventId));
+          getIt<AppRouter>()
+              .router
+              .navigateUnique(AppRouteBuilder.eventDetails(eventId));
+
           break;
         }
     }
