@@ -1,6 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:neighbours/core/cubits/fcm/fcm_cubit.dart';
+import 'package:neighbours/core/di/injection.dart';
 
 import '../../../../auth/domain/repositories/auth_repository.dart';
 
@@ -17,7 +19,9 @@ class ProfileCubit extends Cubit<ProfileState> {
   Future<void> logout() async {
     emit(const ProfileState.logoutLoading());
     try {
+      await getIt<FcmCubit>().removeFcmToken();
       await _authRepository.logout();
+
       emit(const ProfileState.logoutSuccess());
     } catch (e) {
       emit(ProfileState.error(e.toString()));

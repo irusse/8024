@@ -57,14 +57,14 @@ mixin HomeInitializationMixin<T extends StatefulWidget> on State<Home> {
 
   void handleAppLifecycleStateChange(AppLifecycleState state) {
     // Перезагрузка данных при возврате в активное состояние приложения
-    if (_lastLifecycleState != null &&
-        (_lastLifecycleState == AppLifecycleState.paused ||
-            _lastLifecycleState == AppLifecycleState.inactive) &&
-        state == AppLifecycleState.resumed) {
-      _debouncedDataFetch(firstInit: false);
-    }
-
-    _lastLifecycleState = state;
+    // if (_lastLifecycleState != null &&
+    //     (_lastLifecycleState == AppLifecycleState.paused ||
+    //         _lastLifecycleState == AppLifecycleState.inactive) &&
+    //     state == AppLifecycleState.resumed) {
+    //   _debouncedDataFetch(firstInit: false);
+    // }
+    //
+    // _lastLifecycleState = state;
   }
 
   void _debouncedDataFetch({bool firstInit = true}) {

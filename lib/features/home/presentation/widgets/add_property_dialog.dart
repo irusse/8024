@@ -147,6 +147,7 @@ class _AddPropertyDialogState extends State<AddPropertyDialog> {
                         await context.read<UserLocationCubit>().getPosition();
                     if (userLocation == null) return;
                     if (!context.mounted) return;
+
                     final property = await context
                         .read<PropertiesCubit>()
                         .addProperty(

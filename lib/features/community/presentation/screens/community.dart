@@ -3,9 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/components/default_app_bar.dart';
+import 'package:neighbours/core/components/default_loading_overlay.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/features/community/domain/entities/community/community_entity.dart';
+import 'package:neighbours/features/community/presentation/widgets/error_with_try_btn.dart';
 
 import '../../../../core/services/snackbar_service.dart';
 import '../cubits/community/community_cubit.dart';
@@ -53,48 +55,21 @@ class _CommunityState extends State<Community> {
             state.fetchCommunityState.isLoading;
 
         if (shouldShowFullScreenLoading) {
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Загрузка...'),
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-            ),
-            body: const Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
+          return const Scaffold(body: DefaultLoadingOverlay());
         }
 
         // Если произошла ошибка и нет данных для отображения
         if (state.fetchCommunityState.isFailure && communityEntity.id == 0) {
           return Scaffold(
-            appBar: AppBar(
-              title: const Text('Ошибка'),
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-            ),
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Не удалось загрузить данные сообщества',
-                    style: context.text.bodyLarge,
-                    textAlign: TextAlign.center,
-                  ),
-                  const VerticalGap(16),
-                  ElevatedButton(
-                    onPressed: () {
-                      context
-                          .read<CommunityCubit>()
-                          .getCommunityById(widget.communityId);
-                    },
-                    child: const Text('Повторить'),
-                  ),
-                ],
+              appBar: const DefaultAppBar(
+                title: 'Ошибка',
+                showBackButton: true,
               ),
-            ),
-          );
+              body: ErrorWithTryBtn(
+                  error: 'Не удалось загрузить данные сообщества',
+                  onErrorClick: () => context
+                      .read<CommunityCubit>()
+                      .getCommunityById(widget.communityId)));
         }
 
         final numberOfParticipants = state.participants.length;

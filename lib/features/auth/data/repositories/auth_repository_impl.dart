@@ -16,29 +16,29 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> logout() async {
-     _authService.clearTokens();
+    await _authService.clearTokens();
   }
 
   @override
-  Future<Either<Failure,SmsResponseEntity>> phoneLogin(String phone) async {
+  Future<Either<Failure, SmsResponseEntity>> phoneLogin(String phone) async {
     final result = await _remoteDataSource.phoneLogin(phone);
-    return result.fold((failure) => Left(failure), (res)=>Right(res.toEntity()));
+    return result.fold(
+        (failure) => Left(failure), (res) => Right(res.toEntity()));
   }
 
   @override
-  Future<Either<Failure,void>> verifySmsCode(String phone, String code) async {
+  Future<Either<Failure, void>> verifySmsCode(String phone, String code) async {
     final result = await _remoteDataSource.verifySmsCode(phone, code);
 
-  return result.fold(
-    (failure) => Left(failure),
-    (res) async {
-      await _authService.saveTokens(
-        accessToken: res.accessToken,
-        refreshToken: res.refreshToken,
-      );
-      return const Right(null);
-    },
-  );
-   
+    return result.fold(
+      (failure) => Left(failure),
+      (res) async {
+        await _authService.saveTokens(
+          accessToken: res.accessToken,
+          refreshToken: res.refreshToken,
+        );
+        return const Right(null);
+      },
+    );
   }
 }

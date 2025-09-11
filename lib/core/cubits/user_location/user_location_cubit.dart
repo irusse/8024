@@ -40,12 +40,19 @@ class UserLocationCubit extends Cubit<UserLocationState> {
 
       return coordinates;
     } on TimeoutException {
-      return null;
-    } on LocationServiceDisabledException  {
-      final a =  await fetchLocalLocation();
-      if(a!=null)
-      await _updateUserLocation(a);
-
+      //Todo Решить проблему с долго загрузкой геопозиции
+      final cachedLocation = await fetchLocalLocation();
+      if (cachedLocation != null) {
+        await _updateUserLocation(cachedLocation);
+      }
+      return cachedLocation;
+    } on LocationServiceDisabledException {
+      //Todo Решить проблему с долго загрузкой геопозиции
+      final cachedLocation = await fetchLocalLocation();
+      if (cachedLocation != null) {
+        await _updateUserLocation(cachedLocation);
+      }
+      _serviceDisabled();
       return null;
     } catch (e) {
       emit(const UserLocationState.failedToResolvePlacemark());

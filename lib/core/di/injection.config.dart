@@ -151,8 +151,8 @@ extension GetItInjectableX on _i174.GetIt {
         () => registerModule.secureStorage);
     gh.singleton<_i361.Dio>(() => networkModule.dio);
     gh.singleton<_i941.NotificationService>(() => _i941.NotificationService());
-    gh.singleton<_i81.AppRouter>(() => _i81.AppRouter());
     gh.singleton<_i928.FCMService>(() => _i928.FCMService());
+    gh.singleton<_i81.AppRouter>(() => _i81.AppRouter());
     gh.singleton<_i954.PropertyRemoteDataSource>(
         () => _i954.PropertyRemoteDataSourceImpl(gh<_i361.Dio>()));
     gh.singleton<_i93.ThemeCubit>(

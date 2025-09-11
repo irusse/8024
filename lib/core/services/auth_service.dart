@@ -69,7 +69,6 @@ class AuthService {
       }
     } catch (e) {
       debugPrint('[AuthService] Error clearing tokens: $e');
-      // Не пробрасываем ошибку, так как очистка должна быть надежной
     }
   }
 
@@ -98,7 +97,7 @@ class AuthService {
   /// Проверяет валидность токена (базовая проверка)
   bool isTokenValid(String? token) {
     if (token == null || token.isEmpty) return false;
-    
+
     // Базовая проверка формата JWT (должен содержать 3 части, разделенные точками)
     final parts = token.split('.');
     return parts.length == 3;

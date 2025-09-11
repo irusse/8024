@@ -87,6 +87,7 @@ class AppRouter {
             pageBuilder: (context, state) {
               final eventId = state.pathParameters['eventId'] as String;
               return CustomPageTransition.slideFromBottom(
+                key: state.pageKey,
                 child: MultiBlocProvider(providers: [
                   BlocProvider.value(value: getIt<EventsCubit>()),
                   BlocProvider.value(value: getIt<UserCubit>()),
@@ -152,19 +153,20 @@ class AppRouter {
           path: AppRoutePath.countryCodeSelect,
           name: AppRoutePath.countryCodeSelect,
           pageBuilder: (context, state) {
-            final authCubit = getIt<AuthCubit>();
             return CustomPageTransition.slideFromRight(
+                key: state.pageKey,
                 child: BlocProvider<AuthCubit>.value(
-              value: authCubit,
-              child: const CountryCodeSelect(),
-            ));
+                  value: getIt<AuthCubit>(),
+                  child: const CountryCodeSelect(),
+                ));
           },
         ),
         GoRoute(
           path: AppRoutePath.login,
           pageBuilder: (context, state) => CustomPageTransition.slideFromRight(
-            child: BlocProvider<AuthCubit>(
-              create: (_) => getIt<AuthCubit>(),
+            key: state.pageKey,
+            child: BlocProvider<AuthCubit>.value(
+              value: getIt<AuthCubit>(),
               child: const PhoneAuthPage(),
             ),
           ),
@@ -174,16 +176,17 @@ class AppRouter {
           pageBuilder: (context, state) {
             final phone = state.pathParameters['phone']!;
             return CustomPageTransition.slideFromRight(
+                key: state.pageKey,
                 child: MultiBlocProvider(
                     providers: [
-                  BlocProvider.value(value: getIt<AuthCubit>()),
-                  BlocProvider<OtpCubit>(
-                    create: (_) => OtpCubit(),
-                  )
-                ],
+                      BlocProvider.value(value: getIt<AuthCubit>()),
+                      BlocProvider<OtpCubit>(
+                        create: (_) => OtpCubit(),
+                      )
+                    ],
                     child: BlocConsumer<AuthCubit, AuthState>(
                       listener: (context, state) {
-                        if (state.isAuthenticated) {
+                        if (state.verifyState.isSuccess) {
                           context.go(AppRoutePath.home);
                         }
                         if (state.resendState.isSuccess) {
@@ -226,27 +229,29 @@ class AppRouter {
                       state.pathParameters['eventTitle'] ?? 'Чат';
 
                   return CustomPageTransition.slideFromRight(
+                      key: state.pageKey,
                       child: MultiBlocProvider(
-                    providers: [
-                      BlocProvider.value(
-                        value: getIt<ChatCubit>(),
-                      ),
-                      BlocProvider.value(value: getIt<UserCubit>()),
-                    ],
-                    child: Chat(
-                      eventId: eventId,
-                      eventTitle: eventTitle,
-                    ),
-                  ));
+                        providers: [
+                          BlocProvider.value(
+                            value: getIt<ChatCubit>(),
+                          ),
+                          BlocProvider.value(value: getIt<UserCubit>()),
+                        ],
+                        child: Chat(
+                          eventId: eventId,
+                          eventTitle: eventTitle,
+                        ),
+                      ));
                 }),
           ],
           pageBuilder: (context, state) {
             return CustomPageTransition.slideFromRight(
+                key: state.pageKey,
                 child: MultiBlocProvider(providers: [
-              BlocProvider.value(value: getIt<EventsCubit>()),
-              BlocProvider.value(value: getIt<ChatCubit>()),
-              BlocProvider.value(value: getIt<UserCubit>()),
-            ], child: const ChatList()));
+                  BlocProvider.value(value: getIt<EventsCubit>()),
+                  BlocProvider.value(value: getIt<ChatCubit>()),
+                  BlocProvider.value(value: getIt<UserCubit>()),
+                ], child: const ChatList()));
           },
         ),
         GoRoute(
@@ -254,6 +259,7 @@ class AppRouter {
           pageBuilder: (context, state) {
             final notificationEvent = state.extra as EventEntity?;
             return CustomPageTransition.slideFromBottom(
+              key: state.pageKey,
               child: MultiBlocProvider(providers: [
                 BlocProvider.value(value: getIt<UserLocationCubit>()),
                 BlocProvider.value(value: getIt<UserCubit>()),
@@ -270,6 +276,7 @@ class AppRouter {
           pageBuilder: (context, state) {
             final event = state.extra as EventEntity?;
             return CustomPageTransition.slideFromBottom(
+              key: state.pageKey,
               child: MultiBlocProvider(providers: [
                 BlocProvider.value(value: getIt<UserLocationCubit>()),
                 BlocProvider.value(value: getIt<UserCubit>()),
@@ -309,6 +316,7 @@ class AppRouter {
           pageBuilder: (context, state) {
             final propertyId = int.parse(state.pathParameters['propertyId']!);
             return CustomPageTransition.slideFromRight(
+              key: state.pageKey,
               child: MultiBlocProvider(
                 providers: [
                   BlocProvider.value(
@@ -356,6 +364,7 @@ class AppRouter {
               pageBuilder: (context, state) {
                 final property = state.extra as PropertyEntity?;
                 return CustomPageTransition.slideFromBottom(
+                  key: state.pageKey,
                   child: MultiBlocProvider(
                     providers: [
                       BlocProvider(
@@ -432,66 +441,6 @@ class AppRouter {
                   routes: [
                     GoRoute(
                       path: AppRoutePath.deleteSmsCode,
-                      pageBuilder: (context, state) =>
-                          CustomPageTransition.slideFromRight(
-                        child: MultiBlocProvider(
-                            providers: [
-                              BlocProvider.value(
-                                value: getIt<UserCubit>(),
-                              ),
-                              BlocProvider<OtpCubit>(
-                                create: (_) => OtpCubit(),
-                              )
-                            ],
-                            child: BlocConsumer<UserCubit, UserState>(
-                              listener: (context, state) {
-                                if (state.confirmProfileDeletion.isSuccess) {
-                                  context.pop();
-                                }
-                                if (state.requestProfileDeletion.isSuccess) {
-                                  final code = state.deletionRequestCode;
-                                  context.snackbar.info(
-                                      context, 'Код для тестирования: $code',
-                                      position: SnackBarPosition.top);
-                                }
-                              },
-                              builder: (context, state) => SmsCodePage(
-                                  phone: getIt<UserCubit>().state.user.phone,
-                                  onCodeCompleted: (code) => context
-                                      .read<UserCubit>()
-                                      .confirmProfileDeletion(code),
-                                  onRetry: (phone) => context
-                                      .read<UserCubit>()
-                                      .requestProfileDeletion(),
-                                  isError: context
-                                      .read<UserCubit>()
-                                      .state
-                                      .confirmProfileDeletion
-                                      .isFailure,
-                                  isLoading: context
-                                      .read<UserCubit>()
-                                      .state
-                                      .confirmProfileDeletion
-                                      .isLoading),
-                            )),
-                      ),
-                    ),
-                  ]),
-              GoRoute(
-                  path: AppRoutePath.notifications,
-                  name: AppRoutePath.notifications,
-                  pageBuilder: (context, state) {
-                    return CustomPageTransition.slideFromRight(
-                      key: state.pageKey,
-                      child: BlocProvider.value(
-                        value: getIt<NotificationCubit>(),
-                        child: const NotificationScreen(),
-                      ),
-                    );
-                  },
-                  routes: [
-                    GoRoute(
-                      path: AppRoutePath.deleteSmsCode,
                       name: AppRoutePath.deleteSmsCode,
                       pageBuilder: (context, state) =>
                           CustomPageTransition.slideFromRight(
@@ -539,10 +488,24 @@ class AppRouter {
                     ),
                   ]),
               GoRoute(
+                path: AppRoutePath.notifications,
+                name: AppRoutePath.notifications,
+                pageBuilder: (context, state) {
+                  return CustomPageTransition.slideFromRight(
+                    key: state.pageKey,
+                    child: BlocProvider.value(
+                      value: getIt<NotificationCubit>(),
+                      child: const NotificationScreen(),
+                    ),
+                  );
+                },
+              ),
+              GoRoute(
                 path: AppRoutePath.myEvents,
                 name: AppRoutePath.myEvents,
                 pageBuilder: (context, state) =>
                     CustomPageTransition.slideFromRight(
+                  key: state.pageKey,
                   child: MultiBlocProvider(providers: [
                     BlocProvider.value(
                       value: getIt<UserCubit>(),
@@ -558,6 +521,7 @@ class AppRouter {
                 name: AppRoutePath.propertyVerifications,
                 pageBuilder: (context, state) =>
                     CustomPageTransition.slideFromRight(
+                  key: state.pageKey,
                   child: MultiBlocProvider(providers: [
                     BlocProvider(
                       create: (_) => getIt<UserVerifiedPropertiesCubit>(),
@@ -569,6 +533,7 @@ class AppRouter {
                 path: AppRoutePath.documentPage,
                 pageBuilder: (context, state) {
                   return CustomPageTransition.slideFromRight(
+                    key: state.pageKey,
                     child: MultiBlocProvider(
                         providers: [
                           BlocProvider(

@@ -134,8 +134,9 @@ class NotificationService {
         {
           int? communityId = payload['communityId'];
           if (communityId == null) return;
-          getIt<AppRouter>().router.push(
-              AppRouteBuilder.chatPage(communityId, payload['eventTitle']));
+          getIt<AppRouter>()
+              .router
+              .push(AppRouteBuilder.community(communityId));
           break;
         }
       case NotificationConstants.propertyVerified:

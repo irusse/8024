@@ -74,7 +74,6 @@ class ProfileScreen extends StatelessWidget {
               context.read<PropertiesCubit>().onLogout();
               context.read<EventsCubit>().onLogout();
               context.read<NotificationCubit>().onLogout();
-              getIt<FcmCubit>().removeFcmToken();
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 context.go(AppRoutePath.authWelcome);
               });
