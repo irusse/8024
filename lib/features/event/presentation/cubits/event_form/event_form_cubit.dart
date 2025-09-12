@@ -13,14 +13,17 @@ part 'event_form_state.dart';
 class EventFormCubit extends Cubit<EventFormState> {
   final EventEntity? _originalEvent;
 
-  EventFormCubit({EventEntity? event})
-      : _originalEvent = event,
+  EventFormCubit({
+    EventEntity? event,
+    double? defaultLatitude,
+    double? defaultLongitude,
+  })  : _originalEvent = event,
         super(EventFormState(
           id: event?.id ?? 0,
           title: event?.title ?? '',
           description: event?.description ?? '',
-          latitude: event?.latitude ?? 0,
-          longitude: event?.longitude ?? 0,
+          latitude: event?.latitude ?? defaultLatitude ?? 0,
+          longitude: event?.longitude ?? defaultLongitude ?? 0,
           categoryId: event?.category.id,
           imageUrl: event?.image,
           selectedDateTime: event?.eventDateTime,

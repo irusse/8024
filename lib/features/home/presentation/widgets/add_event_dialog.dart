@@ -36,7 +36,11 @@ class AddEventDialog extends StatelessWidget {
             const HorizontalGap(8),
             _eventButton(context, onClick: () {
               context.pop();
-              context.push(AppRoutePath.eventForm);
+              context.push(AppRoutePath.eventForm, extra: {
+                'event': null,
+                'defaultLatitude': cameraLatitude,
+                'defaultLongitude': cameraLongitude,
+              });
             }, text: "Мероприятие", iconPath: Assets.icons.stars),
           ],
         ),

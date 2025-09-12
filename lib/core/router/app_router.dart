@@ -298,14 +298,31 @@ class AppRouter {
         GoRoute(
           path: AppRoutePath.eventForm,
           pageBuilder: (context, state) {
-            final event = state.extra as EventEntity?;
+            final extra = state.extra;
+            EventEntity? event;
+            double? defaultLatitude;
+            double? defaultLongitude;
+            
+            if (extra is EventEntity) {
+              event = extra;
+            } else if (extra is Map<String, dynamic>) {
+              event = extra['event'] as EventEntity?;
+              defaultLatitude = extra['defaultLatitude'] as double?;
+              defaultLongitude = extra['defaultLongitude'] as double?;
+            }
+            
             return CustomPageTransition.slideFromBottom(
               key: state.pageKey,
               child: MultiBlocProvider(providers: [
                 BlocProvider.value(value: getIt<UserLocationCubit>()),
                 BlocProvider.value(value: getIt<UserCubit>()),
                 BlocProvider.value(value: getIt<EventsCubit>()),
-                BlocProvider(create: (_) => EventFormCubit(event: event)),
+                BlocProvider(
+                    create: (_) => EventFormCubit(
+                      event: event,
+                      defaultLatitude: defaultLatitude,
+                      defaultLongitude: defaultLongitude,
+                    )),
               ], child: const EventForm()),
             );
           },
