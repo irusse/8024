@@ -10,13 +10,16 @@ part 'notification_form_state.dart';
 class NotificationFormCubit extends Cubit<NotificationFormState> {
   final EventEntity? _originalEvent;
 
-  NotificationFormCubit({EventEntity? event})
-      : _originalEvent = event,
+  NotificationFormCubit({
+    EventEntity? event,
+    double? defaultLatitude,
+    double? defaultLongitude,
+  })  : _originalEvent = event,
         super(NotificationFormState(
           id: event?.id ?? 0,
           title: event?.title ?? '',
-          latitude: event?.latitude ?? 0,
-          longitude: event?.longitude ?? 0,
+          latitude: event?.latitude ?? defaultLatitude ?? 0,
+          longitude: event?.longitude ?? defaultLongitude ?? 0,
           categoryId: event?.category.id,
           description: event?.description ?? '',
           image: event?.image,

@@ -31,7 +31,7 @@ class EventLayerService extends LayerService {
   static const double minZoom = 14;
 
   static const double targetIconDp = 24; // целевой размер иконки на экране
-  static const double targetImageDp = 72; // целевой размер иконки на экране
+  static const double targetImageDp = 80; // целевой размер иконки на экране
 
   double get _dpr =>
       WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
@@ -108,12 +108,12 @@ class EventLayerService extends LayerService {
         16,
         [
           "literal",
-          [0, 1.8]
+          [0, 2]
         ],
         21,
         [
           "literal",
-          [0, 3]
+          [0, 3.2]
         ],
       ],
       textSize: context.text.labelLarge.fontSize,
@@ -242,11 +242,10 @@ class EventLayerService extends LayerService {
         ["linear"],
         ["zoom"],
         16,
-        0.5,
+        0.6,
         18,
         0.7,
-        21,
-        0.8,
+
       ],
       iconAllowOverlap: true,
       iconIgnorePlacement: true,

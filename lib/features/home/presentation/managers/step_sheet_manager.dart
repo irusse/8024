@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:neighbours/core/cubits/user_location/user_location_cubit.dart';
 import 'package:neighbours/core/di/injection.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
@@ -20,6 +21,8 @@ import '../cubits/home/home_cubit.dart';
 import '../cubits/profile_create/profile_create_cubit.dart';
 
 mixin StepSheetManager<T extends StatefulWidget> on State<Home> {
+  MapboxMap? get mapboxMapController;
+  
   Future<void> showStepSheet(
     BuildContext context,
     HomeState state, {
@@ -111,11 +114,28 @@ mixin StepSheetManager<T extends StatefulWidget> on State<Home> {
       case ShowSetCoordinates():
         return await SheetUtils.ensureBottomSheetClosed(context);
       case ShowAddEvent():
+        double? cameraLatitude;
+        double? cameraLongitude;
+        
+        if (mapboxMapController != null) {
+          try {
+            final camera = await mapboxMapController!.getCameraState();
+            final center = camera.center;
+            cameraLatitude = center.coordinates.lat.toDouble();
+            cameraLongitude = center.coordinates.lng.toDouble();
+          } catch (e) {
+            // Если не удалось получить координаты камеры, используем null
+          }
+        }
+        
         return _buildStepSheet(
           context,
           title: 'Добавить',
           isDismissible: true,
-          child: const AddEventDialog(),
+          child: AddEventDialog(
+            cameraLatitude: cameraLatitude,
+            cameraLongitude: cameraLongitude,
+          ),
         );
       case ShowNoActiveCommunities():
         return _buildStepSheet(

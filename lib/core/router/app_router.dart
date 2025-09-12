@@ -266,7 +266,19 @@ class AppRouter {
         GoRoute(
           path: AppRoutePath.notificationForm,
           pageBuilder: (context, state) {
-            final notificationEvent = state.extra as EventEntity?;
+            final extra = state.extra;
+            EventEntity? notificationEvent;
+            double? defaultLatitude;
+            double? defaultLongitude;
+            
+            if (extra is EventEntity) {
+              notificationEvent = extra;
+            } else if (extra is Map<String, dynamic>) {
+              notificationEvent = extra['event'] as EventEntity?;
+              defaultLatitude = extra['defaultLatitude'] as double?;
+              defaultLongitude = extra['defaultLongitude'] as double?;
+            }
+            
             return CustomPageTransition.slideFromBottom(
               key: state.pageKey,
               child: MultiBlocProvider(providers: [
@@ -274,8 +286,11 @@ class AppRouter {
                 BlocProvider.value(value: getIt<UserCubit>()),
                 BlocProvider.value(value: getIt<EventsCubit>()),
                 BlocProvider(
-                    create: (_) =>
-                        NotificationFormCubit(event: notificationEvent)),
+                    create: (_) => NotificationFormCubit(
+                      event: notificationEvent,
+                      defaultLatitude: defaultLatitude,
+                      defaultLongitude: defaultLongitude,
+                    )),
               ], child: const NotificationForm()),
             );
           },
