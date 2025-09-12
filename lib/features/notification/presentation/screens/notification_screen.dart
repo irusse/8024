@@ -21,12 +21,30 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
+  late final ScrollController _scrollController;
+
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<NotificationCubit>().fetchNotifications();
     });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      context.read<NotificationCubit>().loadMoreNotifications();
+    }
   }
 
   @override
@@ -59,12 +77,17 @@ class _NotificationScreenState extends State<NotificationScreen> {
             },
             orElse: () {},
           );
-          state.deleteAllState.maybeWhen(
+          state.deleteAllState.handleApiState(
+            onError: (message) {
+              context.snackbar.error(context, message);
+            },
+            onSuccess: () => context.snackbar
+                .success(context, "Уведомления успешно удалены"),
+          );
+          state.loadMoreState.maybeWhen(
             failure: (message) {
               context.snackbar.error(context, message);
             },
-            success: (_) =>
-                context.snackbar.info(context, "Уведомления успешно удалены"),
             orElse: () {},
           );
         },
@@ -89,8 +112,20 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   ),
                 ),
               ListView.builder(
-                itemCount: state.notifications.length,
+                controller: _scrollController,
+                itemCount: state.notifications.length + (state.hasMore ? 1 : 0),
                 itemBuilder: (context, index) {
+                  if (index >= state.notifications.length) {
+                    // Показываем индикатор загрузки в конце списка
+                    return state.isLoadingMore
+                        ? const Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          )
+                        : const SizedBox.shrink();
+                  }
                   final NotificationEntity entity = state.notifications[index];
                   return NotificationItem(entity: entity);
                 },

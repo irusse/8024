@@ -27,9 +27,20 @@ class NotificationCubit extends Cubit<NotificationState> {
   Future<void> fetchNotifications({
     int page = 1,
     int limit = 10,
+    bool refresh = false,
   }) async {
-    _resetStates();
-    emit(state.copyWith(fetchState: const ApiState.loading()));
+    if (refresh) {
+      _resetStates();
+      emit(state.copyWith(
+        fetchState: const ApiState.loading(),
+        notifications: [],
+        currentPage: 1,
+        hasMore: true,
+      ));
+    } else {
+      _resetStates();
+      emit(state.copyWith(fetchState: const ApiState.loading()));
+    }
 
     final result = await _repository.getNotifications(
       page: page,
@@ -43,6 +54,8 @@ class NotificationCubit extends Cubit<NotificationState> {
       emit(state.copyWith(
         notifications: notificationList.data,
         unreadCount: notificationList.unreadCount,
+        currentPage: page,
+        hasMore: notificationList.data.length >= limit,
         fetchState: const ApiState.success(null),
       ));
     });
@@ -126,7 +139,51 @@ class NotificationCubit extends Cubit<NotificationState> {
   }
 
   void onLogout() {
-    emit(state.copyWith(notifications: [], unreadCount: 0));
+    emit(state.copyWith(
+      notifications: [],
+      unreadCount: 0,
+      currentPage: 1,
+      hasMore: true,
+      isLoadingMore: false,
+    ));
+  }
+
+  Future<void> loadMoreNotifications({
+    int limit = 10,
+  }) async {
+    if (!state.hasMore || state.isLoadingMore) return;
+
+    emit(state.copyWith(
+      loadMoreState: const ApiState.loading(),
+      isLoadingMore: true,
+    ));
+
+    final nextPage = state.currentPage + 1;
+    final result = await _repository.getNotifications(
+      page: nextPage,
+      limit: limit,
+    );
+
+    result.fold(
+      (failure) => emit(state.copyWith(
+        loadMoreState: ApiState.failure(failure.message),
+        isLoadingMore: false,
+      )),
+      (notificationList) {
+        final allNotifications = [
+          ...state.notifications,
+          ...notificationList.data
+        ];
+        emit(state.copyWith(
+          notifications: allNotifications,
+          unreadCount: notificationList.unreadCount,
+          currentPage: nextPage,
+          hasMore: notificationList.data.length >= limit,
+          loadMoreState: const ApiState.success(null),
+          isLoadingMore: false,
+        ));
+      },
+    );
   }
 
   void _resetStates() {
@@ -134,6 +191,7 @@ class NotificationCubit extends Cubit<NotificationState> {
       fetchState: const ApiState.initial(),
       deleteAllState: const ApiState.initial(),
       markAsReadState: const ApiState.initial(),
+      loadMoreState: const ApiState.initial(),
     ));
   }
 }
