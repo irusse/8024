@@ -6,7 +6,6 @@ import 'package:neighbours/core/extensions/context_ext.dart';
 
 import '../constants/ui_constants.dart';
 import 'custom_gap.dart';
-import 'custom_outlined_button.dart';
 
 class UnexpectedErrorScreen extends StatelessWidget {
   final VoidCallback onRetry;

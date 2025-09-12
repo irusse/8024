@@ -35,4 +35,5 @@ class _Images {
 class _Lotties {
   static const _basePath = 'assets/lotties';
   final warning = '$_basePath/warning_animation.json';
+  final notFound = '$_basePath/not_found.json';
 }

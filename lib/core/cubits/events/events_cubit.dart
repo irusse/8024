@@ -1,12 +1,19 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
+import 'package:neighbours/core/di/injection.dart';
 import 'package:neighbours/core/domain/entities/event/event_category_entity.dart';
 import 'package:neighbours/core/domain/entities/event/event_entity.dart';
 import 'package:neighbours/core/domain/repositories/event_repository.dart';
+import 'package:neighbours/core/error/failures.dart';
+import 'package:neighbours/core/services/notification_service.dart';
 
+import '../../constants/notification_constants.dart';
 import '../../state/api_state.dart';
 
 part 'events_cubit.freezed.dart';
@@ -16,8 +23,27 @@ part 'events_state.dart';
 @singleton
 class EventsCubit extends Cubit<EventsState> {
   final EventRepository _eventRepository;
+  StreamSubscription? _notificationSub;
 
-  EventsCubit(this._eventRepository) : super(const EventsState());
+  EventsCubit(this._eventRepository) : super(const EventsState()) {
+    _notificationSub =
+        getIt<NotificationService>().stream.listen((notification) {
+      if (notification.type == NotificationConstants.eventDeleted) {
+        _resetStates();
+        final payload = jsonDecode(notification.payload ?? "{}");
+        final eventId = payload['eventId'] as int?;
+
+        if (eventId == null) return;
+        _removeEventFromState(eventId);
+      }
+    });
+  }
+
+  @override
+  Future<void> close() {
+    _notificationSub?.cancel();
+    return super.close();
+  }
 
   List<T> _sortedAllEvents<T>() {
     final allEvents = state.events.values.toList();
@@ -181,7 +207,7 @@ class EventsCubit extends Cubit<EventsState> {
     final int? id = int.tryParse(eventId);
     if (id == null) return;
     final previousState = state;
-    _removeEventOptimistically(id);
+    _removeEventFromState(id);
 
     emit(state.copyWith(deleteState: const ApiState.loading()));
 
@@ -222,9 +248,14 @@ class EventsCubit extends Cubit<EventsState> {
     final result = await _eventRepository.joinEvent(eventId: eventId);
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        joinEventState: ApiState.failure(failure.message),
-      )),
+      (failure) {
+        if (failure is NotFoundFailure) {
+          _removeEventFromState(id);
+        }
+        emit(state.copyWith(
+          joinEventState: ApiState.failure(failure.message),
+        ));
+      },
       (entity) => _handleEventUpdated(entity, isJoin: true),
     );
   }
@@ -239,9 +270,14 @@ class EventsCubit extends Cubit<EventsState> {
     final result = await _eventRepository.leaveEvent(eventId: eventId);
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        leaveEventState: ApiState.failure(failure.message),
-      )),
+      (failure) {
+        if (failure is NotFoundFailure) {
+          _removeEventFromState(id);
+        }
+        emit(state.copyWith(
+          leaveEventState: ApiState.failure(failure.message),
+        ));
+      },
       (entity) => _handleEventUpdated(entity, isJoin: false),
     );
   }
@@ -332,7 +368,7 @@ class EventsCubit extends Cubit<EventsState> {
     emit(state.copyWith(events: {}));
   }
 
-  void _removeEventOptimistically(int id) {
+  void _removeEventFromState(int id) {
     final updatedEvents = Map<int, EventEntity>.from(state.events);
     if (updatedEvents.containsKey(id)) {
       updatedEvents.remove(id);

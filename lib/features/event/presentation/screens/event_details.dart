@@ -10,6 +10,7 @@ import 'package:neighbours/core/components/default_app_bar.dart';
 import 'package:neighbours/core/components/default_loading_overlay.dart';
 import 'package:neighbours/core/components/default_tab_bar.dart';
 import 'package:neighbours/core/components/shaped_cached_image.dart';
+import 'package:neighbours/core/constants/default_constants.dart';
 import 'package:neighbours/core/constants/ui_constants.dart';
 import 'package:neighbours/core/cubits/events/events_cubit.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
@@ -17,7 +18,6 @@ import 'package:neighbours/core/domain/entities/event/event_entity.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/router/app_routes.dart';
 import 'package:neighbours/core/state/api_state.dart';
-import 'package:neighbours/features/community/presentation/widgets/error_with_try_btn.dart';
 import 'package:neighbours/features/event/presentation/cubits/vote/vote_cubit.dart';
 import 'package:neighbours/features/event/presentation/widgets/chat_tab.dart';
 import 'package:neighbours/features/event/presentation/widgets/default_divider.dart';
@@ -111,6 +111,7 @@ class _EventDetailsState extends State<EventDetails> {
           onSuccess: () => context.pop(),
           onError: (error) => context.snackbar.error(context, error),
         );
+
         state.joinEventState.handleApiState(
           onSuccess: () =>
               context.snackbar.success(context, 'Вы вступили в мероприятие'),
@@ -121,8 +122,7 @@ class _EventDetailsState extends State<EventDetails> {
             context.snackbar.info(context, 'Вы покинули мероприятие');
             final voteCubit = context.read<VoteCubit>();
             final results = voteCubit.state.votingResults;
-            final event =
-                state.events[int.parse(widget.eventId)]; // свежие данные
+            final event = state.events[int.parse(widget.eventId)];
             if (event != null && results?.hasVoted == true) {
               voteCubit.cancelVote(eventId: event.id);
             }
@@ -139,19 +139,19 @@ class _EventDetailsState extends State<EventDetails> {
         }
 
         // Ошибка если не удалось загрузить
-        if (event == null && state.fetchEventByIdState.isFailure) {
-          return Scaffold(
-            body: ErrorWithTryBtn(
-              error: "Что-то пошло не так\nВозможно событие удалено",
-              onErrorClick: () => context
-                  .read<EventsCubit>()
-                  .fetchEventById(eventId: widget.eventId),
-            ),
+        if (event == null || state.fetchEventByIdState.isFailure) {
+          // Если я сам удаляю событие → не уходим на 404
+          if (!state.deleteState.isLoading && !state.deleteState.isSuccess) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (context.mounted) {
+                context.pushReplacement(AppRoutePath.notFound,
+                    extra: DefaultConstants.eventDeletedText);
+              }
+            });
+          }
+          return const Scaffold(
+            body: DefaultLoadingOverlay(),
           );
-        }
-
-        if (event == null) {
-          return const SizedBox(); // fallback
         }
 
         final userId = context.read<UserCubit>().state.user.id;

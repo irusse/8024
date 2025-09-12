@@ -53,6 +53,7 @@ import '../../features/chat/presentation/screens/chat.dart';
 import '../../features/home/presentation/cubits/home/home_cubit.dart';
 import '../../features/profile/presentation/pages/profile_screen.dart';
 import '../../features/property/domain/entities/resource/resource_entity.dart';
+import '../components/not_found_page.dart';
 import '../di/injection.dart';
 import '../../features/auth/presentation/pages/sms_code_page.dart';
 import '../../features/splash/presentation/pages/splash_screen.dart';
@@ -144,6 +145,14 @@ class AppRouter {
                   retryCallback();
                 }
               });
+            }),
+        GoRoute(
+            path: AppRoutePath.notFound,
+            builder: (context, state) {
+              final text = state.extra as String?;
+              return NotFoundPage(
+                text: text,
+              );
             }),
         GoRoute(
           path: AppRoutePath.authWelcome,

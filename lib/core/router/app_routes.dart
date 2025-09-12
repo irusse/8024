@@ -11,6 +11,7 @@ abstract class AppRoutePath {
   static const profile = '/profile';
   static const editProfile = 'edit';
   static const myEvents = 'my-events';
+  static const notFound = '/not-found';
   static const noInternet = '/no_internet';
   static const unexpectedError = '/unexpected-error';
   static const notificationForm = '/notification-form';

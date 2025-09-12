@@ -1,6 +1,7 @@
+import 'dart:async';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:injectable/injectable.dart';
-import 'package:neighbours/core/cubits/fcm/fcm_cubit.dart';
 import 'package:neighbours/core/data/models/app_notification/app_notification_model.dart';
 import 'package:neighbours/core/di/injection.dart';
 import 'package:neighbours/core/services/notification_service.dart';
@@ -8,18 +9,39 @@ import 'package:neighbours/core/services/notification_service.dart';
 @singleton
 class FCMService {
   final _firebaseMessaging = FirebaseMessaging.instance;
+  bool _isInitialized = false;
+
+  final _tokenController = StreamController<String>.broadcast();
+
+  Stream<String> get onTokenRefresh => _tokenController.stream;
 
   Future<void> init() async {
-    await _firebaseMessaging.requestPermission();
+    try {
+      if (_isInitialized) return;
+      print('=========================');
+      print('[FCM SERVICE] INIT');
+      print('=========================');
+      _isInitialized = true;
+      await _firebaseMessaging.requestPermission();
+
+      _initPushNotifications();
+    } catch (err) {
+      _isInitialized = false;
+    }
+  }
+
+  Future<String?> getToken() async {
     final fcmToken = await _firebaseMessaging.getToken();
+    return fcmToken;
+  }
 
-    if (fcmToken == null) return;
-    await getIt<FcmCubit>().saveFcmToken(fcmToken);
-    _firebaseMessaging.onTokenRefresh.listen((token) async {
-      await getIt<FcmCubit>().saveFcmToken(token);
-    });
+  // await getIt<FcmCubit>().saveFcmToken(fcmToken);
+  // _firebaseMessaging.onTokenRefresh.listen((token) async {
+  //   await getIt<FcmCubit>().saveFcmToken(token);
+  // });
 
-    _initPushNotifications();
+  void reset() {
+    _isInitialized = false;
   }
 
   void _initPushNotifications() {

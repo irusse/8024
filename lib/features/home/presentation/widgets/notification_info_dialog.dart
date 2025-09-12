@@ -30,7 +30,14 @@ class NotificationInfoDialog extends StatelessWidget {
           prev.joinEventState != curr.joinEventState ||
           prev.leaveEventState != curr.leaveEventState,
       builder: (context, state) {
-        final notification = state.events[eventId]!;
+        final notification = state.events[eventId];
+        if (notification == null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (context.mounted && context.canPop()) context.pop();
+          });
+          return const SizedBox.shrink();
+        }
+
         final isCreator = notification.isCreator(userId);
         final isParticipant = notification.isParticipant(userId);
 

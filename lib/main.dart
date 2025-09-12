@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:neighbours/core/cubits/fcm/fcm_cubit.dart';
 import 'package:neighbours/core/cubits/theme/theme_cubit.dart';
 import 'package:neighbours/core/services/notification_service.dart';
 import 'core/di/injection.dart';
@@ -17,6 +18,7 @@ import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   await dotenv.load();
   await configureDependencies();
 
@@ -26,7 +28,7 @@ void main() async {
   ]);
   ChuckerFlutter.showOnRelease = false;
   ChuckerFlutter.showNotification = true;
-
+  await getIt<FcmCubit>().initFCM();
   await getIt<NotificationService>().init();
 
   runApp(BlocProvider.value(

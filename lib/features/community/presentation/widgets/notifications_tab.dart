@@ -41,7 +41,7 @@ class NotificationsTab extends StatelessWidget {
         return DateGroupedList<EventEntity>(
           items: context.read<EventsCubit>().allNotifications(),
           dateOf: (e) => e.createdAt,
-          itemBuilder: (ctx, e) => NotificationCard(event: e),
+          itemBuilder: (ctx, e) => NotificationCard(event: e,),
           sortDescending: true,
           showTodayYesterday: true,
           dateLocale: 'ru_RU',

@@ -206,8 +206,6 @@ extension GetItInjectableX on _i174.GetIt {
             gh<_i558.FlutterSecureStorage>()));
     gh.singleton<_i61.PropertyRepository>(() =>
         _i758.PropertyRepositoryImpl(gh<_i954.PropertyRemoteDataSource>()));
-    gh.singleton<_i791.FcmCubit>(
-        () => _i791.FcmCubit(gh<_i637.PushRepository>()));
     gh.singleton<_i745.AuthService>(
         () => _i745.AuthService(gh<_i558.FlutterSecureStorage>()));
     gh.singleton<_i420.ChatRepository>(
@@ -246,6 +244,10 @@ extension GetItInjectableX on _i174.GetIt {
             gh<_i392.UserLocationLocalDataSource>()));
     gh.singleton<_i221.VoteRepository>(
         () => _i630.VoteRepositoryImpl(gh<_i990.VoteRemoteDatasource>()));
+    gh.singleton<_i791.FcmCubit>(() => _i791.FcmCubit(
+          gh<_i637.PushRepository>(),
+          gh<_i928.FCMService>(),
+        ));
     gh.lazySingleton<_i549.ResourcesCubit>(
         () => _i549.ResourcesCubit(gh<_i50.ResourceRepository>()));
     gh.singleton<_i787.AuthRepository>(() => _i153.AuthRepositoryImpl(

@@ -1,6 +1,8 @@
 class DefaultConstants {
-  static const String mapBoxLight = "mapbox://styles/mapbox/satellite-streets-v12";
-  static const String mapBoxDark = "mapbox://styles/mapbox/satellite-streets-v12";
+  static const String mapBoxLight =
+      "mapbox://styles/mapbox/satellite-streets-v12";
+  static const String mapBoxDark =
+      "mapbox://styles/mapbox/satellite-streets-v12";
 
   static const addressNeedStep = 1;
   static const userInfoNeedStep = 2;
@@ -30,4 +32,7 @@ class DefaultConstants {
   static const privacy = "privacy";
   static const event = "EVENT";
   static const notification = "NOTIFICATION";
+
+  static const eventDeletedText =
+      "К сожалению, это мероприятие больше недоступно.Возможно, его удалил организатор.";
 }

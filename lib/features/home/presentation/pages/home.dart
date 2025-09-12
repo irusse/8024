@@ -8,6 +8,7 @@ import 'package:neighbours/core/components/my_location_btn.dart';
 import 'package:neighbours/core/cubits/events/events_cubit.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
 import 'package:neighbours/core/cubits/user_location/user_location_cubit.dart';
+import 'package:neighbours/core/error/failures.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/router/app_routes.dart';
 import 'package:neighbours/core/services/map_service.dart';
@@ -228,6 +229,11 @@ class _HomeState extends State<Home>
 
                   state.joinEventState.mapOrNull(success: (res) {
                     chatCubit.joinEvent(res.data.id);
+                  }, failure: (failure) {
+                    if (failure is NotFoundFailure) {
+                      context.snackbar.error(context,
+                          "Не удалось найти событие.\nВозможно оно было удалено");
+                    }
                   });
                   state.createEventState.mapOrNull(success: (res) {
                     chatCubit.joinEvent(res.data.id);
@@ -239,6 +245,11 @@ class _HomeState extends State<Home>
                     chatCubit
                       ..leaveEvent(res.data.id)
                       ..removeEventCount(res.data.id);
+                  }, failure: (failure) {
+                    if (failure is NotFoundFailure) {
+                      context.snackbar.error(context,
+                          "Не удалось найти событие.\nВозможно оно было удалено");
+                    }
                   });
                   state.deleteState.maybeWhen(
                     success: (eventId) => chatCubit.leaveEvent(eventId),
