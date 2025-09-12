@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
+import 'package:neighbours/core/components/primary_button.dart';
+import 'package:neighbours/core/constants/assets.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 
 import '../constants/ui_constants.dart';
@@ -20,18 +23,29 @@ class UnexpectedErrorScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.error_outline_outlined,
-              color: context.color.secondary,
-              size: 56,
+            VerticalGap(MediaQuery.of(context).size.height / 4),
+            AspectRatio(
+              aspectRatio: 1.6,
+              child: Lottie.asset(Assets.lotties.warning, repeat: false),
             ),
-            const VerticalGap(16),
+            const VerticalGap(32),
             Text(
-              'Что-то пошло не так',
-              style: context.text.bodyLarge,
+              'Упссс..',
+              style: context.text.titleSmall,
             ),
-            const VerticalGap(24),
-            CustomOutlinedButton(onPressed: onRetry, text: 'Попробовать снова')
+            const VerticalGap(8),
+            Text(
+              'Похоже, произошла ошибка. Давайте попробуем снова!',
+              style: context.text.bodyLarge
+                  .copyWith(color: context.color.secondaryText),
+              textAlign: TextAlign.center,
+            ),
+            const Spacer(),
+            PrimaryButton(
+                verticalPadding: 16,
+                onPressed: onRetry,
+                text: 'Попробовать снова'),
+            const VerticalGap(48)
           ],
         ),
       ),

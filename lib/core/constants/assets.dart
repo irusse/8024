@@ -1,6 +1,7 @@
 abstract class Assets {
   static final icons = _Icons();
   static final images = _Images();
+  static final lotties = _Lotties();
 }
 
 class _Icons {
@@ -29,4 +30,9 @@ class _Icons {
 class _Images {
   static const _basePath = 'assets/images';
   final square = '$_basePath/square.png';
+}
+
+class _Lotties {
+  static const _basePath = 'assets/lotties';
+  final warning = '$_basePath/warning_animation.json';
 }

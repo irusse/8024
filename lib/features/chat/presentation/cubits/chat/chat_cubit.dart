@@ -1,11 +1,16 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
+import 'package:neighbours/core/constants/notification_constants.dart';
+import 'package:neighbours/core/di/injection.dart';
+import 'package:neighbours/core/services/notification_service.dart';
 import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
 import 'package:neighbours/features/chat/domain/repositories/chat_repository.dart';
-import 'package:neighbours/core/services/notification_service.dart';
 import 'package:neighbours/features/chat/domain/repositories/chat_socket_repository.dart';
 
 part 'chat_cubit.freezed.dart';
@@ -16,13 +21,33 @@ part 'chat_state.dart';
 class ChatCubit extends Cubit<ChatState> {
   final ChatRepository _chatRepository;
   final ChatSocketRepository _chatSocketRepository;
-  final NotificationService _notificationService;
-
   int? _currentOpenChatId;
+  StreamSubscription? _notificationSub;
 
-  ChatCubit(this._chatRepository, this._chatSocketRepository,
-      this._notificationService)
-      : super(const ChatState());
+  ChatCubit(
+    this._chatRepository,
+    this._chatSocketRepository,
+  ) : super(const ChatState()) {
+    _notificationSub =
+        getIt<NotificationService>().stream.listen((notification) {
+      if (notification.type == NotificationConstants.messageReceived) {
+        final payload = jsonDecode(notification.payload ?? "{}");
+        final eventId = payload['eventId'] as int?;
+
+        if (eventId == null) return;
+
+        if (_currentOpenChatId != eventId) {
+          getIt<NotificationService>().showBasicNotification(notification);
+        }
+      }
+    });
+  }
+
+  @override
+  Future<void> close() {
+    _notificationSub?.cancel();
+    return super.close();
+  }
 
   Future<void> fetchEventMessages(int eventId) async {
     emit(state

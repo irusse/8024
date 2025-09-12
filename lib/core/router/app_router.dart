@@ -84,7 +84,6 @@ class AppRouter {
             }),
         GoRoute(
             path: AppRoutePath.eventDetails,
-
             pageBuilder: (context, state) {
               final eventId = state.pathParameters['eventId'] as String;
               return CustomPageTransition.slideFromBottom(
@@ -96,7 +95,7 @@ class AppRouter {
                   BlocProvider<VoteCubit>(
                     create: (_) => getIt<VoteCubit>(),
                   ),
-                ], child: EventDetails(key:UniqueKey(),eventId: eventId)),
+                ], child: EventDetails(key: UniqueKey(), eventId: eventId)),
               );
             }),
         GoRoute(

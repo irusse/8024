@@ -47,7 +47,6 @@ class _EventDetailsState extends State<EventDetails> {
     context.read<EventsCubit>().fetchEventById(eventId: widget.eventId);
   }
 
-
   Future<void> _onDeleteClick(BuildContext context, int eventId) async {
     final deleteConfirm = await showDialog<bool>(
       context: context,

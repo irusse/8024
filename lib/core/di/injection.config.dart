@@ -270,15 +270,14 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i502.VoteCubit(gh<_i221.VoteRepository>()));
     gh.singleton<_i587.ChatSocketRepository>(() =>
         _i560.ChatSocketRepositoryImpl(gh<_i1037.ChatSocketDataSource>()));
+    gh.singleton<_i266.ChatCubit>(() => _i266.ChatCubit(
+          gh<_i420.ChatRepository>(),
+          gh<_i587.ChatSocketRepository>(),
+        ));
     gh.singleton<_i235.AuthCubit>(
         () => _i235.AuthCubit(gh<_i787.AuthRepository>()));
     gh.factory<_i470.ProfileCubit>(
         () => _i470.ProfileCubit(gh<_i787.AuthRepository>()));
-    gh.singleton<_i266.ChatCubit>(() => _i266.ChatCubit(
-          gh<_i420.ChatRepository>(),
-          gh<_i587.ChatSocketRepository>(),
-          gh<_i941.NotificationService>(),
-        ));
     return this;
   }
 }

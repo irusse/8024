@@ -93,6 +93,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
           .read<ResourcesCubit>()
           .fetchResourcesByPropertyId(widget.propertyId);
     });
+
     super.initState();
   }
 
@@ -165,6 +166,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                             vertical: 12,
                           ),
                           child: CustomOutlinedButton(
+                              isLoading: isGettingPosition || isVerifying,
                               onPressed: () async {
                                 final userLocation = await context
                                     .read<UserLocationCubit>()

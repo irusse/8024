@@ -57,7 +57,7 @@ class NetworkHandler {
           case 403:
             return const AuthFailure('Доступ запрещен');
           case 404:
-            return const ServerFailure('Ресурс не найден');
+            return const NotFoundFailure('Ресурс не найден');
           case 500:
             return const ServerFailure('Внутренняя ошибка сервера');
           default:

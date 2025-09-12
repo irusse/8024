@@ -216,6 +216,6 @@ class JWTInterceptor extends Interceptor {
     debugPrint('[JWTInterceptor] Handling logout');
     reset();
     await _authService.clearTokens();
-    _appRouter.router.push(AppRoutePath.login);
+    _appRouter.router.go(AppRoutePath.login);
   }
 }
