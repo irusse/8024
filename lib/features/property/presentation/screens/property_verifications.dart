@@ -52,9 +52,12 @@ class _PropertyVerificationsState extends State<PropertyVerifications> {
                   final verification = state.verifications[index];
                   return VerifiedPropertyItem(entity: verification);
                 },
-                separatorBuilder: (context,index)=>const VerticalGap(8),
+                separatorBuilder: (context, index) => const VerticalGap(8),
               ),
-              if (state.fetchState.isLoading) const DefaultLoadingOverlay(transparent: true,),
+              if (state.fetchState.isLoading)
+                const DefaultLoadingOverlay(
+                  transparent: true,
+                ),
               if (state.fetchState.isFailure)
                 ErrorWithTryBtn(
                     error: state.fetchState.error!,

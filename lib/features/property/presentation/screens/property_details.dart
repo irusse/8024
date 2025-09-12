@@ -140,8 +140,21 @@ class _PropertyDetailsState extends State<PropertyDetails> {
             prev.updateState.isLoading != curr.updateState.isLoading ||
             prev.verifyState.isLoading != curr.verifyState.isLoading,
         builder: (context, state) {
-          final properties = state.properties;
-          final PropertyEntity currentProperty = properties[widget.propertyId]!;
+          final currentProperty = state.properties[widget.propertyId];
+          if (currentProperty == null) {
+            // Если я сам удаляю объект → не уходим на 404
+            if (!state.deleteState.isLoading && !state.deleteState.isSuccess) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (context.mounted) {
+                  context.pushReplacement(AppRoutePath.notFound,
+                      extra: DefaultConstants.propertyDeletedText);
+                }
+              });
+            }
+            return const Scaffold(
+              body: DefaultLoadingOverlay(),
+            );
+          }
           final isUserProperty = currentProperty.createdById == userId;
           return Stack(
             children: [

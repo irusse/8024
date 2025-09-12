@@ -35,4 +35,6 @@ class DefaultConstants {
 
   static const eventDeletedText =
       "К сожалению, это мероприятие больше недоступно.Возможно, его удалил организатор.";
+  static const propertyDeletedText =
+      "К сожалению, этот объект недвижимости недоступен.";
 }
