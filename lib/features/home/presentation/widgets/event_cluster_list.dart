@@ -15,23 +15,20 @@ class EventClusterList extends StatelessWidget {
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: events.length,
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 8),
         itemBuilder: (context, index) {
           final event = events[index];
-          return Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: SizedBox(
-                width: MediaQuery.of(context).size.width - 40,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: context.color.background,
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: EventInfoDialog(
-                    event: event,
-                  ),
-                )),
+          return Container(
+            margin: const EdgeInsets.only(right: 12),
+            width: MediaQuery.of(context).size.width - 32,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: context.color.background,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: EventInfoDialog(
+              event: event,
+            ),
           );
         },
       ),

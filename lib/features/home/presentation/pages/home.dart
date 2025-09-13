@@ -166,204 +166,214 @@ class _HomeState extends State<Home>
         }
       },
       child: Scaffold(
-          body: SafeArea(
-              top: false,
-              child: BlocConsumer<HomeCubit, HomeState>(
-            listenWhen: (prev, curr) => prev.runtimeType != curr.runtimeType,
-            listener: (context, state) {
-              if (state is Error) {
-                context.snackbar.error(context, state.message);
-              } else if (state is NetworkError) {
-                context.push(AppRoutePath.noInternet, extra: performDataFetch);
-              } else if (state is GetStepError) {
-                context.push(AppRoutePath.unexpectedError, extra: performDataFetch);
-              }
-              showStepSheet(context, state, onDataFetchRequired: performDataFetch);
-            },
-            builder: (context, state) {
-              final showMarker = context.read<HomeCubit>().isMarkerVisible();
+        body: SafeArea(
+            top: false,
+            child: BlocConsumer<HomeCubit, HomeState>(
+              listenWhen: (prev, curr) => prev.runtimeType != curr.runtimeType,
+              listener: (context, state) {
+                if (state is Error) {
+                  context.snackbar.error(context, state.message);
+                } else if (state is NetworkError) {
+                  context.push(AppRoutePath.noInternet,
+                      extra: performDataFetch);
+                } else if (state is GetStepError) {
+                  context.push(AppRoutePath.unexpectedError,
+                      extra: performDataFetch);
+                }
+                showStepSheet(context, state,
+                    onDataFetchRequired: performDataFetch);
+              },
+              builder: (context, state) {
+                final showMarker = context.read<HomeCubit>().isMarkerVisible();
 
-              return MultiBlocListener(
-                listeners: [
-                  BlocListener<ThemeCubit, ThemeState>(
-                    listenWhen: (prev, curr) => prev.isDark != curr.isDark,
-                    listener: (context, state) async {
-                      if (_mapboxMapController != null) {
-                        await _mapboxMapController!
-                            .loadStyleURI(context.read<ThemeCubit>().getThemeMap);
-                      }
-                    },
-                  ),
-                  BlocListener<UserLocationCubit, UserLocationState>(
-                      listener: (context, locationState) {
-                        locationState.maybeWhen(
-                          permissionDenied: () => _showLocationDisabledDialog(context),
-                          permissionDeniedForever: () =>
-                              _showLocationDisabledDialog(context),
-                          locationReceived: (coordinates, _) {
-                            MapCameraUtils.flyToPosition(
-                              mapboxMapController!,
-                              coordinates.latitude,
-                              coordinates.longitude,
-                            );
-                          },
-                          orElse: () {},
-                        );
-                      }),
-                  BlocListener<UserCubit, UserState>(
-                    listenWhen: (prev, curr) => prev.fetchState != curr.fetchState,
-                    listener: (context, state) {
-                      state.fetchState.mapOrNull(
-                          failure: (error) =>
-                              context.snackbar.error(context, error.message));
-                    },
-                  ),
-                  BlocListener<PropertiesCubit, PropertiesState>(
-                    listenWhen: (prev, curr) => prev.properties != curr.properties,
-                    listener: (context, propertiesState) {
-                      propertyLayerService.updateData(
-                          context, mapboxMapController, propertiesState.properties);
-                    },
-                  ),
-                  BlocListener<EventsCubit, EventsState>(
-                    listener: (context, state) {
-                      final chatCubit = context.read<ChatCubit>();
-
-                      state.joinEventState.mapOrNull(success: (res) {
-                        chatCubit.joinEvent(res.data.id);
-                      }, failure: (failure) {
-                        if (failure is NotFoundFailure) {
-                          context.snackbar.error(context,
-                              "Не удалось найти событие.\nВозможно оно было удалено");
+                return MultiBlocListener(
+                  listeners: [
+                    BlocListener<ThemeCubit, ThemeState>(
+                      listenWhen: (prev, curr) => prev.isDark != curr.isDark,
+                      listener: (context, state) async {
+                        if (_mapboxMapController != null) {
+                          await _mapboxMapController!.loadStyleURI(
+                              context.read<ThemeCubit>().getThemeMap);
                         }
-                      });
-                      state.createEventState.mapOrNull(success: (res) {
-                        chatCubit.joinEvent(res.data.id);
-                      });
-                      state.createNotificationState.mapOrNull(success: (res) {
-                        chatCubit.joinEvent(res.data.id);
-                      });
-                      state.leaveEventState.mapOrNull(success: (res) {
-                        chatCubit
-                          ..leaveEvent(res.data.id)
-                          ..removeEventCount(res.data.id);
-                      }, failure: (failure) {
-                        if (failure is NotFoundFailure) {
-                          context.snackbar.error(context,
-                              "Не удалось найти событие.\nВозможно оно было удалено");
-                        }
-                      });
-                      state.deleteState.maybeWhen(
-                        success: (eventId) => chatCubit.leaveEvent(eventId),
-                        failure: (message) {
-                          context.snackbar.error(context, message);
+                      },
+                    ),
+                    BlocListener<UserLocationCubit, UserLocationState>(
+                        listener: (context, locationState) {
+                      locationState.maybeWhen(
+                        permissionDenied: () =>
+                            _showLocationDisabledDialog(context),
+                        permissionDeniedForever: () =>
+                            _showLocationDisabledDialog(context),
+                        locationReceived: (coordinates, _) {
+                          MapCameraUtils.flyToPosition(
+                            mapboxMapController!,
+                            coordinates.latitude,
+                            coordinates.longitude,
+                          );
                         },
                         orElse: () {},
                       );
+                    }),
+                    BlocListener<UserCubit, UserState>(
+                      listenWhen: (prev, curr) =>
+                          prev.fetchState != curr.fetchState,
+                      listener: (context, state) {
+                        state.fetchState.mapOrNull(
+                            failure: (error) =>
+                                context.snackbar.error(context, error.message));
+                      },
+                    ),
+                    BlocListener<PropertiesCubit, PropertiesState>(
+                      listenWhen: (prev, curr) =>
+                          prev.properties != curr.properties,
+                      listener: (context, propertiesState) {
+                        propertyLayerService.updateData(context,
+                            mapboxMapController, propertiesState.properties);
+                      },
+                    ),
+                    BlocListener<EventsCubit, EventsState>(
+                      listener: (context, state) {
+                        final chatCubit = context.read<ChatCubit>();
 
-                      state.fetchState.maybeWhen(
+                        state.joinEventState.mapOrNull(success: (res) {
+                          chatCubit.joinEvent(res.data.id);
+                        }, failure: (failure) {
+                          if (failure is NotFoundFailure) {
+                            context.snackbar.error(context,
+                                "Не удалось найти событие.\nВозможно оно было удалено");
+                          }
+                        });
+                        state.createEventState.mapOrNull(success: (res) {
+                          chatCubit.joinEvent(res.data.id);
+                        });
+                        state.createNotificationState.mapOrNull(success: (res) {
+                          chatCubit.joinEvent(res.data.id);
+                        });
+                        state.leaveEventState.mapOrNull(success: (res) {
+                          chatCubit
+                            ..leaveEvent(res.data.id)
+                            ..removeEventCount(res.data.id);
+                        }, failure: (failure) {
+                          if (failure is NotFoundFailure) {
+                            context.snackbar.error(context,
+                                "Не удалось найти событие.\nВозможно оно было удалено");
+                          }
+                        });
+                        state.deleteState.maybeWhen(
+                          success: (eventId) => chatCubit.leaveEvent(eventId),
                           failure: (message) {
                             context.snackbar.error(context, message);
                           },
-                          success: (events) {
-                            for (final event in events) {
-                              if (event.creator.id == userId ||
-                                  event.participants.any((p) => p.id == userId)) {
-                                chatCubit.joinEvent(event.id);
-                              }
-                            }
-                          },
-                          orElse: () {});
-                    },
-                  ),
-                  BlocListener<EventsCubit, EventsState>(
-                    listenWhen: (prev, curr) => prev.events != curr.events,
-                    listener: (context, eventsState) {
-                      final events = context.read<EventsCubit>().allFullEvents();
-                      final notifications =
-                      context.read<EventsCubit>().allNotifications();
-                      eventLayerService.updateData(mapboxMapController, events);
-                      notificationLayerService.updateData(
-                          mapboxMapController, notifications);
-                    },
-                  ),
-                ],
-                child: Stack(
-                  children: [
-                    ValueListenableBuilder<bool>(
-                      valueListenable: isMapReadyNotifier,
-                      builder: (context, isReady, child) {
-                        if (!isReady) {
-                          return const HomeLoadingOverlay();
-                        }
-                        return HomeMapView(
-                          initialCameraOptions: initialCameraOptions,
-                          onMapCreated: onMapCreated,
-                          onMapTap: onMapTap,
-                          onStyleLoadedListener: (s) =>
-                              reinitializeLayersAfterThemeChange(),
+                          orElse: () {},
                         );
+
+                        state.fetchState.maybeWhen(
+                            failure: (message) {
+                              context.snackbar.error(context, message);
+                            },
+                            success: (events) {
+                              for (final event in events) {
+                                if (event.creator.id == userId ||
+                                    event.participants
+                                        .any((p) => p.id == userId)) {
+                                  chatCubit.joinEvent(event.id);
+                                }
+                              }
+                            },
+                            orElse: () {});
                       },
                     ),
-                    if (showMarker) const PropertyMarker(),
-                    Positioned(
-                      top: MediaQuery.of(context).padding.top + 10,
-                      left: 16,
-                      right: 16,
-                      child: const TopPanel(),
+                    BlocListener<EventsCubit, EventsState>(
+                      listenWhen: (prev, curr) => prev.events != curr.events,
+                      listener: (context, eventsState) {
+                        final events =
+                            context.read<EventsCubit>().allFullEvents();
+                        final notifications =
+                            context.read<EventsCubit>().allNotifications();
+                        eventLayerService.updateData(
+                            mapboxMapController, events);
+                        notificationLayerService.updateData(
+                            mapboxMapController, notifications);
+                      },
                     ),
-                    Positioned(
-                        bottom: MediaQuery.of(context).size.height / 4,
-                        right: 16,
-                        child: ViewSwitcher(notifier: _viewSwitcherNotifier)),
-                    const Positioned(
-                      bottom: 80,
-                      right: 16,
-                      child: ChatButton(),
-                    ),
-                    const Positioned(
-                      bottom: 80,
-                      left: 16,
-                      child: AddEventButton(),
-                    ),
-                    Positioned(
-                      bottom: 16,
-                      left: 0,
-                      right: 0,
-                      child: BottomPanel(
-                        navigateToProperty: (lat, lng) =>
-                            MapCameraUtils.flyToPosition(
-                                mapboxMapController!, lat, lng),
-                      ),
-                    ),
-                    MyLocationBtn(
-                      top: MediaQuery.of(context).size.height / 2,
-                      onClick: () =>
-                          context.read<UserLocationCubit>().getPosition(),
-                    ),
-                    if (state is ShowSetCoordinates)
-                      SetCoordinates(
-                        onClick: () async {
-                          if (_mapboxMapController == null) return;
-                          final camera =
-                          await _mapboxMapController!.getCameraState();
-                          final center = camera.center;
-                          final coordinates = LatLng(
-                              center.coordinates.lat.toDouble(),
-                              center.coordinates.lng.toDouble());
-                          if (context.mounted) {
-                            context
-                                .read<PropertyFormCubit>()
-                                .setCoordinates(coordinates);
-                            context.read<HomeCubit>().goToAddPropertyStep();
+                  ],
+                  child: Stack(
+                    children: [
+                      ValueListenableBuilder<bool>(
+                        valueListenable: isMapReadyNotifier,
+                        builder: (context, isReady, child) {
+                          if (!isReady) {
+                            return const HomeLoadingOverlay();
                           }
+                          return HomeMapView(
+                            initialCameraOptions: initialCameraOptions,
+                            onMapCreated: onMapCreated,
+                            onMapTap: onMapTap,
+                            onStyleLoadedListener: (s) =>
+                                reinitializeLayersAfterThemeChange(),
+                          );
                         },
                       ),
-                  ],
-                ),
-              );
-            },
-          )),),
+                      if (showMarker) const PropertyMarker(),
+                      Positioned(
+                        top: MediaQuery.of(context).padding.top + 10,
+                        left: 16,
+                        right: 16,
+                        child: const TopPanel(),
+                      ),
+                      Positioned(
+                          bottom: MediaQuery.of(context).size.height / 4,
+                          right: 16,
+                          child: ViewSwitcher(notifier: _viewSwitcherNotifier)),
+                      const Positioned(
+                        bottom: 80,
+                        right: 16,
+                        child: ChatButton(),
+                      ),
+                      const Positioned(
+                        bottom: 80,
+                        left: 16,
+                        child: AddEventButton(),
+                      ),
+                      Positioned(
+                        bottom: 16,
+                        left: 0,
+                        right: 0,
+                        child: BottomPanel(
+                          navigateToProperty: (lat, lng) =>
+                              MapCameraUtils.flyToPosition(
+                                  mapboxMapController!, lat, lng),
+                        ),
+                      ),
+                      MyLocationBtn(
+                        top: MediaQuery.of(context).size.height / 2,
+                        onClick: () =>
+                            context.read<UserLocationCubit>().getPosition(),
+                      ),
+                      if (state is ShowSetCoordinates)
+                        SetCoordinates(
+                          onClick: () async {
+                            if (_mapboxMapController == null) return;
+                            final camera =
+                                await _mapboxMapController!.getCameraState();
+                            final center = camera.center;
+                            final coordinates = LatLng(
+                                center.coordinates.lat.toDouble(),
+                                center.coordinates.lng.toDouble());
+                            if (context.mounted) {
+                              context
+                                  .read<PropertyFormCubit>()
+                                  .setCoordinates(coordinates);
+                              context.read<HomeCubit>().goToAddPropertyStep();
+                            }
+                          },
+                        ),
+                    ],
+                  ),
+                );
+              },
+            )),
+      ),
     );
   }
 }

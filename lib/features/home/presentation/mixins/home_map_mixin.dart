@@ -9,7 +9,8 @@ import 'package:neighbours/core/cubits/user_location/user_location_cubit.dart';
 import 'package:neighbours/core/di/injection.dart';
 import 'package:neighbours/core/utils/map_camera_utils.dart';
 import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
-import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart' show EventsCubit;
+import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart'
+    show EventsCubit;
 import 'package:neighbours/features/home/data/services/event_layer_service.dart';
 import 'package:neighbours/features/home/data/services/notification_layer_service.dart';
 import 'package:neighbours/features/home/data/services/property_layer_service.dart';
@@ -170,8 +171,9 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
         if (!mounted) return;
         showModalBottomSheet(
           context: context,
-          isScrollControlled: false,
+          isScrollControlled: true,
           backgroundColor: Colors.transparent,
+          useSafeArea: true,
           // false т.к. у нас фиксированная высота
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
