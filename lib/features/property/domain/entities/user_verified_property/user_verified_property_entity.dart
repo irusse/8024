@@ -6,7 +6,7 @@ part 'user_verified_property_entity.freezed.dart';
 
 
 @freezed
-class UserVerifiedPropertyEntity with _$UserVerifiedPropertyEntity {
+abstract class UserVerifiedPropertyEntity with _$UserVerifiedPropertyEntity {
   const factory UserVerifiedPropertyEntity({
     required PropertyEntity property,
     required DateTime verifiedAt,

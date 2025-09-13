@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'unread_summary_entity.freezed.dart';
 
 @freezed
-class UnreadSummaryEntity with _$UnreadSummaryEntity {
+abstract class UnreadSummaryEntity with _$UnreadSummaryEntity {
   const factory UnreadSummaryEntity({
     required Map<int, int> count,
     required int event,

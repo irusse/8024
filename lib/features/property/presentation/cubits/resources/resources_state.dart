@@ -1,7 +1,7 @@
 part of 'resources_cubit.dart';
 
 @freezed
-class ResourcesState with _$ResourcesState {
+abstract class ResourcesState with _$ResourcesState {
   const factory ResourcesState({
     @Default([]) List<ResourceEntity> resources,
     @Default(ApiState<void>.initial()) ApiState<void> createState,

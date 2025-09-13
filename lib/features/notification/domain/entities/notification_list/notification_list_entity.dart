@@ -5,7 +5,7 @@ import '../notification/notification_entity.dart';
 part 'notification_list_entity.freezed.dart';
 
 @freezed
-class NotificationListEntity with _$NotificationListEntity {
+abstract class NotificationListEntity with _$NotificationListEntity {
   const factory NotificationListEntity({
     required List<NotificationEntity> data,
     required int unreadCount,

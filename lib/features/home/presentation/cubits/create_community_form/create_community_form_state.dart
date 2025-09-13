@@ -1,7 +1,7 @@
 part of 'create_community_form_cubit.dart';
 
 @freezed
-class CreateCommunityFormState with _$CreateCommunityFormState {
+abstract class CreateCommunityFormState with _$CreateCommunityFormState {
   const factory CreateCommunityFormState({
     String? name,
     String? nameError,

@@ -4,7 +4,7 @@ import 'package:neighbours/core/domain/entities/participant/participant_entity.d
 part 'message_entity.freezed.dart';
 
 @freezed
-class MessageEntity with _$MessageEntity {
+abstract class MessageEntity with _$MessageEntity {
   const factory MessageEntity({
     required int id,
     required String text,

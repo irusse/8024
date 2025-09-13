@@ -5,7 +5,7 @@ import 'package:neighbours/features/community/domain/entities/community/communit
 part 'user_entity.freezed.dart';
 
 @freezed
-class UserEntity with _$UserEntity implements HasName {
+abstract class UserEntity with _$UserEntity implements HasName {
   const factory UserEntity({
     required int id,
     required String firstName,

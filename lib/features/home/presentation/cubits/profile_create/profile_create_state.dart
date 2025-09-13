@@ -1,7 +1,7 @@
 part of 'profile_create_cubit.dart';
 
 @freezed
-class ProfileCreateState with _$ProfileCreateState {
+abstract class ProfileCreateState with _$ProfileCreateState {
   const factory ProfileCreateState({
     @Default('') String name,
     @Default('') String surname,

@@ -1,7 +1,7 @@
 part of 'chat_cubit.dart';
 
 @freezed
-class ChatState with _$ChatState {
+abstract class ChatState with _$ChatState {
   const factory ChatState(
       {@Default([]) List<MessageEntity> messages,
       @Default(ApiState.initial())

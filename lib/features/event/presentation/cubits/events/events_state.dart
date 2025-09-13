@@ -1,7 +1,7 @@
 part of 'events_cubit.dart';
 
 @freezed
-class EventsState with _$EventsState {
+abstract class EventsState with _$EventsState {
   const factory EventsState({
     @Default({}) Map<int, EventEntity> events,
     @Default([]) List<EventCategoryEntity> categories,

@@ -7,7 +7,7 @@ import 'package:neighbours/core/themes/theme.dart';
 part 'property_entity.freezed.dart';
 
 @freezed
-class PropertyEntity with _$PropertyEntity {
+abstract class PropertyEntity with _$PropertyEntity {
   const factory PropertyEntity({
     required int id,
     required String name,

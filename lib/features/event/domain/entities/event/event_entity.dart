@@ -9,7 +9,7 @@ import 'event_category_entity.dart';
 part 'event_entity.freezed.dart';
 
 @freezed
-class EventEntity with _$EventEntity {
+abstract class EventEntity with _$EventEntity {
   const factory EventEntity({
     required int id,
     required String title,

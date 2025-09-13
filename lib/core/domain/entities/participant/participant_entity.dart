@@ -4,7 +4,7 @@ import 'package:neighbours/core/mixins/has_name_mixin.dart';
 part 'participant_entity.freezed.dart';
 
 @freezed
-class ParticipantEntity with _$ParticipantEntity implements HasName {
+abstract class ParticipantEntity with _$ParticipantEntity implements HasName {
   const factory ParticipantEntity({
     required int id,
     required String firstName,

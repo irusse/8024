@@ -1,7 +1,7 @@
 part of 'community_cubit.dart';
 
 @freezed
-class CommunityState with _$CommunityState {
+abstract class CommunityState with _$CommunityState {
   const factory CommunityState({
     required CommunityEntity community,
     @Default([]) List<ParticipantEntity> participants,

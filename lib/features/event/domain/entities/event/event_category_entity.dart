@@ -5,7 +5,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'event_category_entity.freezed.dart';
 
 @freezed
-class EventCategoryEntity with _$EventCategoryEntity {
+abstract class EventCategoryEntity with _$EventCategoryEntity {
   const factory EventCategoryEntity({
     required int id,
     required String name,
