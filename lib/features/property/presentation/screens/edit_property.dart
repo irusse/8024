@@ -67,7 +67,7 @@ class _EditPropertyState extends State<EditProperty> {
           child: Column(
             children: [
               AspectRatio(
-                aspectRatio: 1,
+                aspectRatio: 1.4,
                 child: CenteredMapPicker(
                     initialCoordinates: propertyFormCubit.state.latitude != null
                         ? LatLng(propertyFormCubit.state.latitude!,

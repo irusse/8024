@@ -41,7 +41,6 @@ class ChatSocketDataSource {
         .disableAutoConnect()
         .setPath('/socket.io/')
         .enableReconnection()
-        .setReconnectionAttempts(5)
         .setReconnectionDelay(1000)
         .setReconnectionDelayMax(5000)
         .setTimeout(20000)

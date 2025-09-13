@@ -10,7 +10,7 @@ class CustomTextField extends StatefulWidget {
   final TextEditingController? controller;
   final String? hintText;
   final Function(String)? onChanged;
-  final EdgeInsets? padding;
+
   final bool borderVisible;
   final List<TextInputFormatter>? inputFormatters;
   final TextInputType? keyboardType;
@@ -28,7 +28,6 @@ class CustomTextField extends StatefulWidget {
   const CustomTextField(
       {super.key,
       this.hintText,
-      this.padding,
       required this.controller,
       this.onChanged,
       this.readOnly = false,
@@ -86,8 +85,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
       valueListenable: _isFocusedNotifier,
       builder: (context, isFocused, child) {
         return Container(
-          padding: widget.padding ??
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             border: widget.borderVisible
@@ -105,8 +103,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
           if (widget.prefix != null) widget.prefix!,
           Expanded(
             child: TextField(
-              onTapOutside: (event) =>
-                  FocusManager.instance.primaryFocus?.unfocus(),
+              onTapOutside: (widget.maxLines ?? 1) <= 2
+                  ? (event) => _focusNode.unfocus()
+                  : null,
               scrollController: widget.scrollController,
               autofocus: widget.autoFocus,
               onTap: widget.onTap,
@@ -119,9 +118,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
               controller: widget.controller,
               cursorColor: context.color.primary,
               style: widget.textStyle ??
-                  context.text.bodyMedium.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
+                  context.text.bodyMedium.copyWith(fontWeight: FontWeight.w500),
               keyboardType: widget.keyboardType,
               maxLines: widget.maxLines,
               inputFormatters: widget.inputFormatters ??
@@ -130,7 +127,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                       ? []
                       : null),
               decoration: InputDecoration(
-                contentPadding: EdgeInsets.zero,
+                contentPadding: const EdgeInsets.symmetric(vertical: 8),
                 counterText: widget.counterText,
                 disabledBorder: InputBorder.none,
                 border: InputBorder.none,

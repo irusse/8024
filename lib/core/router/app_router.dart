@@ -117,6 +117,7 @@ class AppRouter {
                       ),
                     ],
                     child: Community(
+                      key: UniqueKey(),
                       communityId: communityId,
                       communityEntity: communityEntity,
                     )),
@@ -270,7 +271,7 @@ class AppRouter {
             EventEntity? notificationEvent;
             double? defaultLatitude;
             double? defaultLongitude;
-            
+
             if (extra is EventEntity) {
               notificationEvent = extra;
             } else if (extra is Map<String, dynamic>) {
@@ -278,7 +279,7 @@ class AppRouter {
               defaultLatitude = extra['defaultLatitude'] as double?;
               defaultLongitude = extra['defaultLongitude'] as double?;
             }
-            
+
             return CustomPageTransition.slideFromBottom(
               key: state.pageKey,
               child: MultiBlocProvider(providers: [
@@ -287,10 +288,10 @@ class AppRouter {
                 BlocProvider.value(value: getIt<EventsCubit>()),
                 BlocProvider(
                     create: (_) => NotificationFormCubit(
-                      event: notificationEvent,
-                      defaultLatitude: defaultLatitude,
-                      defaultLongitude: defaultLongitude,
-                    )),
+                          event: notificationEvent,
+                          defaultLatitude: defaultLatitude,
+                          defaultLongitude: defaultLongitude,
+                        )),
               ], child: const NotificationForm()),
             );
           },
@@ -302,7 +303,7 @@ class AppRouter {
             EventEntity? event;
             double? defaultLatitude;
             double? defaultLongitude;
-            
+
             if (extra is EventEntity) {
               event = extra;
             } else if (extra is Map<String, dynamic>) {
@@ -310,7 +311,7 @@ class AppRouter {
               defaultLatitude = extra['defaultLatitude'] as double?;
               defaultLongitude = extra['defaultLongitude'] as double?;
             }
-            
+
             return CustomPageTransition.slideFromBottom(
               key: state.pageKey,
               child: MultiBlocProvider(providers: [
@@ -319,10 +320,10 @@ class AppRouter {
                 BlocProvider.value(value: getIt<EventsCubit>()),
                 BlocProvider(
                     create: (_) => EventFormCubit(
-                      event: event,
-                      defaultLatitude: defaultLatitude,
-                      defaultLongitude: defaultLongitude,
-                    )),
+                          event: event,
+                          defaultLatitude: defaultLatitude,
+                          defaultLongitude: defaultLongitude,
+                        )),
               ], child: const EventForm()),
             );
           },
@@ -374,6 +375,7 @@ class AppRouter {
                   ),
                 ],
                 child: PropertyDetails(
+                  key: UniqueKey(),
                   propertyId: propertyId,
                 ),
               ),

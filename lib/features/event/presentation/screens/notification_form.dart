@@ -126,7 +126,7 @@ class _NotificationFormState extends State<NotificationForm> {
             : Column(
                 children: [
                   AspectRatio(
-                    aspectRatio: 1,
+                    aspectRatio: 1.4,
                     child: CenteredMapPicker(
                         initialCoordinates:
                             notificationFormCubit.state.latitude != 0 &&

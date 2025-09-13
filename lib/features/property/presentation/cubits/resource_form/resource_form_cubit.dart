@@ -90,9 +90,7 @@ class ResourceFormCubit extends Cubit<ResourceFormState> {
   }
 
   Future<void> pickImageFromGallery() async {
-    final XFile? image = await _imageService.pickImage(
-      ImageSource.gallery,
-    );
+    final XFile? image = await _imageService.pickImage(ImageSource.gallery);
 
     if (image != null) {
       emit(state.copyWith(newPhotoFile: image));

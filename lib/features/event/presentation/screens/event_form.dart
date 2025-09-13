@@ -138,7 +138,7 @@ class _EventFormState extends State<EventForm> {
             : Column(
                 children: [
                   AspectRatio(
-                    aspectRatio: 1.2,
+                    aspectRatio: 1.4,
                     child: CenteredMapPicker(
                       initialCoordinates: eventFormCubit.state.latitude != 0 &&
                               eventFormCubit.state.longitude != 0

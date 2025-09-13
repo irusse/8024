@@ -238,7 +238,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                           LabelValueText(
                               label: 'Пользователь',
                               value: currentProperty.createdBy),
-                          const VerticalGap(8),
+                          const VerticalGap(24),
                           Container(
                             alignment: Alignment.centerLeft,
                             child: Text(
@@ -246,7 +246,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                               style: context.text.titleSmall,
                             ),
                           ),
-                          const VerticalGap(8),
+                          const VerticalGap(16),
                           PropertyResources(
                             propertyId: widget.propertyId,
                             isUserProperty: isUserProperty,
