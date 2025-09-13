@@ -23,17 +23,17 @@ dependencies:
   pretty_dio_logger: ^1.4.0
   get_it: ^8.0.3
   injectable: ^2.5.1
-  objectbox: ^2.0.0
-  objectbox_flutter_libs: ^2.0.0
+  objectbox: ^4.3.1
+  objectbox_flutter_libs: ^4.3.1
   path_provider: ^2.1.2
   intl: ^0.20.2
   injectable_generator: ^2.3.2
-  objectbox_generator: ^2.0.0
+  objectbox_generator: ^4.3.1
   mask_text_input_formatter: ^2.7.0
   image_picker: ^1.1.2
   mapbox_maps_flutter: ^2.10.0
-  freezed: ^2.5.7
-  freezed_annotation: ^2.4.4
+  freezed: ^3.2.3
+  freezed_annotation: ^3.1.0
   json_annotation: ^4.9.0
   flutter_dotenv: ^5.2.1
   flutter_secure_storage: ^9.2.4
@@ -64,7 +64,7 @@ dev_dependencies:
     sdk: flutter
   json_serializable: ^6.8.0
   flutter_lints: ^2.0.0
-  build_runner: ^2.4.15
+  build_runner: ^2.6.0
   vector_graphics_compiler: ^1.1.19
 
 flutter:
