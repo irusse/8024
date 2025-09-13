@@ -46,19 +46,15 @@ class NotificationInfoDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const VerticalGap(8),
             NotificationCard(
               event: notification,
               isClickable: false,
             ),
             const VerticalGap(8),
-            SizedBox(
-              height: 50,
-              child: LocationAddressView(
-                longitude: notification.longitude,
-                latitude: notification.latitude,
-                maxLines: 2,
-              ),
+            LocationAddressView(
+              longitude: notification.longitude,
+              latitude: notification.latitude,
+              maxLines: 1,
             ),
             const VerticalGap(16),
             _bottom(context,
@@ -67,6 +63,7 @@ class NotificationInfoDialog extends StatelessWidget {
                 isParticipant: isParticipant,
                 eventTitle: notification.title,
                 state: state),
+            const VerticalGap(8),
           ],
         );
       },

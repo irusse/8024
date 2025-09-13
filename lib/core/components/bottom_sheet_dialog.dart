@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
+import 'package:neighbours/core/components/drag_handle.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 
 class BaseBottomSheetDialog extends StatelessWidget {
@@ -48,18 +49,7 @@ class BaseBottomSheetDialog extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (showDragHandle) ...[
-            Center(
-              child: Container(
-                width: 56,
-                height: 3,
-                decoration: BoxDecoration(
-                  color: context.color.tertiary,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-          ],
+          if (showDragHandle) const DragHandle(),
           if (title != null || titleWidget != null) ...[
             Container(
               margin: const EdgeInsets.only(top: 16),

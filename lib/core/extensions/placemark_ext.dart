@@ -3,7 +3,6 @@ import 'package:geocoding/geocoding.dart';
 extension PlacemarkFormat on Placemark {
   String get title {
     final parts = [
-      locality,
       street,
       subThoroughfare,
     ].where((e) => e != null && e.isNotEmpty).toList();
