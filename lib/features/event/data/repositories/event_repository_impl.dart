@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:neighbours/core/data/datasources/event_remote_datasource.dart';
+import 'package:neighbours/features/event/data/datasources/event_remote_datasource.dart';
 import 'package:neighbours/core/error/failures.dart';
-import '../../domain/entities/event/event_category_entity.dart';
-import '../../domain/entities/event/event_entity.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_category_entity.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
 import '../../domain/repositories/event_repository.dart';
 
 @Singleton(as: EventRepository)

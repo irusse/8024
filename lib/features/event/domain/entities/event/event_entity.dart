@@ -1,8 +1,10 @@
 import 'package:collection/collection.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:neighbours/core/constants/default_constants.dart';
-import 'package:neighbours/core/domain/entities/event/event_category_entity.dart';
-import 'participant_entity.dart';
+import 'package:neighbours/core/domain/entities/participant/participant_entity.dart';
+
+import 'event_category_entity.dart';
+
 
 part 'event_entity.freezed.dart';
 

@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:neighbours/core/components/default_app_bar.dart';
 import 'package:neighbours/core/components/default_tab_bar.dart';
-import 'package:neighbours/core/cubits/events/events_cubit.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
-import 'package:neighbours/core/domain/entities/event/event_entity.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/features/community/presentation/widgets/event_card.dart';
 import 'package:neighbours/features/community/presentation/widgets/notification_card.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
+import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart';
 
 import '../../../../core/components/custom_gap.dart';
 import '../../../../core/components/date_grouped_list.dart';
-import '../../../event/presentation/widgets/default_divider.dart';
+import '../widgets/default_divider.dart';
 
 class UserEvents extends StatefulWidget {
   const UserEvents({super.key});

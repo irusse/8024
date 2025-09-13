@@ -1,20 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
+import 'package:neighbours/core/constants/notification_constants.dart';
 import 'package:neighbours/core/di/injection.dart';
-import 'package:neighbours/core/domain/entities/event/event_category_entity.dart';
-import 'package:neighbours/core/domain/entities/event/event_entity.dart';
-import 'package:neighbours/core/domain/repositories/event_repository.dart';
+import 'package:neighbours/core/state/api_state.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_category_entity.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
+import 'package:neighbours/features/event/domain/repositories/event_repository.dart';
 import 'package:neighbours/core/error/failures.dart';
 import 'package:neighbours/core/services/notification_service.dart';
 
-import '../../constants/notification_constants.dart';
-import '../../state/api_state.dart';
 
 part 'events_cubit.freezed.dart';
 

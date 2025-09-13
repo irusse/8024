@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:neighbours/core/domain/entities/event/event_entity.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_entity.dart' show EventEntity;
 import 'package:neighbours/features/home/presentation/widgets/notification_info_dialog.dart';
 
 class NotificationClusterList extends StatelessWidget {

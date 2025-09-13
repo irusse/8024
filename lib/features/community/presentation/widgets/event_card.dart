@@ -4,9 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:neighbours/core/components/icon_text_span.dart';
 import 'package:neighbours/core/components/shaped_cached_image.dart';
-import 'package:neighbours/core/domain/entities/event/event_entity.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/router/app_routes.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
 
 import '../../../../core/components/custom_gap.dart';
 

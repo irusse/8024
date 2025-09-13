@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 
 import '../../../../core/error/failures.dart';
-import '../../../../core/domain/entities/event/participant_entity.dart';
+import '../../../../core/domain/entities/participant/participant_entity.dart';
 import '../../../../core/domain/entities/user/user_entity.dart';
 import '../entities/community/community_entity.dart';
 

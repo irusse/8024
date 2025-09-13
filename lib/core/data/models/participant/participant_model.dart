@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:neighbours/core/domain/entities/event/participant_entity.dart';
-import '../../../config/app_config.dart';
-
+import 'package:neighbours/core/config/app_config.dart';
+import 'package:neighbours/core/domain/entities/participant/participant_entity.dart';
 part 'participant_model.g.dart';
 
 @JsonSerializable()

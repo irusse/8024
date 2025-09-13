@@ -1,9 +1,10 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:neighbours/core/data/models/event/event_category_model.dart';
-import 'package:neighbours/core/data/models/event/participant_model.dart';
-import 'package:neighbours/core/domain/entities/event/event_entity.dart';
-import '../../../config/app_config.dart';
-import '../../../utils/date_time_converter.dart';
+import 'package:neighbours/core/config/app_config.dart';
+import 'package:neighbours/core/utils/date_time_converter.dart';
+import 'package:neighbours/core/data/models/participant/participant_model.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
+
+import 'event_category_model.dart';
 
 part 'event_model.g.dart';
 

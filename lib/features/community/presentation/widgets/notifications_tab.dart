@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:neighbours/core/constants/ui_constants.dart';
-import 'package:neighbours/core/cubits/events/events_cubit.dart';
-import 'package:neighbours/core/domain/entities/event/event_entity.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/features/community/presentation/widgets/error_with_try_btn.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
+import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart';
 import '../../../../core/components/date_grouped_list.dart';
 import 'notification_card.dart';
 

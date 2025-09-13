@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
+import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart';
 
 import '../../../../core/components/custom_alert_dialog.dart';
 import '../../../../core/components/primary_button.dart';
-import '../../../../core/cubits/events/events_cubit.dart';
 import '../../../../core/state/api_state.dart';
 
 class ParticipateButton extends StatelessWidget {

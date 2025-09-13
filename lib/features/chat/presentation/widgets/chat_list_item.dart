@@ -6,9 +6,9 @@ import 'package:neighbours/core/components/custom_svg.dart';
 import 'package:neighbours/core/components/shaped_cached_image.dart';
 import 'package:neighbours/core/constants/ui_constants.dart';
 import 'package:neighbours/features/chat/presentation/cubits/chat/chat_cubit.dart';
-import 'package:neighbours/core/domain/entities/event/event_entity.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/router/app_routes.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
 
 class ChatListItem extends StatelessWidget {
   final EventEntity entity;

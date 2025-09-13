@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import 'package:neighbours/core/domain/entities/event/event_entity.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
 
 part 'notification_form_cubit.freezed.dart';
 

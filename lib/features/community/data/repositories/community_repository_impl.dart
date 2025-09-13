@@ -3,7 +3,7 @@ import 'package:injectable/injectable.dart';
 import 'package:neighbours/features/community/data/datasources/community_remote_datasource.dart';
 import 'package:neighbours/core/error/failures.dart';
 
-import '../../../../core/domain/entities/event/participant_entity.dart';
+import '../../../../core/domain/entities/participant/participant_entity.dart';
 import '../../../../core/domain/entities/user/user_entity.dart';
 import '../../domain/entities/community/community_entity.dart';
 import '../../domain/repositories/community_repository.dart';

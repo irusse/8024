@@ -5,9 +5,9 @@ import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/router/app_routes.dart';
 import 'package:neighbours/core/state/api_state.dart';
+import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart';
 
 import '../../../../core/constants/ui_constants.dart';
-import '../../../../core/cubits/events/events_cubit.dart';
 import 'error_with_try_btn.dart';
 import 'event_card.dart';
 

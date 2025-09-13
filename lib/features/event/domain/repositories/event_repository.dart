@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:neighbours/core/domain/entities/event/event_category_entity.dart';
-import 'package:neighbours/core/domain/entities/event/event_entity.dart';
-import '../../error/failures.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_category_entity.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
+import '../../../../core/error/failures.dart';
 
 abstract class EventRepository {
   Future<Either<Failure, EventEntity>> createNotification({

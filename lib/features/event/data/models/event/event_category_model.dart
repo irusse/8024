@@ -1,8 +1,8 @@
 import 'dart:ui';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:neighbours/core/config/app_config.dart';
-import 'package:neighbours/core/domain/entities/event/event_category_entity.dart';
 import 'package:neighbours/core/extensions/color_ext.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_category_entity.dart';
 
 part 'event_category_model.g.dart';
 

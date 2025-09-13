@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:neighbours/core/domain/entities/event/participant_entity.dart';
+import 'package:neighbours/core/domain/entities/participant/participant_entity.dart';
 
 part 'message_entity.freezed.dart';
 

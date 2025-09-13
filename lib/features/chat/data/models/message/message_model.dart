@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:neighbours/core/data/models/event/participant_model.dart';
+import 'package:neighbours/core/data/models/participant/participant_model.dart';
 import 'package:neighbours/core/utils/date_time_converter.dart';
 import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
 

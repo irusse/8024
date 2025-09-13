@@ -6,11 +6,11 @@ import 'package:injectable/injectable.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/themes/theme.dart';
+import 'package:neighbours/features/event/data/models/event/event_model.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
 import 'package:neighbours/features/home/data/services/layer_service.dart';
 
 import '../../../../core/constants/assets.dart';
-import '../../../../core/data/models/event/event_model.dart';
-import '../../../../core/domain/entities/event/event_entity.dart';
 import 'map_icon_service.dart';
 
 @injectable

@@ -5,9 +5,8 @@ import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/constants/default_constants.dart';
 import 'package:neighbours/core/error/failures.dart';
 import 'package:neighbours/core/network/network_handler.dart';
-
-import '../models/event/event_category_model.dart';
-import '../models/event/event_model.dart';
+import 'package:neighbours/features/event/data/models/event/event_category_model.dart';
+import 'package:neighbours/features/event/data/models/event/event_model.dart';
 
 abstract class EventRemoteDataSource {
   Future<Either<Failure, EventModel>> createNotification({

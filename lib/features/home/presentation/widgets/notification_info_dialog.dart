@@ -5,11 +5,11 @@ import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/components/custom_outlined_button.dart';
 import 'package:neighbours/core/components/default_loading_overlay.dart';
 import 'package:neighbours/core/components/primary_button.dart';
-import 'package:neighbours/core/cubits/events/events_cubit.dart';
-import 'package:neighbours/core/domain/entities/event/event_entity.dart';
 import 'package:neighbours/core/router/app_routes.dart';
 import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/features/community/presentation/widgets/notification_card.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
+import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart';
 import '../../../event/presentation/widgets/location_address_view.dart';
 
 class NotificationInfoDialog extends StatelessWidget {

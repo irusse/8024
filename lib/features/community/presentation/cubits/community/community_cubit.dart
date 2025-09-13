@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:neighbours/core/domain/entities/event/participant_entity.dart';
+import 'package:neighbours/core/domain/entities/participant/participant_entity.dart';
 import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/features/community/domain/entities/community/community_entity.dart';
 import 'package:neighbours/features/community/domain/repositories/community_repository.dart';

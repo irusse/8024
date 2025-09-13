@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/components/default_app_bar.dart';
 import 'package:neighbours/core/components/default_tab_bar.dart';
-import 'package:neighbours/core/cubits/events/events_cubit.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
+import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart';
 import '../widgets/chat_list_item.dart';
 
 class ChatList extends StatelessWidget {
