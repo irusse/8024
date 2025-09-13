@@ -46,4 +46,6 @@ abstract class PropertyRepository {
 
   Future<Either<Failure, List<UserVerifiedPropertyEntity>>>
       getUserVerifications();
+
+  Future<Either<Failure, PropertyEntity>> getPropertyById(int id);
 }

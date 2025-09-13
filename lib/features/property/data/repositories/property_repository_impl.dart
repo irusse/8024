@@ -133,4 +133,14 @@ class PropertyRepositoryImpl implements PropertyRepository {
           Right(modelsList.map((model) => model.toEntity()).toList()),
     );
   }
+
+  @override
+  Future<Either<Failure, PropertyEntity>> getPropertyById(int id) async {
+    final result = await _remoteDataSource.getPropertyById(id);
+
+    return result.fold(
+      (failure) => Left(failure),
+      (propertyModel) => Right(propertyModel.toEntity()),
+    );
+  }
 }

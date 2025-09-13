@@ -57,6 +57,8 @@ abstract class PropertyRemoteDataSource {
 
   Future<Either<Failure, List<UserVerifiedPropertyModel>>>
       getUserVerifications();
+
+  Future<Either<Failure, PropertyModel>> getPropertyById(int id);
 }
 
 @Singleton(as: PropertyRemoteDataSource)
@@ -258,6 +260,14 @@ class PropertyRemoteDataSourceImpl implements PropertyRemoteDataSource {
           .map((json) =>
               UserVerifiedPropertyModel.fromJson(json as Map<String, dynamic>))
           .toList();
+    });
+  }
+
+  @override
+  Future<Either<Failure, PropertyModel>> getPropertyById(int id) async {
+    return NetworkHandler.handleRequest(() async {
+      final response = await _dio.get('/properties/$id');
+      return PropertyModel.fromJson(response.data);
     });
   }
 }

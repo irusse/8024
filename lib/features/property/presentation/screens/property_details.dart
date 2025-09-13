@@ -89,6 +89,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<PropertiesCubit>().getPropertyById(widget.propertyId);
       context
           .read<ResourcesCubit>()
           .fetchResourcesByPropertyId(widget.propertyId);
@@ -138,11 +139,11 @@ class _PropertyDetailsState extends State<PropertyDetails> {
         },
         buildWhen: (prev, curr) =>
             prev.updateState.isLoading != curr.updateState.isLoading ||
-            prev.verifyState.isLoading != curr.verifyState.isLoading,
+            prev.verifyState.isLoading != curr.verifyState.isLoading ||
+            prev.fetchState.isLoading != curr.fetchState.isLoading,
         builder: (context, state) {
           final currentProperty = state.properties[widget.propertyId];
           if (currentProperty == null) {
-            // Если я сам удаляю объект → не уходим на 404
             if (!state.deleteState.isLoading && !state.deleteState.isSuccess) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (context.mounted) {

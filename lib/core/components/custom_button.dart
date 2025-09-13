@@ -68,7 +68,7 @@ class CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Opacity(
-      opacity: isEnabled && !isLoading?1:0.5,
+      opacity: isEnabled && !isLoading ? 1 : 0.5,
       child: InkWell(
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,

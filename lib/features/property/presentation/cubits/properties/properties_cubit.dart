@@ -218,4 +218,28 @@ class PropertiesCubit extends Cubit<PropertiesState> {
       },
     );
   }
+
+  Future<PropertyEntity?> getPropertyById(int id) async {
+    _resetStates();
+    emit(state.copyWith(fetchState: const ApiState.loading()));
+
+    final result = await _propertyRepository.getPropertyById(id);
+
+    return result.fold(
+      (failure) {
+        emit(state.copyWith(fetchState: ApiState.failure(failure.message)));
+        return null;
+      },
+      (property) {
+        final updatedProperties =
+            Map<int, PropertyEntity>.from(state.properties)..[id] = property;
+
+        emit(state.copyWith(
+          properties: updatedProperties,
+          fetchState: const ApiState.success(null),
+        ));
+        return property;
+      },
+    );
+  }
 }
