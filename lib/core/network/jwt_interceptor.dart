@@ -1,8 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:injectable/injectable.dart';
-import 'package:neighbours/core/router/app_router.dart';
-import 'package:neighbours/core/router/app_routes.dart';
 import 'dart:async';
 
 import '../../features/auth/data/models/verify_sms_response_model.dart';
@@ -12,8 +10,6 @@ import '../services/auth_service.dart';
 class JWTInterceptor extends Interceptor {
   final Dio _dio;
   final AuthService _authService;
-  final AppRouter _appRouter;
-
   // Защита от бесконечных циклов
   static const int _maxRefreshAttempts = 3;
   static const Duration _refreshTimeout = Duration(seconds: 10);
@@ -26,7 +22,6 @@ class JWTInterceptor extends Interceptor {
   JWTInterceptor(
     this._dio,
     this._authService,
-    this._appRouter,
   );
 
   @override
@@ -78,7 +73,7 @@ class JWTInterceptor extends Interceptor {
               await _retryRequest(err.requestOptions, newToken);
           return handler.resolve(retryResponse);
         } else {
-          // Refresh не удался, выходим из системы
+          debugPrint('[JWTInterceptor] Refresh не удался, выходим из системы');
           await _handleLogout();
           return handler.next(err);
         }
@@ -216,6 +211,6 @@ class JWTInterceptor extends Interceptor {
     debugPrint('[JWTInterceptor] Handling logout');
     reset();
     await _authService.clearTokens();
-    _appRouter.router.go(AppRoutePath.login);
+
   }
 }

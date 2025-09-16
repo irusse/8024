@@ -17,7 +17,7 @@ class MessageItem extends StatelessWidget {
     final isMyMessage = message.user.id == userId;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         mainAxisAlignment:
             isMyMessage ? MainAxisAlignment.end : MainAxisAlignment.start,

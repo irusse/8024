@@ -156,7 +156,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i361.Dio>(() => networkModule.dio);
     gh.singleton<_i941.NotificationService>(() => _i941.NotificationService());
     gh.singleton<_i928.FCMService>(() => _i928.FCMService());
-    gh.singleton<_i81.AppRouter>(() => _i81.AppRouter());
     gh.singleton<_i954.PropertyRemoteDataSource>(
         () => _i954.PropertyRemoteDataSourceImpl(gh<_i361.Dio>()));
     gh.singleton<_i93.ThemeCubit>(
@@ -231,11 +230,6 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i630.NotificationRepository>(),
           gh<_i941.NotificationService>(),
         ));
-    gh.singleton<_i260.JWTInterceptor>(() => _i260.JWTInterceptor(
-          gh<_i361.Dio>(),
-          gh<_i745.AuthService>(),
-          gh<_i81.AppRouter>(),
-        ));
     gh.singleton<_i50.ResourceRepository>(() =>
         _i41.ResourceRepositoryImpl(gh<_i129.ResourceRemoteDataSource>()));
     gh.factory<_i322.CreateCommunityFormCubit>(
@@ -245,6 +239,10 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i543.UserLocationRepository>(() =>
         _i247.UserLocationRepositoryImpl(
             gh<_i392.UserLocationLocalDataSource>()));
+    gh.singleton<_i260.JWTInterceptor>(() => _i260.JWTInterceptor(
+          gh<_i361.Dio>(),
+          gh<_i745.AuthService>(),
+        ));
     gh.singleton<_i221.VoteRepository>(
         () => _i630.VoteRepositoryImpl(gh<_i990.VoteRemoteDatasource>()));
     gh.singleton<_i791.FcmCubit>(() => _i791.FcmCubit(
@@ -259,6 +257,7 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i107.AuthRemoteDataSource>(),
           gh<_i745.AuthService>(),
         ));
+    gh.singleton<_i81.AppRouter>(() => _i81.AppRouter(gh<_i745.AuthService>()));
     gh.singleton<_i1037.ChatSocketDataSource>(
         () => _i1037.ChatSocketDataSource(gh<_i745.AuthService>()));
     gh.singleton<_i667.DioClient>(() => _i667.DioClient(

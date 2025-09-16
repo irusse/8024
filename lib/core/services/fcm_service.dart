@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/data/models/app_notification/app_notification_model.dart';
 import 'package:neighbours/core/di/injection.dart';
@@ -18,9 +19,9 @@ class FCMService {
   Future<void> init() async {
     try {
       if (_isInitialized) return;
-      print('=========================');
-      print('[FCM SERVICE] INIT');
-      print('=========================');
+      debugPrint('=========================');
+      debugPrint('[FCM SERVICE] INIT');
+      debugPrint('=========================');
       _isInitialized = true;
       await _firebaseMessaging.requestPermission();
 
@@ -57,9 +58,9 @@ class FCMService {
 
   /// Handles message received while the app is in the background
   void _onForegroundMessage(RemoteMessage message) {
-    print('=========================');
-    print('[FCM SERVICE] Foreground message received');
-    print('=========================');
+    debugPrint('=========================');
+    debugPrint('[FCM SERVICE] Foreground message received');
+    debugPrint('=========================');
     final notificationData = message.notification;
     if (notificationData != null) {
       getIt<NotificationService>().onNewNotification(message);
@@ -68,9 +69,9 @@ class FCMService {
 
   /// Handles notification taps when the app is opened from the background or terminated state
   void _onMessageOpenedApp(RemoteMessage message) {
-    print('=========================');
-    print('[FCM SERVICE] Notification caused the app to open');
-    print('=========================');
+    debugPrint('=========================');
+    debugPrint('[FCM SERVICE] Notification caused the app to open');
+    debugPrint('=========================');
     final notificationModel = AppNotificationModel.fromRemoteMessage(message);
     if (notificationModel.payload == null) return;
     final payload = getIt<NotificationService>()
@@ -81,5 +82,5 @@ class FCMService {
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print('Background message received: ${message.data.toString()}');
+  debugPrint('Background message received: ${message.data.toString()}');
 }

@@ -77,7 +77,7 @@ class NotificationService {
     final appNotificationModel =
         AppNotificationModel.fromRemoteMessage(message);
 
-    _controller.add(appNotificationModel); // пушим в поток
+    _controller.add(appNotificationModel);
 
     // показываем только "системные" уведомления сразу
     if (appNotificationModel.type != NotificationConstants.messageReceived) {

@@ -53,11 +53,13 @@ class NoCommunitiesDialog extends StatelessWidget {
     required String title,
     required Widget child,
   }) async {
-    await SheetUtils.ensureBottomSheetClosed(context);
+    final hostContext = Navigator.of(context).overlay?.context ?? context;
 
+    await SheetUtils.ensureBottomSheetClosed(context);
+    if (!hostContext.mounted) return;
     if (context.mounted) {
       showBaseBottomSheet(
-        context: context,
+        context: hostContext,
         title: title,
         isDismissible: false,
         child: MultiBlocProvider(

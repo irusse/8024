@@ -22,7 +22,7 @@ import '../cubits/profile_create/profile_create_cubit.dart';
 
 mixin StepSheetManager<T extends StatefulWidget> on State<Home> {
   MapboxMap? get mapboxMapController;
-  
+
   Future<void> showStepSheet(
     BuildContext context,
     HomeState state, {
@@ -116,7 +116,7 @@ mixin StepSheetManager<T extends StatefulWidget> on State<Home> {
       case ShowAddEvent():
         double? cameraLatitude;
         double? cameraLongitude;
-        
+
         if (mapboxMapController != null) {
           try {
             final camera = await mapboxMapController!.getCameraState();
@@ -127,16 +127,17 @@ mixin StepSheetManager<T extends StatefulWidget> on State<Home> {
             // Если не удалось получить координаты камеры, используем null
           }
         }
-        
-        return _buildStepSheet(
-          context,
-          title: 'Добавить',
-          isDismissible: true,
-          child: AddEventDialog(
-            cameraLatitude: cameraLatitude,
-            cameraLongitude: cameraLongitude,
-          ),
-        );
+        if (context.mounted) {
+          return _buildStepSheet(
+            context,
+            title: 'Добавить',
+            isDismissible: true,
+            child: AddEventDialog(
+              cameraLatitude: cameraLatitude,
+              cameraLongitude: cameraLongitude,
+            ),
+          );
+        }
       case ShowNoActiveCommunities():
         return _buildStepSheet(
           context,

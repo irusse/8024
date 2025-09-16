@@ -26,8 +26,6 @@ class JoinCommunityDialog extends StatefulWidget {
 
 class _JoinCommunityDialogState extends State<JoinCommunityDialog> {
   final _codeController = TextEditingController();
-  bool loading = false;
-  String? error;
 
   @override
   void dispose() {
@@ -84,7 +82,7 @@ class _JoinCommunityDialogState extends State<JoinCommunityDialog> {
       final newCommunity = newUser.communities.first;
       if (!mounted) return;
       context.snackbar.success(
-          context, "Вы успешно встпили в сообщество ${newCommunity.name}");
+          context, "Вы успешно вступили в сообщество ${newCommunity.name}");
 
       // Вызываем функцию для обновления данных
       widget.onDataFetchRequired?.call();
