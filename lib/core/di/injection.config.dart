@@ -127,6 +127,7 @@ import '../router/app_router.dart' as _i81;
 import '../services/auth_service.dart' as _i745;
 import '../services/fcm_service.dart' as _i928;
 import '../services/image_service.dart' as _i768;
+import '../services/internet_connection_service.dart' as _i350;
 import '../services/map_service.dart' as _i569;
 import '../services/marker_service.dart' as _i45;
 import '../services/notification_service.dart' as _i941;
@@ -156,6 +157,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i361.Dio>(() => networkModule.dio);
     gh.singleton<_i941.NotificationService>(() => _i941.NotificationService());
     gh.singleton<_i928.FCMService>(() => _i928.FCMService());
+    gh.singleton<_i350.InternetConnectionService>(
+        () => _i350.InternetConnectionService());
     gh.singleton<_i954.PropertyRemoteDataSource>(
         () => _i954.PropertyRemoteDataSourceImpl(gh<_i361.Dio>()));
     gh.singleton<_i93.ThemeCubit>(

@@ -9,6 +9,7 @@ import 'package:neighbours/core/cubits/fcm/fcm_cubit.dart';
 import 'package:neighbours/core/cubits/theme/theme_cubit.dart';
 import 'package:neighbours/core/data/models/app_notification/app_notification_model.dart';
 import 'package:neighbours/core/services/notification_service.dart';
+import 'package:neighbours/core/components/connection_wrapper.dart';
 import 'core/di/injection.dart';
 import 'core/router/app_router.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -29,7 +30,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
   await dotenv.load();
   await configureDependencies();
 
@@ -37,6 +37,7 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+
   await getIt<FcmCubit>().initFCM();
   await getIt<NotificationService>().init();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -71,7 +72,7 @@ class MyApp extends StatelessWidget {
               designSize: const Size(375, 812),
               minTextAdapt: true,
               splitScreenMode: true,
-              builder: (context, _) => child!,
+              builder: (context, _) => ConnectionWrapper(child: child!),
             );
           },
         );
