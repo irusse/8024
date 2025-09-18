@@ -6,10 +6,12 @@ import 'package:neighbours/core/components/custom_outlined_button.dart';
 import 'package:neighbours/core/components/custom_svg.dart';
 import 'package:neighbours/core/components/default_app_bar.dart';
 import 'package:neighbours/core/components/default_loading_overlay.dart';
+import 'package:neighbours/core/config/app_config.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
 import 'package:neighbours/core/cubits/user_location/user_location_cubit.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/router/app_routes.dart';
+import 'package:neighbours/core/services/share_service.dart';
 import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/core/themes/theme.dart';
 import 'package:neighbours/features/property/domain/entities/property/property_entity.dart';
@@ -55,7 +57,11 @@ class _PropertyDetailsState extends State<PropertyDetails> {
             BottomSheetOption(
                 text: 'Поделиться',
                 iconPath: Assets.icons.share,
-                onClick: () {}),
+                onClick: () {
+                  final shareLink = AppConfig.shareLink;
+                  final path = AppRouteBuilder.propertyDetails(property.id);
+                  ShareService.shareLink("$shareLink$path");
+                }),
             if (isUserProperty)
               BottomSheetOption(
                 text: 'Удалить',
@@ -147,7 +153,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
             if (!state.deleteState.isLoading && !state.deleteState.isSuccess) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (context.mounted) {
-                  context.pushReplacement(AppRoutePath.notFound,
+                  context.replace(AppRoutePath.notFound,
                       extra: DefaultConstants.propertyDeletedText);
                 }
               });

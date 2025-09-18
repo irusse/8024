@@ -3,6 +3,7 @@ import 'package:collection/collection.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
+import 'package:neighbours/core/error/failures.dart';
 import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/features/property/domain/entities/property/property_entity.dart';
 import 'package:neighbours/features/property/domain/repositories/property_repository.dart';
@@ -203,6 +204,15 @@ class PropertiesCubit extends Cubit<PropertiesState> {
 
     return result.fold(
       (failure) {
+        if (failure is NotFoundFailure) {
+          final updatedProperties =
+              Map<int, PropertyEntity>.from(state.properties)
+                ..remove(propertyId);
+          emit(state.copyWith(
+              verifyState: ApiState.failure(failure.message),
+              properties: updatedProperties));
+          return null;
+        }
         emit(state.copyWith(verifyState: ApiState.failure(failure.message)));
         return null;
       },
@@ -227,6 +237,15 @@ class PropertiesCubit extends Cubit<PropertiesState> {
 
     return result.fold(
       (failure) {
+        if (failure is NotFoundFailure) {
+          final updatedProperties =
+              Map<int, PropertyEntity>.from(state.properties)..remove(id);
+          emit(state.copyWith(
+              fetchState: ApiState.failure(failure.message),
+              properties: updatedProperties));
+          return;
+        }
+
         emit(state.copyWith(fetchState: ApiState.failure(failure.message)));
         return null;
       },

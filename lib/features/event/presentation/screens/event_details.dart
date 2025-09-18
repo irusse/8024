@@ -10,11 +10,13 @@ import 'package:neighbours/core/components/default_app_bar.dart';
 import 'package:neighbours/core/components/default_loading_overlay.dart';
 import 'package:neighbours/core/components/default_tab_bar.dart';
 import 'package:neighbours/core/components/shaped_cached_image.dart';
+import 'package:neighbours/core/config/app_config.dart';
 import 'package:neighbours/core/constants/default_constants.dart';
 import 'package:neighbours/core/constants/ui_constants.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/router/app_routes.dart';
+import 'package:neighbours/core/services/share_service.dart';
 import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
 import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart';
@@ -74,7 +76,11 @@ class _EventDetailsState extends State<EventDetails> {
         children: [
           BottomSheetOption(
             text: 'Поделиться',
-            onClick: () {},
+            onClick: () {
+              final shareLink = AppConfig.shareLink;
+              final path = AppRouteBuilder.eventDetails(event.id);
+              ShareService.shareLink("$shareLink$path");
+            },
             iconPath: Assets.icons.share,
           ),
           BottomSheetOption(

@@ -36,17 +36,11 @@ class FCMService {
     return fcmToken;
   }
 
-  // await getIt<FcmCubit>().saveFcmToken(fcmToken);
-  // _firebaseMessaging.onTokenRefresh.listen((token) async {
-  //   await getIt<FcmCubit>().saveFcmToken(token);
-  // });
-
   void reset() {
     _isInitialized = false;
   }
 
   void _initPushNotifications() {
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
     FirebaseMessaging.onMessageOpenedApp.listen(_onMessageOpenedApp);
     FirebaseMessaging.onMessage.listen(_onForegroundMessage);
     FirebaseMessaging.instance.getInitialMessage().then((message) {
@@ -78,9 +72,4 @@ class FCMService {
         .buildPayloadMap(notificationModel.payload!, notificationModel.type);
     getIt<NotificationService>().handleNotificationTap(payload);
   }
-}
-
-@pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  debugPrint('Background message received: ${message.data.toString()}');
 }

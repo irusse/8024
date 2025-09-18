@@ -1,4 +1,3 @@
-import 'package:chucker_flutter/chucker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
@@ -19,7 +18,6 @@ import 'package:neighbours/features/auth/presentation/cubits/otp/otp_cubit.dart'
 import 'package:neighbours/features/auth/presentation/pages/auth_welcome_page.dart';
 import 'package:neighbours/features/auth/presentation/pages/country_code_select.dart';
 import 'package:neighbours/features/chat/presentation/screens/chat_list.dart';
-import 'package:neighbours/features/community/domain/entities/community/community_entity.dart';
 import 'package:neighbours/features/community/presentation/cubits/community/community_cubit.dart';
 import 'package:neighbours/features/community/presentation/screens/community.dart';
 import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
@@ -86,8 +84,6 @@ class AppRouter {
 
   late final GoRouter router = GoRouter(
     refreshListenable: GoRouterRefreshStream(_authService.accessTokenStream),
-
-    // 🔒 Централизованная логика доступа
     redirect: (context, state) async {
       final token = await _authService.getValidAccessToken();
 
@@ -99,13 +95,13 @@ class AppRouter {
           _matchesPath(state, AppRoutePath.countryCodeSelect) ||
           _matchesPath(state, AppRoutePath.sms);
 
-      // 1) Нет токена → разрешаем быть на любом экране auth-флоу (и splash),
+      // Нет токена → разрешаем быть на любом экране auth-флоу (и splash),
       //    а если пользователь куда-то вне auth полез — уводим на login (или welcome, как тебе удобнее).
       if (token == null) {
         return (inAuthFlow || onSplash) ? null : AppRoutePath.login;
       }
 
-      // 2) Есть токен → не держим на splash/auth, сразу ведём на home.
+      // Есть токен → не держим на splash/auth, сразу ведём на home.
       if (onSplash || inAuthFlow) {
         return AppRoutePath.home;
       }
@@ -113,8 +109,6 @@ class AppRouter {
       // Иначе остаёмся где были
       return null;
     },
-
-    observers: [ChuckerFlutter.navigatorObserver],
     initialLocation: AppRoutePath.splash,
     routes: [
       GoRoute(
@@ -128,45 +122,6 @@ class AppRouter {
               key: state.pageKey,
               child: FullScreenMapView(
                   latitude: latLng.latitude, longitude: latLng.longitude),
-            );
-          }),
-      GoRoute(
-          path: AppRoutePath.eventDetails,
-          pageBuilder: (context, state) {
-            final eventId = state.pathParameters['eventId'] as String;
-            return CustomPageTransition.slideFromBottom(
-              key: state.pageKey,
-              child: MultiBlocProvider(providers: [
-                BlocProvider.value(value: getIt<EventsCubit>()),
-                BlocProvider.value(value: getIt<UserCubit>()),
-                BlocProvider.value(value: getIt<ChatCubit>()),
-                BlocProvider<VoteCubit>(
-                  create: (_) => getIt<VoteCubit>(),
-                ),
-              ], child: EventDetails(key: UniqueKey(), eventId: eventId)),
-            );
-          }),
-      GoRoute(
-          path: AppRoutePath.community,
-          pageBuilder: (context, state) {
-            final communityId = int.parse(state.pathParameters['communityId']!);
-            final CommunityEntity? communityEntity =
-                state.extra as CommunityEntity?;
-            return CustomPageTransition.slideFromRight(
-              key: state.pageKey,
-              child: MultiBlocProvider(
-                  providers: [
-                    BlocProvider.value(value: getIt<EventsCubit>()),
-                    BlocProvider.value(value: getIt<UserCubit>()),
-                    BlocProvider(
-                      create: (_) => getIt<CommunityCubit>(),
-                    ),
-                  ],
-                  child: Community(
-                    key: UniqueKey(),
-                    communityId: communityId,
-                    communityEntity: communityEntity,
-                  )),
             );
           }),
       GoRoute(
@@ -374,103 +329,150 @@ class AppRouter {
         },
       ),
       GoRoute(
-        path: AppRoutePath.home,
-        builder: (context, state) => MultiBlocProvider(providers: [
-          BlocProvider(create: (_) => PropertyFormCubit()),
-          BlocProvider.value(
-            value: getIt<HomeCubit>(),
-          ),
-          BlocProvider.value(
-            value: getIt<NotificationCubit>(),
-          ),
-          BlocProvider.value(value: getIt<EventsCubit>()),
-          BlocProvider.value(
-            value: getIt<UserCubit>(),
-          ),
-          BlocProvider.value(
-            value: getIt<ChatCubit>(),
-          ),
-          BlocProvider.value(
-            value: getIt<UserLocationCubit>(),
-          ),
-          BlocProvider.value(
-            value: getIt<PropertiesCubit>(),
-          ),
-        ], child: const Home()),
-      ),
-      GoRoute(
-        path: AppRoutePath.propertyDetails,
-        pageBuilder: (context, state) {
-          final propertyId = int.parse(state.pathParameters['propertyId']!);
-          return CustomPageTransition.slideFromRight(
-            key: state.pageKey,
-            child: MultiBlocProvider(
-              providers: [
-                BlocProvider.value(
-                  value: getIt<PropertiesCubit>(),
-                ),
-                BlocProvider.value(
-                  value: getIt<UserCubit>(),
-                ),
-                BlocProvider.value(
-                  value: getIt<UserLocationCubit>(),
-                ),
-                BlocProvider.value(
-                  value: getIt<ResourcesCubit>(),
-                ),
-              ],
-              child: PropertyDetails(
-                key: UniqueKey(),
-                propertyId: propertyId,
-              ),
-            ),
-          );
-        },
-        routes: [
-          GoRoute(
-            path: AppRoutePath.resourceForm,
-            pageBuilder: (context, state) {
-              final propertyId = int.parse(state.pathParameters['propertyId']!);
-              final resource = state.extra as ResourceEntity?;
-              return CustomPageTransition.slideFromRight(
-                key: state.pageKey,
-                child: MultiBlocProvider(providers: [
-                  BlocProvider(
-                    create: (_) => ResourceFormCubit(resource: resource)
-                      ..setPropertyId(propertyId),
+          path: AppRoutePath.home,
+          builder: (context, state) => MultiBlocProvider(
+                providers: [
+                  BlocProvider(create: (_) => PropertyFormCubit()),
+                  BlocProvider.value(
+                    value: getIt<HomeCubit>(),
                   ),
                   BlocProvider.value(
-                    value: getIt<ResourcesCubit>(),
-                  )
-                ], child: const ResourceForm()),
-              );
-            },
-          ),
-          GoRoute(
-            path: AppRoutePath.propertyEdit,
-            pageBuilder: (context, state) {
-              final property = state.extra as PropertyEntity?;
-              return CustomPageTransition.slideFromBottom(
-                key: state.pageKey,
-                child: MultiBlocProvider(
-                  providers: [
-                    BlocProvider(
-                      create: (_) => PropertyFormCubit(property: property),
+                    value: getIt<NotificationCubit>(),
+                  ),
+                  BlocProvider.value(value: getIt<EventsCubit>()),
+                  BlocProvider.value(
+                    value: getIt<UserCubit>(),
+                  ),
+                  BlocProvider.value(
+                    value: getIt<ChatCubit>(),
+                  ),
+                  BlocProvider.value(
+                    value: getIt<UserLocationCubit>(),
+                  ),
+                  BlocProvider.value(
+                    value: getIt<PropertiesCubit>(),
+                  ),
+                ],
+                child: const Home(),
+              ),
+          routes: [
+            GoRoute(
+                path: AppRoutePath.community,
+                pageBuilder: (context, state) {
+                  final key = state.extra is Key ? state.extra as Key : null;
+                  final communityId =
+                      int.parse(state.pathParameters['communityId']!);
+                  return CustomPageTransition.slideFromRight(
+                    key: state.pageKey,
+                    child: MultiBlocProvider(
+                        providers: [
+                          BlocProvider.value(value: getIt<EventsCubit>()),
+                          BlocProvider.value(value: getIt<UserCubit>()),
+                          BlocProvider(
+                            create: (_) => getIt<CommunityCubit>(),
+                          ),
+                        ],
+                        child: Community(
+                          key: key,
+                          communityId: communityId,
+                        )),
+                  );
+                }),
+            GoRoute(
+                path: AppRoutePath.eventDetails,
+                pageBuilder: (context, state) {
+                  final eventId = state.pathParameters['eventId'] as String;
+                  final key = state.extra is Key ? state.extra as Key : null;
+                  return CustomPageTransition.slideFromBottom(
+                    key: state.pageKey,
+                    child: MultiBlocProvider(providers: [
+                      BlocProvider.value(value: getIt<EventsCubit>()),
+                      BlocProvider.value(value: getIt<UserCubit>()),
+                      BlocProvider.value(value: getIt<ChatCubit>()),
+                      BlocProvider<VoteCubit>(
+                        create: (_) => getIt<VoteCubit>(),
+                      ),
+                    ], child: EventDetails(key: key, eventId: eventId)),
+                  );
+                }),
+            GoRoute(
+              path: AppRoutePath.propertyDetails,
+              pageBuilder: (context, state) {
+                final propertyId =
+                    int.parse(state.pathParameters['propertyId']!);
+                final key = state.extra is Key ? state.extra as Key : null;
+                return CustomPageTransition.slideFromRight(
+                  key: state.pageKey,
+                  child: MultiBlocProvider(
+                    providers: [
+                      BlocProvider.value(
+                        value: getIt<PropertiesCubit>(),
+                      ),
+                      BlocProvider.value(
+                        value: getIt<UserCubit>(),
+                      ),
+                      BlocProvider.value(
+                        value: getIt<UserLocationCubit>(),
+                      ),
+                      BlocProvider.value(
+                        value: getIt<ResourcesCubit>(),
+                      ),
+                    ],
+                    child: PropertyDetails(
+                      key: key,
+                      propertyId: propertyId,
                     ),
-                    BlocProvider.value(
-                      value: getIt<PropertiesCubit>(),
-                    ),
-                    BlocProvider.value(
-                      value: getIt<UserLocationCubit>(),
-                    ),
-                  ],
-                  child: const EditProperty(),
+                  ),
+                );
+              },
+              routes: [
+                GoRoute(
+                  path: AppRoutePath.resourceForm,
+                  pageBuilder: (context, state) {
+                    final propertyId =
+                        int.parse(state.pathParameters['propertyId']!);
+                    final resource = state.extra as ResourceEntity?;
+                    return CustomPageTransition.slideFromRight(
+                      key: state.pageKey,
+                      child: MultiBlocProvider(providers: [
+                        BlocProvider(
+                          create: (_) => ResourceFormCubit(resource: resource)
+                            ..setPropertyId(propertyId),
+                        ),
+                        BlocProvider.value(
+                          value: getIt<ResourcesCubit>(),
+                        )
+                      ], child: const ResourceForm()),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
-        ],
-      ),
+                GoRoute(
+                  path: AppRoutePath.propertyEdit,
+                  pageBuilder: (context, state) {
+                    final property = state.extra as PropertyEntity?;
+                    return CustomPageTransition.slideFromBottom(
+                      key: state.pageKey,
+                      child: MultiBlocProvider(
+                        providers: [
+                          BlocProvider(
+                            create: (_) =>
+                                PropertyFormCubit(property: property),
+                          ),
+                          BlocProvider.value(
+                            value: getIt<PropertiesCubit>(),
+                          ),
+                          BlocProvider.value(
+                            value: getIt<UserLocationCubit>(),
+                          ),
+                        ],
+                        child: const EditProperty(),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ]),
       GoRoute(
           path: AppRoutePath.profile,
           pageBuilder: (context, state) => CustomPageTransition.slideFromLeft(

@@ -1,5 +1,5 @@
-import 'package:chucker_flutter/chucker_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +7,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:neighbours/core/cubits/fcm/fcm_cubit.dart';
 import 'package:neighbours/core/cubits/theme/theme_cubit.dart';
+import 'package:neighbours/core/data/models/app_notification/app_notification_model.dart';
 import 'package:neighbours/core/services/notification_service.dart';
 import 'core/di/injection.dart';
 import 'core/router/app_router.dart';
@@ -14,6 +15,16 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'core/themes/theme.dart';
 import 'firebase_options.dart';
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  final notificationService = getIt<NotificationService>();
+  final model = AppNotificationModel.fromRemoteMessage(message);
+  await notificationService.showBasicNotification(model);
+  debugPrint('=========================');
+  debugPrint('[MAIN] Handling a background message');
+  debugPrint('=========================');
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,11 +37,9 @@ void main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  ChuckerFlutter.showOnRelease = false;
-  ChuckerFlutter.showNotification = true;
   await getIt<FcmCubit>().initFCM();
   await getIt<NotificationService>().init();
-
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(BlocProvider.value(
     value: getIt<ThemeCubit>()..loadTheme(),
     child: const MyApp(),

@@ -50,7 +50,7 @@ class ResourceItem extends StatelessWidget {
 
   Widget _showResourcePhoto(BuildContext context, String? photo) {
     return ShapedCachedImage(
-      url: resourceEntity.photo!,
+      url: resourceEntity.photo,
       isSquare: true,
       radius: 8,
     );

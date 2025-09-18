@@ -1,11 +1,12 @@
 abstract class AppRoutePath {
   static const home = '/';
+  static const eventDetails = 'event-details/:eventId';
+  static const propertyDetails = 'property-details/:propertyId';
   static const authWelcome = '/auth-welcome';
   static const splash = '/splash';
   static const login = '/login';
-  static const propertyDetails = '/property-details/:propertyId';
   static const propertyEdit = 'edit';
-  static const community = '/community/:communityId';
+  static const community = 'community/:communityId';
   static const resourceForm = 'resource-form';
   static const sms = '/sms/:phone';
   static const profile = '/profile';
@@ -16,7 +17,6 @@ abstract class AppRoutePath {
   static const unexpectedError = '/unexpected-error';
   static const notificationForm = '/notification-form';
   static const eventForm = '/event-form';
-  static const eventDetails = '/event-details/:eventId';
   static const fullMapPreview = '/full-map-preview';
   static const propertyVerifications = 'property-verifications';
   static const documentPage = 'document-page/:key';
@@ -49,14 +49,12 @@ abstract class AppRouteBuilder {
   static String propertyEdit(int propertyId) =>
       '/property-details/$propertyId/${AppRoutePath.propertyEdit}';
 
-  static String eventDetails(int eventId) =>
-      AppRoutePath.eventDetails.replaceAll(':eventId', eventId.toString());
+  static String eventDetails(int eventId) => "/event-details/$eventId";
 
   static String resourceForm(int propertyId) =>
       '/property-details/$propertyId/${AppRoutePath.resourceForm}';
 
   static String sms(String phone) => '/sms/$phone';
 
-  static String community(int communityId) =>
-      AppRoutePath.community.replaceAll(':communityId', communityId.toString());
+  static String community(int communityId) => '/community/$communityId';
 }

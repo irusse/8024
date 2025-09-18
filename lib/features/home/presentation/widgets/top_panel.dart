@@ -29,7 +29,7 @@ class TopPanel extends StatelessWidget {
     if (community == null) {
       context.read<HomeCubit>().showNoActiveCommunities();
     } else {
-      context.push(AppRouteBuilder.community(community.id), extra: community);
+      context.push(AppRouteBuilder.community(community.id));
     }
   }
 
