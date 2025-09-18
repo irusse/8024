@@ -1,7 +1,7 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:injectable_generator/utils.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/components/default_app_bar.dart';
 import 'package:neighbours/core/components/default_loading_overlay.dart';
