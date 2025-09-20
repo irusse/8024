@@ -94,7 +94,7 @@ class NotificationService {
       notification.hashCode,
       notification.title,
       notification.body,
-      _chatNotificationDetails(),
+      _notificationDetails(),
       payload:
           jsonEncode(buildPayloadMap(notification.payload!, notification.type)),
     );
@@ -106,7 +106,7 @@ class NotificationService {
     return payloadMap;
   }
 
-  NotificationDetails _chatNotificationDetails() {
+  NotificationDetails _notificationDetails() {
     return const NotificationDetails(
         android: AndroidNotificationDetails('chat_channel', 'Чат',
             channelDescription: 'Уведомления о новых сообщениях в чате',

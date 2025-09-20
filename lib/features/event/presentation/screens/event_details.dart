@@ -21,6 +21,7 @@ import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
 import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart';
 import 'package:neighbours/features/event/presentation/cubits/vote/vote_cubit.dart';
+import 'package:neighbours/features/event/presentation/services/event_share_service.dart';
 import 'package:neighbours/features/event/presentation/widgets/chat_tab.dart';
 import 'package:neighbours/features/event/presentation/widgets/default_divider.dart';
 import 'package:neighbours/features/event/presentation/widgets/event_participants_tab.dart';
@@ -76,11 +77,7 @@ class _EventDetailsState extends State<EventDetails> {
         children: [
           BottomSheetOption(
             text: 'Поделиться',
-            onClick: () {
-              final shareLink = AppConfig.shareLink;
-              final path = AppRouteBuilder.eventDetails(event.id);
-              ShareService.shareLink("$shareLink$path");
-            },
+            onClick: () => EventShareService.shareEvent(event.id),
             iconPath: Assets.icons.share,
           ),
           BottomSheetOption(

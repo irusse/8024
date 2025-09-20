@@ -19,12 +19,11 @@ import 'firebase_options.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  final notificationService = getIt<NotificationService>();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  final notificationService = NotificationService()..init();
+
   final model = AppNotificationModel.fromRemoteMessage(message);
   await notificationService.showBasicNotification(model);
-  debugPrint('=========================');
-  debugPrint('[MAIN] Handling a background message');
-  debugPrint('=========================');
 }
 
 void main() async {

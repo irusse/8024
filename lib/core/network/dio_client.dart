@@ -1,8 +1,9 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/network/jwt_interceptor.dart';
-import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:talker_dio_logger/talker_dio_logger_interceptor.dart';
+import 'package:talker_dio_logger/talker_dio_logger_settings.dart';
 import '../config/app_config.dart';
 
 @module
@@ -29,15 +30,15 @@ class DioClient {
 
   DioClient(this._dio, this._jwtInterceptor) {
     _dio.interceptors.addAll([
-      PrettyDioLogger(
-        requestHeader: true,
-        requestBody: true,
-        responseBody: true,
-        responseHeader: true,
-        error: true,
-        compact: true,
-        maxWidth: 80,
-        logPrint: (obj) => debugPrint(obj.toString()),
+
+      TalkerDioLogger(
+        settings: const TalkerDioLoggerSettings(
+          printRequestHeaders: true,
+          printResponseHeaders: true,
+          enabled: kDebugMode,
+          printResponseMessage: true,
+          printResponseTime: true,
+        ),
       ),
       _jwtInterceptor,
     ]);

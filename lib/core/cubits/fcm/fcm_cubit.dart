@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
@@ -14,18 +16,23 @@ part 'fcm_state.dart';
 class FcmCubit extends Cubit<FcmState> {
   final FCMService _fcmService;
   final PushRepository _pushRepository;
+  StreamSubscription<String>? _tokenSub;
 
   FcmCubit(this._pushRepository, this._fcmService) : super(const FcmState());
 
   Future<void> initFCM() async {
     await _fcmService.init();
+    _tokenSub ??= _fcmService.onTokenRefresh.listen((token) async {
+      await saveFcmToken(token);
+    });
   }
 
-  Future<void> saveFcmToken() async {
+  Future<void> saveFcmToken([String? token]) async {
     _reset();
-    final token = await _fcmService.getToken();
-    if (token == null) return;
-    final result = await _pushRepository.saveFcmToken(token);
+    final fcmToken = token ?? await _fcmService.getToken();
+    if (fcmToken == null) return;
+
+    final result = await _pushRepository.saveFcmToken(fcmToken);
     result.fold(
         (failure) => emit(state.copyWith(
               updateTokenState: ApiState.failure(failure.message),
@@ -68,6 +75,8 @@ class FcmCubit extends Cubit<FcmState> {
 
   void onLogout() {
     _fcmService.reset();
+    _tokenSub?.cancel();
+    _tokenSub = null;
   }
 
   /// Сброс состояний

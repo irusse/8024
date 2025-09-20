@@ -318,20 +318,20 @@ class _HomeState extends State<Home>
                   ),
                   Positioned(
                       bottom: MediaQuery.of(context).size.height / 4,
-                      right: 16,
+                      right: 8,
                       child: ViewSwitcher(notifier: _viewSwitcherNotifier)),
-                  const Positioned(
-                    bottom: 80,
-                    right: 16,
+                  Positioned(
+                    bottom: MediaQuery.of(context).padding.bottom + 80,
+                    right: 8,
                     child: ChatButton(),
                   ),
-                  const Positioned(
-                    bottom: 80,
-                    left: 16,
+                  Positioned(
+                    bottom: MediaQuery.of(context).padding.bottom + 80,
+                    left: 8,
                     child: AddEventButton(),
                   ),
                   Positioned(
-                    bottom: 16,
+                    bottom: MediaQuery.of(context).padding.bottom + 16,
                     left: 0,
                     right: 0,
                     child: BottomPanel(
@@ -341,7 +341,7 @@ class _HomeState extends State<Home>
                     ),
                   ),
                   MyLocationBtn(
-                    top: MediaQuery.of(context).size.height / 2,
+                     bottom: MediaQuery.of(context).size.height / 2.5,
                     onClick: () =>
                         context.read<UserLocationCubit>().getPosition(),
                   ),

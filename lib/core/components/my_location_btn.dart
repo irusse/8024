@@ -16,7 +16,7 @@ class MyLocationBtn extends StatelessWidget {
   Widget build(BuildContext context) {
     return Positioned(
       top: top,
-      right: 10,
+      right: 8,
       bottom: bottom,
       child: CustomButton(
         width: 48,

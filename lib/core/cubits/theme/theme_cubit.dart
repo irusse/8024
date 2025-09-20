@@ -10,10 +10,10 @@ class ThemeCubit extends Cubit<ThemeState> {
   static const _themeKey = 'is_dark';
   final SharedPreferences _prefs;
 
-  ThemeCubit(this._prefs) : super(ThemeState(false));
+  ThemeCubit(this._prefs) : super(ThemeState(true));
 
   void loadTheme() {
-    final isDark = _prefs.getBool(_themeKey) ?? false;
+    final isDark = _prefs.getBool(_themeKey) ?? true;
     emit(ThemeState(isDark));
   }
 

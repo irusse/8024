@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
+import 'package:neighbours/core/extensions/color_ext.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
 
@@ -15,13 +16,12 @@ class MessageItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isMyMessage = message.user.id == userId;
-
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         mainAxisAlignment:
             isMyMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!isMyMessage) ...[
             DefaultCircleAvatar(
@@ -31,59 +31,68 @@ class MessageItem extends StatelessWidget {
               textStyle: context.text.labelLarge.copyWith(
                 fontWeight: FontWeight.w500,
               ),
-              radius: 16,
+              radius: 18,
             ),
             const HorizontalGap(8),
           ],
           Flexible(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
+            child: Padding(
+              padding: EdgeInsets.only(
+                left: isMyMessage ? 40 : 0,
+                right: isMyMessage ? 0 : 40,
+              ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: isMyMessage
+                      ? context.color.primary
+                      : context.color.secondary,
+                  borderRadius: BorderRadius.only(
+                    topLeft: const Radius.circular(16),
+                    topRight: const Radius.circular(16),
+                    bottomLeft:
+                        isMyMessage ? const Radius.circular(16) : Radius.zero,
+                    bottomRight:
+                        isMyMessage ? Radius.zero : const Radius.circular(16),
                   ),
-                  decoration: BoxDecoration(
-                    color: isMyMessage
-                        ? context.color.primary
-                        : context.color.secondary,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (!isMyMessage) ...[
                       Text(
-                        message.text,
-                        style: context.text.bodyMedium
-                            .copyWith(color: isMyMessage ? Colors.white : null),
-                      ),
-                      const VerticalGap(4),
-                      Text(
-                        DateFormat("HH:mm").format(message.createdAt),
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: isMyMessage
-                              ? Colors.white.withValues(alpha: 0.7)
-                              : Colors.grey,
+                        message.user.fullName,
+                        style: context.text.bodySmall.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: ColorExtension.byIndex(message.userId),
                         ),
                       ),
                     ],
-                  ),
+                    Text(
+                      message.text,
+                      style: context.text.bodyMedium.copyWith(
+                        color: isMyMessage ? Colors.white : null,
+                      ),
+                    ),
+                    const VerticalGap(4),
+                    Text(
+                      DateFormat("HH:mm").format(message.createdAt),
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: isMyMessage
+                            ? Colors.white.withValues(alpha: 0.7)
+                            : Colors.grey,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
-          if (isMyMessage) ...[
-            const SizedBox(width: 8),
-            DefaultCircleAvatar(
-                id: message.userId,
-                name: "Я",
-                url: message.user.avatar,
-                radius: 16,
-                textStyle: context.text.labelLarge
-                    .copyWith(fontWeight: FontWeight.w500))
-          ],
         ],
       ),
     );

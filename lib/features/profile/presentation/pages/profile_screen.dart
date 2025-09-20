@@ -73,6 +73,7 @@ class ProfileScreen extends StatelessWidget {
             logoutSuccess: () async {
               context.read<PropertiesCubit>().onLogout();
               context.read<EventsCubit>().onLogout();
+              context.read<UserCubit>().onLogout();
               context.read<NotificationCubit>().onLogout();
               getIt<FcmCubit>().onLogout();
               context.go(AppRoutePath.authWelcome);

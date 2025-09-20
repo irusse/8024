@@ -110,7 +110,6 @@ mixin HomeInitializationMixin<T extends StatefulWidget> on State<Home> {
         getIt<FcmCubit>().saveFcmToken();
 
         notificationCubit.fetchUnreadCount();
-
       }
       final community = userCubit.state.user.communities.firstOrNull;
 

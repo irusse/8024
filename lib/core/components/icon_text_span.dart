@@ -10,17 +10,18 @@ class IconTextSpan extends StatelessWidget {
   final TextStyle? textStyle;
   final String? iconPath;
   final int maxLines;
-  const IconTextSpan({
-    super.key,
-    required this.text,
-    required this.iconColor,
-    required this.textStyle,
-    this.iconPath,
-    this.icon,
-    this.iconSize = 24,
-    this.spacing = 4,
-    this.maxLines = 2
-  }) : assert(
+
+  const IconTextSpan(
+      {super.key,
+      required this.text,
+      required this.iconColor,
+      required this.textStyle,
+      this.iconPath,
+      this.icon,
+      this.iconSize = 24,
+      this.spacing = 4,
+      this.maxLines = 2})
+      : assert(
           icon != null || iconPath != null,
           'Either `icon` or `iconPath` must be provided.',
         );

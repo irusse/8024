@@ -17,6 +17,7 @@ import 'package:neighbours/core/themes/theme.dart';
 import 'package:neighbours/features/property/domain/entities/property/property_entity.dart';
 import 'package:neighbours/features/property/presentation/cubits/properties/properties_cubit.dart';
 import 'package:neighbours/features/property/presentation/cubits/resources/resources_cubit.dart';
+import 'package:neighbours/features/property/presentation/services/property_share_service.dart';
 import 'package:neighbours/features/property/presentation/widgets/property_resources.dart';
 import '../../../../core/components/bottom_sheet_dialog.dart';
 import '../../../../core/components/bottom_sheet_option.dart';
@@ -57,11 +58,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
             BottomSheetOption(
                 text: 'Поделиться',
                 iconPath: Assets.icons.share,
-                onClick: () {
-                  final shareLink = AppConfig.shareLink;
-                  final path = AppRouteBuilder.propertyDetails(property.id);
-                  ShareService.shareLink("$shareLink$path");
-                }),
+                onClick: () => PropertyShareService.shareProperty(property.id)),
             if (isUserProperty)
               BottomSheetOption(
                 text: 'Удалить',

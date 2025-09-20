@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:neighbours/core/components/shaped_cached_image.dart';
+import 'package:neighbours/core/extensions/color_ext.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 
 class DefaultCircleAvatar extends StatelessWidget {
@@ -23,7 +24,7 @@ class DefaultCircleAvatar extends StatelessWidget {
       return CircleAvatar(
         radius: radius,
         backgroundColor:
-            id != null ? _getUserColor(id!) : context.color.tertiary,
+            id != null ? ColorExtension.byIndex(id!) : context.color.tertiary,
         child: Text(
           name.isNotEmpty ? name[0].toUpperCase() : '?',
           style: textStyle.copyWith(
@@ -37,10 +38,5 @@ class DefaultCircleAvatar extends StatelessWidget {
       url: url,
       radius: radius,
     );
-  }
-
-  Color _getUserColor(int id) {
-    const colors = Colors.primaries;
-    return colors[id % colors.length];
   }
 }

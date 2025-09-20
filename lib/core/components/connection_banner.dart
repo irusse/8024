@@ -3,6 +3,8 @@ import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'dart:async';
 
+import 'package:neighbours/core/themes/theme.dart';
+
 class ConnectionBanner extends StatefulWidget {
   final bool isConnected;
 
@@ -25,26 +27,20 @@ class _ConnectionBannerState extends State<ConnectionBanner> {
   @override
   void didUpdateWidget(ConnectionBanner oldWidget) {
     super.didUpdateWidget(oldWidget);
-
-    if (widget.isConnected != wasConnected) {
-      if (!widget.isConnected) {
-        _showBanner(
-          "Интернет соединение прервано.\nВключен автономный режим",
-          context.color.basicRed,
-          persistent: true,
-        );
-      } else {
-        _showBanner(
-          "Соединение восстановлено",
-          Colors.green,
-          persistent: false,
-        );
-      }
-      wasConnected = widget.isConnected;
+    if (!widget.isConnected) {
+      _showBanner(
+        "Интернет соединение прервано.\nВключен автономный режим",
+        context.color.secondary,
+      );
+    } else {
+      _showBanner(
+        "Соединение восстановлено",
+        CommonModeColors.green,
+      );
     }
   }
 
-  void _showBanner(String text, Color bgColor, {required bool persistent}) {
+  void _showBanner(String text, Color bgColor) {
     _timer?.cancel();
     setState(() {
       message = text;
@@ -52,13 +48,12 @@ class _ConnectionBannerState extends State<ConnectionBanner> {
       showBanner = true;
     });
 
-    if (!persistent) {
-      _timer = Timer(const Duration(seconds: 3), () {
-        if (mounted) {
-          setState(() => showBanner = false);
-        }
-      });
-    }
+    // даже если persistent == true → запускаем таймер
+    _timer = Timer(const Duration(seconds: 3), () {
+      if (mounted) {
+        setState(() => showBanner = false);
+      }
+    });
   }
 
   @override
@@ -71,15 +66,20 @@ class _ConnectionBannerState extends State<ConnectionBanner> {
   Widget build(BuildContext context) {
     final paddingTop = MediaQuery.of(context).padding.top + 8;
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      height: showBanner ? paddingTop + 56 : 0, // плавная высота
-      curve: Curves.easeInOut,
-      child: AnimatedOpacity(
-        opacity: showBanner ? 1.0 : 0.0,
-        duration: const Duration(milliseconds: 200),
+    if (!showBanner) return const SizedBox.shrink();
+
+    return Dismissible(
+      key: const ValueKey("connection_banner"),
+      direction: DismissDirection.up,
+      onDismissed: (_) {
+        setState(() => showBanner = false);
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+        height: paddingTop + 56,
         child: Material(
-          elevation: 4,
+          elevation: 2,
           child: Container(
             width: double.infinity,
             padding: EdgeInsets.only(

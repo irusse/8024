@@ -17,30 +17,29 @@ class ConnectionWrapper extends StatefulWidget {
 
 class _ConnectionWrapperState extends State<ConnectionWrapper> {
   late final InternetConnectionService _connectionService;
-  late final ValueNotifier<bool> _internetState;
 
   @override
   void initState() {
     super.initState();
     _connectionService = getIt<InternetConnectionService>();
-    _internetState = _connectionService.internetState;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
+      body: Stack(
         children: [
-          ValueListenableBuilder<bool>(
-            valueListenable: _internetState,
-            builder: (context, isConnected, _) {
-              return ConnectionBanner(
-                isConnected: isConnected,
+          widget.child,
+          StreamBuilder<bool?>(
+            stream: _connectionService.onStatusChange,
+            builder: (context, snapshot) {
+              if (snapshot.data == null) return SizedBox.shrink();
+              final isConnected = snapshot.data as bool;
+              return Align(
+                alignment: Alignment.topCenter,
+                child: ConnectionBanner(isConnected: isConnected),
               );
             },
-          ),
-          Expanded(
-            child: widget.child,
           ),
         ],
       ),

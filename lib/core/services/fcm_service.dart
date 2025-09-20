@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/data/models/app_notification/app_notification_model.dart';
 import 'package:neighbours/core/di/injection.dart';
+import 'package:neighbours/core/logging/logger.dart';
 import 'package:neighbours/core/services/notification_service.dart';
 
 @singleton
@@ -15,17 +15,24 @@ class FCMService {
   final _tokenController = StreamController<String>.broadcast();
 
   Stream<String> get onTokenRefresh => _tokenController.stream;
+  final String _tag = "FCM SERVICE";
 
   Future<void> init() async {
     try {
       if (_isInitialized) return;
-      debugPrint('=========================');
-      debugPrint('[FCM SERVICE] INIT');
-      debugPrint('=========================');
+      AppLogger.info("INITIALIZING", tag: _tag);
       _isInitialized = true;
       await _firebaseMessaging.requestPermission();
-
       _initPushNotifications();
+
+      final token = await _firebaseMessaging.getToken();
+      if (token != null) {
+        _tokenController.add(token);
+      }
+      FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+        AppLogger.debug("TOKEN REFRESHED", tag: _tag);
+        _tokenController.add(newToken);
+      });
     } catch (err) {
       _isInitialized = false;
     }
@@ -52,9 +59,7 @@ class FCMService {
 
   /// Handles message received while the app is in the background
   void _onForegroundMessage(RemoteMessage message) {
-    debugPrint('=========================');
-    debugPrint('[FCM SERVICE] Foreground message received');
-    debugPrint('=========================');
+    AppLogger.info("New Foreground message", tag: _tag);
     final notificationData = message.notification;
     if (notificationData != null) {
       getIt<NotificationService>().onNewNotification(message);
@@ -63,9 +68,7 @@ class FCMService {
 
   /// Handles notification taps when the app is opened from the background or terminated state
   void _onMessageOpenedApp(RemoteMessage message) {
-    debugPrint('=========================');
-    debugPrint('[FCM SERVICE] Notification caused the app to open');
-    debugPrint('=========================');
+    AppLogger.info("Notification tapped", tag: _tag);
     final notificationModel = AppNotificationModel.fromRemoteMessage(message);
     if (notificationModel.payload == null) return;
     final payload = getIt<NotificationService>()
