@@ -9,7 +9,7 @@ import 'package:neighbours/features/home/presentation/pages/home.dart';
 import 'package:neighbours/features/home/presentation/widgets/add_event_dialog.dart';
 import 'package:neighbours/features/home/presentation/widgets/auth_address_dialog.dart';
 import 'package:neighbours/features/home/presentation/widgets/no_communities_dialog.dart';
-import 'package:neighbours/features/home/presentation/widgets/profile_dialog.dart';
+import 'package:neighbours/features/profile/presentation/widgets/profile_dialog.dart';
 import 'package:neighbours/features/home/presentation/widgets/add_property_dialog.dart';
 import 'package:neighbours/core/components/bottom_sheet_dialog.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
@@ -17,8 +17,8 @@ import 'package:neighbours/features/property/presentation/cubits/properties/prop
 import 'package:neighbours/features/property/presentation/cubits/property_form/property_form_cubit.dart';
 
 import '../../../../core/utils/sheet_utils.dart';
+import '../../../profile/presentation/cubits/profile_create/profile_create_cubit.dart';
 import '../cubits/home/home_cubit.dart';
-import '../cubits/profile_create/profile_create_cubit.dart';
 
 mixin StepSheetManager<T extends StatefulWidget> on State<Home> {
   MapboxMap? get mapboxMapController;

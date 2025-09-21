@@ -5,8 +5,6 @@ import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/error/failures.dart';
 import 'package:neighbours/core/network/network_handler.dart';
 
-import '../../../../core/data/models/user/user_model.dart';
-
 abstract class HomeRemoteDataSource {
   Future<Either<Failure, int>> getRegistrationStep();
 
@@ -14,13 +12,6 @@ abstract class HomeRemoteDataSource {
     required double latitude,
     required double longitude,
     required String address,
-  });
-
-  Future<Either<Failure, UserModel>> submitProfile({
-    required String name,
-    required String surname,
-    required String email,
-    XFile? image,
   });
 
   Future<Either<Failure, bool>> submitProperty({
@@ -64,37 +55,6 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
         },
       );
       return response.statusCode == 201;
-    });
-  }
-
-  @override
-  Future<Either<Failure, UserModel>> submitProfile({
-    required String name,
-    required String surname,
-    required String email,
-    XFile? image,
-  }) async {
-    return NetworkHandler.handleRequest(() async {
-      final formData = FormData.fromMap({
-        'firstName': name.trim(),
-        if (surname.trim().isNotEmpty) 'lastName': surname.trim(),
-        if (email.trim().isNotEmpty) 'email': email.trim(),
-        if (image != null)
-          'avatar':
-              await MultipartFile.fromFile(image.path, filename: image.name),
-      });
-
-      final response = await _dio.post(
-        '/users/registration/step-two',
-        data: formData,
-      );
-
-      if (response.statusCode == 201) {
-        final userResponse = await _dio.get('/users/me');
-        return UserModel.fromJson(userResponse.data);
-      } else {
-        throw Exception('Ошибка при создании пользователя');
-      }
     });
   }
 

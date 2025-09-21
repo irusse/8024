@@ -70,8 +70,6 @@ import '../../features/home/presentation/cubits/auth_location/auth_location_cubi
 import '../../features/home/presentation/cubits/community_access_form/community_access_cubit.dart'
     as _i294;
 import '../../features/home/presentation/cubits/home/home_cubit.dart' as _i715;
-import '../../features/home/presentation/cubits/profile_create/profile_create_cubit.dart'
-    as _i1041;
 import '../../features/notification/data/datasources/notification_remote_datasource.dart'
     as _i227;
 import '../../features/notification/data/repositories/notification_repository_impl.dart'
@@ -90,6 +88,8 @@ import '../../features/profile/presentation/cubits/document/document_cubit.dart'
     as _i936;
 import '../../features/profile/presentation/cubits/profile/profile_cubit.dart'
     as _i470;
+import '../../features/profile/presentation/cubits/profile_create/profile_create_cubit.dart'
+    as _i245;
 import '../../features/profile/presentation/cubits/user_verified_properties/user_verified_properties_cubit.dart'
     as _i526;
 import '../../features/property/data/datasources/property_remote_datasource.dart'
@@ -123,6 +123,13 @@ import '../domain/repositories/user_location_repository.dart' as _i543;
 import '../domain/repositories/user_repository.dart' as _i544;
 import '../network/dio_client.dart' as _i667;
 import '../network/jwt_interceptor.dart' as _i260;
+import '../notifications/handlers/event_created_handler.dart' as _i1044;
+import '../notifications/handlers/event_joined_handler.dart' as _i643;
+import '../notifications/handlers/event_left_handler.dart' as _i636;
+import '../notifications/handlers/message_received_handler.dart' as _i89;
+import '../notifications/handlers/property_verified_handler.dart' as _i536;
+import '../notifications/handlers/user_joined_community_handler.dart' as _i630;
+import '../notifications/notification_handler.dart' as _i111;
 import '../router/app_router.dart' as _i81;
 import '../services/auth_service.dart' as _i745;
 import '../services/fcm_service.dart' as _i928;
@@ -153,6 +160,7 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i485.MapIconService>(() => _i485.MapIconService());
     gh.factory<_i294.CommunityAccessCubit>(() => _i294.CommunityAccessCubit());
+    gh.factory<_i245.ProfileCreateCubit>(() => _i245.ProfileCreateCubit());
     gh.singleton<_i558.FlutterSecureStorage>(
         () => registerModule.secureStorage);
     gh.singleton<_i361.Dio>(() => networkModule.dio);
@@ -164,6 +172,10 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i954.PropertyRemoteDataSourceImpl(gh<_i361.Dio>()));
     gh.singleton<_i93.ThemeCubit>(
         () => _i93.ThemeCubit(gh<_i460.SharedPreferences>()));
+    gh.singleton<_i111.NotificationHandler>(
+      () => _i1044.EventCreatedHandler(),
+      instanceName: 'EVENT_CREATED',
+    );
     gh.factory<_i166.PropertyLayerService>(
         () => _i166.PropertyLayerService(gh<_i485.MapIconService>()));
     gh.factory<_i835.NotificationLayerService>(
@@ -171,7 +183,15 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i346.EventLayerService>(
         () => _i346.EventLayerService(gh<_i485.MapIconService>()));
     gh.lazySingleton<_i569.MapService>(() => _i569.MapboxService());
+    gh.singleton<_i111.NotificationHandler>(
+      () => _i536.PropertyVerifiedHandler(),
+      instanceName: 'PROPERTY_VERIFIED',
+    );
     gh.singleton<_i768.ImageService>(() => _i768.ImageServiceImpl());
+    gh.singleton<_i111.NotificationHandler>(
+      () => _i630.UserJoinedCommunityHandler(),
+      instanceName: 'USER_JOINED_COMMUNITY',
+    );
     gh.singleton<_i278.HomeRemoteDataSource>(
         () => _i278.HomeRemoteDataSourceImpl(gh<_i361.Dio>()));
     gh.singleton<_i129.ResourceRemoteDataSource>(
@@ -185,8 +205,16 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i227.NotificationRemoteDataSourceImpl(gh<_i361.Dio>()));
     gh.singleton<_i159.ChatRemoteDataSource>(
         () => _i159.ChatRemoteDataSourceImpl(gh<_i361.Dio>()));
+    gh.singleton<_i111.NotificationHandler>(
+      () => _i89.MessageReceivedHandler(),
+      instanceName: 'MESSAGE_RECEIVED',
+    );
     gh.singleton<_i990.VoteRemoteDatasource>(
         () => _i990.VoteRemoteDatasourceImpl(gh<_i361.Dio>()));
+    gh.singleton<_i111.NotificationHandler>(
+      () => _i643.EventJoinedHandler(),
+      instanceName: 'USER_JOINED_EVENT',
+    );
     gh.singleton<_i609.DocumentDataSource>(
         () => _i609.DocumentDataSourceImpl(gh<_i361.Dio>()));
     gh.singleton<_i107.AuthRemoteDataSource>(
@@ -195,6 +223,10 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i1041.PushRepositoryImpl(gh<_i189.PushRemoteDataSource>()));
     gh.singleton<_i698.EventRemoteDataSource>(
         () => _i698.EventRemoteDataSourceImpl(gh<_i361.Dio>()));
+    gh.singleton<_i111.NotificationHandler>(
+      () => _i636.EventLeftHandler(),
+      instanceName: 'USER_LEFT_EVENT',
+    );
     gh.singleton<_i630.NotificationRepository>(() =>
         _i407.NotificationRepositoryImpl(
             gh<_i227.NotificationRemoteDataSource>()));
@@ -224,8 +256,6 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i468.PropertiesCubit(gh<_i61.PropertyRepository>()));
     gh.singleton<_i544.UserRepository>(
         () => _i223.UserRepositoryImpl(gh<_i293.UserRemoteDataSource>()));
-    gh.factory<_i1041.ProfileCreateCubit>(
-        () => _i1041.ProfileCreateCubit(gh<_i0.HomeRepository>()));
     gh.factory<_i1037.AuthLocationCubit>(
         () => _i1037.AuthLocationCubit(gh<_i0.HomeRepository>()));
     gh.singleton<_i715.HomeCubit>(

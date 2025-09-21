@@ -5,6 +5,7 @@ abstract class UserState with _$UserState {
   const factory UserState({
     required UserEntity user,
     @Default(ApiState<void>.initial()) ApiState<void> fetchState,
+    @Default(ApiState<void>.initial()) ApiState<void> createState,
     @Default(ApiState<void>.initial()) ApiState<void> updateState,
     @Default(ApiState<SmsResponseEntity>.initial())
     ApiState<SmsResponseEntity> requestProfileDeletion,

@@ -6,10 +6,10 @@ import 'package:neighbours/core/components/primary_button.dart';
 import 'package:neighbours/core/components/custom_label.dart';
 import 'package:neighbours/core/components/reusable_text_field.dart';
 import 'package:neighbours/core/services/snackbar_service.dart';
+import 'package:neighbours/core/state/api_state.dart';
+import 'package:neighbours/features/profile/presentation/cubits/profile_create/profile_create_cubit.dart';
 import '../../../../core/cubits/user/user_cubit.dart';
 import 'dart:io';
-
-import '../cubits/profile_create/profile_create_cubit.dart';
 
 class ProfileDialog extends StatefulWidget {
   final VoidCallback onSuccess;
@@ -35,19 +35,17 @@ class _ProfileDialogState extends State<ProfileDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final isSubmitting =
-        context.select((ProfileCreateCubit cubit) => cubit.state.isSubmitting);
+    final isSubmitting = context
+        .select<UserCubit, bool>((cubit) => cubit.state.createState.isLoading);
     final image =
         context.select((ProfileCreateCubit cubit) => cubit.state.image);
     final cubit = context.read<ProfileCreateCubit>();
-    return BlocListener<ProfileCreateCubit, ProfileCreateState>(
+    return BlocListener<UserCubit, UserState>(
       listener: (context, state) {
-        if (state.isSubmittedSuccessfully) {
-          widget.onSuccess();
-        } else if (state.submitError != null) {
-          context.snackbar.error(context, state.submitError!,
-              position: SnackBarPosition.top);
-        }
+        state.createState.handleApiState(
+            onSuccess: () => widget.onSuccess(),
+            onError: (error) => context.snackbar
+                .error(context, error, position: SnackBarPosition.top));
       },
       child: SingleChildScrollView(
         child: Column(
@@ -158,10 +156,11 @@ class _ProfileDialogState extends State<ProfileDialog> {
                       context.read<ProfileCreateCubit>().validateAllFields(),
                   isLoading: isSubmitting,
                   onPressed: () async {
-                    final newUser = await cubit.submit();
-                    if (newUser != null && context.mounted) {
-                      context.read<UserCubit>().setUser(newUser);
-                    }
+                    await context.read<UserCubit>().createProfile(
+                        name: state.name,
+                        surname: state.surname,
+                        email: state.email,
+                        image: state.image);
                   },
                 );
               },

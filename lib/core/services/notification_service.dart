@@ -8,9 +8,7 @@ import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/constants/notification_constants.dart';
 import 'package:neighbours/core/data/models/app_notification/app_notification_model.dart';
 import 'package:neighbours/core/di/injection.dart';
-import 'package:neighbours/core/extensions/router_ext.dart';
-import 'package:neighbours/core/router/app_router.dart';
-import 'package:neighbours/core/router/app_routes.dart';
+import '../notifications/notification_handler.dart';
 
 @singleton
 class NotificationService {
@@ -121,49 +119,10 @@ class NotificationService {
   }
 
   void handleNotificationTap(Map<String, dynamic> payload) {
-    final type = payload["type"]!;
-    switch (type) {
-      case NotificationConstants.messageReceived:
-        {
-          int? eventId = payload['eventId'];
-          if (eventId == null) return;
-          getIt<AppRouter>().router.navigateUnique(
-              AppRouteBuilder.chatPage(eventId, payload['eventTitle']));
+    final type = payload["type"];
+    if (type == null) return;
 
-          break;
-        }
-      case NotificationConstants.userJoinedCommunity:
-        {
-          int? communityId = payload['communityId'];
-          if (communityId == null) return;
-          getIt<AppRouter>()
-              .router
-              .navigateUnique(AppRouteBuilder.community(communityId));
-          break;
-        }
-      case NotificationConstants.propertyVerified:
-        {
-          int? propertyId = payload['propertyId'];
-          if (propertyId == null) return;
-
-          getIt<AppRouter>()
-              .router
-              .navigateUnique(AppRouteBuilder.propertyDetails(propertyId));
-
-          break;
-        }
-      case NotificationConstants.eventCreated:
-      case NotificationConstants.userLeftEvent:
-      case NotificationConstants.userJoinedEvent:
-        {
-          int? eventId = payload['eventId'];
-          if (eventId == null) return;
-          getIt<AppRouter>()
-              .router
-              .navigateUnique(AppRouteBuilder.eventDetails(eventId));
-
-          break;
-        }
-    }
+    final handler = getIt<NotificationHandler>(instanceName: type);
+    handler.handle(payload);
   }
 }

@@ -1,4 +1,4 @@
-mixin FormValidationMixin {
+mixin UserDataValidationMixin {
   /// Валидация имени (обязательное, минимум 3 символа)
   ///
   /// Возвращает:

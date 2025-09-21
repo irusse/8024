@@ -9,9 +9,6 @@ abstract class ProfileCreateState with _$ProfileCreateState {
     String? nameError,
     String? surnameError,
     String? emailError,
-    @Default(false) bool isSubmitting,
-    @Default(false) bool isSubmittedSuccessfully,
-    String? submitError,
     XFile? image,
   }) = _ProfileCreateState;
 }

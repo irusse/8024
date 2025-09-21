@@ -3,11 +3,9 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:neighbours/core/di/injection.dart';
-import 'package:neighbours/core/domain/entities/user/user_entity.dart';
 import 'package:neighbours/core/services/image_service.dart';
 
-import '../../../../../core/mixins/form_validation_mixin.dart';
-import '../../../domain/repositories/home_repository.dart';
+import '../../../../profile/presentation/mixins/user_data_validation_mixin.dart';
 
 part 'profile_create_cubit.freezed.dart';
 
@@ -15,10 +13,8 @@ part 'profile_create_state.dart';
 
 @injectable
 class ProfileCreateCubit extends Cubit<ProfileCreateState>
-    with FormValidationMixin {
-  final HomeRepository _homeRepository;
-
-  ProfileCreateCubit(this._homeRepository) : super(const ProfileCreateState());
+    with UserDataValidationMixin {
+  ProfileCreateCubit() : super(const ProfileCreateState());
   final _imageService = getIt<ImageService>();
 
   void onNameChanged(String value) {
@@ -84,41 +80,5 @@ class ProfileCreateCubit extends Cubit<ProfileCreateState>
 
   void removeImage() {
     emit(state.copyWith(image: null));
-  }
-
-  Future<UserEntity?> submit() async {
-    if (!validateAllFields()) return null;
-
-    emit(state.copyWith(
-      isSubmitting: true,
-      submitError: null,
-      isSubmittedSuccessfully: false,
-    ));
-
-    final result = await _homeRepository.submitProfile(
-      name: state.name,
-      surname: state.surname,
-      email: state.email,
-      image: state.image,
-    );
-
-    return result.fold(
-      (failure) {
-        emit(state.copyWith(
-          isSubmitting: false,
-          submitError: failure.message,
-          isSubmittedSuccessfully: false,
-        ));
-        return null;
-      },
-      (user) {
-        emit(state.copyWith(
-          isSubmitting: false,
-          submitError: null,
-          isSubmittedSuccessfully: true,
-        ));
-        return user;
-      },
-    );
   }
 }
