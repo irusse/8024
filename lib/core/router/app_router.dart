@@ -368,8 +368,8 @@ class AppRouter {
                         providers: [
                           BlocProvider.value(value: getIt<EventsCubit>()),
                           BlocProvider.value(value: getIt<UserCubit>()),
-                          BlocProvider(
-                            create: (_) => getIt<CommunityCubit>(),
+                          BlocProvider.value(
+                            value: getIt<CommunityCubit>(),
                           ),
                         ],
                         child: Community(

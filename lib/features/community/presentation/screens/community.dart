@@ -56,7 +56,7 @@ class _CommunityState extends State<Community> {
   Widget build(BuildContext context) {
     return BlocBuilder<CommunityCubit, CommunityState>(
       builder: (context, state) {
-        final communityEntity = state.community;
+        final communityEntity = state.selectedCommunity;
         final shouldShowFullScreenLoading =
             communityEntity.id == 0 && state.fetchCommunityState.isLoading;
 

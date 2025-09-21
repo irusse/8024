@@ -125,8 +125,6 @@ mixin HomeInitializationMixin<T extends StatefulWidget> on State<Home> {
           ),
         ]);
       }
-
-      // Загружаем реальную геолокацию параллельно, не блокируя инициализацию
       locationCubit.getPosition();
     } on NetworkException {
       if (!mounted) return;

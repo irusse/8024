@@ -67,8 +67,8 @@ import '../../features/home/data/services/property_layer_service.dart' as _i166;
 import '../../features/home/domain/repositories/home_repository.dart' as _i0;
 import '../../features/home/presentation/cubits/auth_location/auth_location_cubit.dart'
     as _i1037;
-import '../../features/home/presentation/cubits/create_community_form/create_community_form_cubit.dart'
-    as _i322;
+import '../../features/home/presentation/cubits/community_access_form/community_access_cubit.dart'
+    as _i294;
 import '../../features/home/presentation/cubits/home/home_cubit.dart' as _i715;
 import '../../features/home/presentation/cubits/profile_create/profile_create_cubit.dart'
     as _i1041;
@@ -152,6 +152,7 @@ extension GetItInjectableX on _i174.GetIt {
       preResolve: true,
     );
     gh.factory<_i485.MapIconService>(() => _i485.MapIconService());
+    gh.factory<_i294.CommunityAccessCubit>(() => _i294.CommunityAccessCubit());
     gh.singleton<_i558.FlutterSecureStorage>(
         () => registerModule.secureStorage);
     gh.singleton<_i361.Dio>(() => networkModule.dio);
@@ -235,9 +236,7 @@ extension GetItInjectableX on _i174.GetIt {
         ));
     gh.singleton<_i50.ResourceRepository>(() =>
         _i41.ResourceRepositoryImpl(gh<_i129.ResourceRemoteDataSource>()));
-    gh.factory<_i322.CreateCommunityFormCubit>(
-        () => _i322.CreateCommunityFormCubit(gh<_i121.CommunityRepository>()));
-    gh.factory<_i491.CommunityCubit>(
+    gh.singleton<_i491.CommunityCubit>(
         () => _i491.CommunityCubit(gh<_i121.CommunityRepository>()));
     gh.lazySingleton<_i543.UserLocationRepository>(() =>
         _i247.UserLocationRepositoryImpl(

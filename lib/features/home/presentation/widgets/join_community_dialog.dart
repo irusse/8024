@@ -5,12 +5,14 @@ import 'package:neighbours/core/components/custom_label.dart';
 import 'package:neighbours/core/components/primary_button.dart';
 import 'package:neighbours/core/constants/ui_constants.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
-import 'package:neighbours/features/home/presentation/cubits/create_community_form/create_community_form_cubit.dart';
+import 'package:neighbours/core/state/api_state.dart';
+import 'package:neighbours/features/community/presentation/cubits/community/community_cubit.dart';
 import '../../../../core/cubits/user/user_cubit.dart';
 import '../../../../core/cubits/user_location/user_location_cubit.dart';
 import '../../../../core/services/snackbar_service.dart';
 import '../../../../core/utils/sheet_utils.dart';
 import '../../../auth/presentation/widgets/pin_code_text_field.dart';
+import '../cubits/community_access_form/community_access_cubit.dart';
 
 class JoinCommunityDialog extends StatefulWidget {
   final VoidCallback? onDataFetchRequired;
@@ -37,12 +39,16 @@ class _JoinCommunityDialogState extends State<JoinCommunityDialog> {
   Widget build(BuildContext context) {
     final isUserLocationLoading = context
         .select<UserLocationCubit, bool>((cubit) => cubit.state.isLoading);
-    return BlocConsumer<CreateCommunityFormCubit, CreateCommunityFormState>(
+    final isSubmitEnabled = context
+        .select<CommunityAccessCubit, bool>((cubit) => cubit.isJoinEnabled());
+    return BlocConsumer<CommunityCubit, CommunityState>(
       listenWhen: (previous, current) =>
-          previous.error != current.error && current.error != null,
+          previous.joinCommunityState != previous.joinCommunityState,
       listener: (context, state) {
-        context.snackbar
-            .error(context, state.error!, position: SnackBarPosition.top);
+        if (state.joinCommunityState.isFailure) {
+          context.snackbar.error(context, state.joinCommunityState.error!,
+              position: SnackBarPosition.top);
+        }
       },
       builder: (context, state) {
         return Column(
@@ -52,13 +58,14 @@ class _JoinCommunityDialogState extends State<JoinCommunityDialog> {
             const VerticalGap(8),
             const CustomLabel(text: 'Пригласительный код'),
             const VerticalGap(8),
-            _buildCodeField(context, state),
+            _buildCodeField(context, state.joinCommunityState.isLoading,
+                state.joinCommunityState.isFailure),
             const VerticalGap(8),
             PrimaryButton(
               text: 'Вступить',
-              isEnabled:
-                  context.read<CreateCommunityFormCubit>().isJoinEnabled(),
-              isLoading: state.isJoining || isUserLocationLoading,
+              isEnabled: isSubmitEnabled,
+              isLoading:
+                  state.joinCommunityState.isLoading || isUserLocationLoading,
               onPressed: _onConfirm,
             ),
           ],
@@ -71,7 +78,8 @@ class _JoinCommunityDialogState extends State<JoinCommunityDialog> {
     final userCubit = context.read<UserCubit>();
     final userLocation = await context.read<UserLocationCubit>().getPosition();
     if (userLocation == null || !mounted) return;
-    final newUser = await context.read<CreateCommunityFormCubit>().submit(
+    final newUser = await context.read<CommunityCubit>().join(
+          code: context.read<CommunityAccessCubit>().state.code!,
           userLatitude: userLocation.latitude,
           userLongitude: userLocation.longitude,
         );
@@ -83,14 +91,12 @@ class _JoinCommunityDialogState extends State<JoinCommunityDialog> {
       if (!mounted) return;
       context.snackbar.success(
           context, "Вы успешно вступили в сообщество ${newCommunity.name}");
-
-      // Вызываем функцию для обновления данных
       widget.onDataFetchRequired?.call();
     }
   }
 
-  Widget _buildCodeField(BuildContext context, CreateCommunityFormState state) {
-    final cubit = context.read<CreateCommunityFormCubit>();
+  Widget _buildCodeField(BuildContext context, bool isLoading, bool hasError) {
+    final cubit = context.read<CommunityAccessCubit>();
     final codeLength = cubit.communityCodeLength;
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -103,14 +109,14 @@ class _JoinCommunityDialogState extends State<JoinCommunityDialog> {
           fieldWidth: fieldWidth,
           fieldHeight: fieldWidth + 15,
           borderWidth: 2,
-          hasError: state.error != null,
-          enabled: !state.isJoining,
+          hasError: hasError,
+          enabled: !isLoading,
           textInputType: TextInputType.text,
           borderColor: context.color.secondary,
           activeBorderColor: context.color.primary,
           borderRadius: BorderRadius.circular(12),
           textStyle: context.text.titleSmall,
-          onChange: (value) => cubit.onCommunityCodeChanged(value),
+          onChange: (value) => cubit.onCodeChanged(value),
           onComplete: (value) {},
         );
       },

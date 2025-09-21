@@ -20,9 +20,17 @@ import 'firebase_options.dart';
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  final notificationService = NotificationService()..init();
+  
+  // Initialize dependencies for background handler
+  await configureDependencies();
+  
+  final notificationService = getIt<NotificationService>();
+  await notificationService.init();
 
   final model = AppNotificationModel.fromRemoteMessage(message);
+  debugPrint('Background handler: Processing notification - ${model.title}');
+  debugPrint('Background handler: Notification type - ${model.type}');
+  
   await notificationService.showBasicNotification(model);
 }
 
@@ -40,6 +48,9 @@ void main() async {
   await getIt<FcmCubit>().initFCM();
   await getIt<NotificationService>().init();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  
+  // Save FCM token after initialization
+  await getIt<FcmCubit>().saveFcmToken();
   runApp(BlocProvider.value(
     value: getIt<ThemeCubit>()..loadTheme(),
     child: const MyApp(),

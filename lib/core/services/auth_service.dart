@@ -24,7 +24,6 @@ class AuthService {
       final token = await _storage.read(key: _accessTokenKey);
       return token != null && token.isNotEmpty;
     } catch (e) {
-      debugPrint('[AuthService] Error checking token: $e');
       return false;
     }
   }
@@ -47,10 +46,8 @@ class AuthService {
 
       if (!_isDisposed) {
         _accessTokenController.add(accessToken);
-        debugPrint('[AuthService] Tokens saved successfully');
       }
     } catch (e) {
-      debugPrint('[AuthService] Error saving tokens: $e');
       rethrow;
     }
   }
@@ -65,11 +62,8 @@ class AuthService {
 
       if (!_isDisposed) {
         _accessTokenController.add(null);
-        debugPrint('[AuthService] Tokens cleared successfully');
       }
-    } catch (e) {
-      debugPrint('[AuthService] Error clearing tokens: $e');
-    }
+    } catch (e) {}
   }
 
   /// Получает access token
@@ -89,7 +83,6 @@ class AuthService {
       final token = await _storage.read(key: _refreshTokenKey);
       return token?.isNotEmpty == true ? token : null;
     } catch (e) {
-      debugPrint('[AuthService] Error getting refresh token: $e');
       return null;
     }
   }
@@ -122,7 +115,6 @@ class AuthService {
       final refreshToken = await getValidRefreshToken();
       return accessToken != null && refreshToken != null;
     } catch (e) {
-      debugPrint('[AuthService] Error checking authentication: $e');
       return false;
     }
   }
@@ -132,7 +124,6 @@ class AuthService {
     if (!_isDisposed) {
       _isDisposed = true;
       _accessTokenController.close();
-      debugPrint('[AuthService] Disposed successfully');
     }
   }
 

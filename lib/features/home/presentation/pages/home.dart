@@ -341,7 +341,7 @@ class _HomeState extends State<Home>
                     ),
                   ),
                   MyLocationBtn(
-                     bottom: MediaQuery.of(context).size.height / 2.5,
+                    bottom: MediaQuery.of(context).size.height / 2.5,
                     onClick: () =>
                         context.read<UserLocationCubit>().getPosition(),
                   ),
