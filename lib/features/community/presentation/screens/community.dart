@@ -56,16 +56,14 @@ class _CommunityState extends State<Community> {
   Widget build(BuildContext context) {
     return BlocBuilder<CommunityCubit, CommunityState>(
       builder: (context, state) {
-        final communityEntity = state.selectedCommunity;
-        final shouldShowFullScreenLoading =
-            communityEntity.id == 0 && state.fetchCommunityState.isLoading;
-
-        if (shouldShowFullScreenLoading) {
+        if (state.selectedCommunity == null &&
+            state.fetchCommunityState.isLoading) {
           return const Scaffold(body: DefaultLoadingOverlay());
         }
 
         // Ошибка + нет данных
-        if (state.fetchCommunityState.isFailure && communityEntity.id == 0) {
+        if (state.fetchCommunityState.isFailure &&
+            state.selectedCommunity == null) {
           return Scaffold(
             appBar: const DefaultAppBar(
               title: 'Ошибка',
@@ -79,7 +77,7 @@ class _CommunityState extends State<Community> {
             ),
           );
         }
-
+        final communityEntity = state.selectedCommunity!;
         final numberOfParticipants = state.participants.length;
         final usersTabTitle = state.participantsState.isLoading ||
                 state.participantsState.isFailure

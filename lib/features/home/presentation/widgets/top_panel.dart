@@ -15,7 +15,7 @@ class TopPanel extends StatelessWidget {
   void _onProfileClick(BuildContext context) {
     final cubit = context.read<HomeCubit>();
     if (cubit.canOpenProfile()) {
-      context.push(AppRoutePath.profile);
+      context.push(AppRoutePath.myProfile);
     } else {
       context.read<HomeCubit>()
         ..setIdle()

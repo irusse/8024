@@ -75,7 +75,10 @@ class _EventDetailsState extends State<EventDetails> {
         children: [
           BottomSheetOption(
             text: 'Поделиться',
-            onClick: () => EventShareService.shareEvent(event.id),
+            onClick: () {
+              context.pop();
+              EventShareService.shareEvent(event.id);
+            },
             iconPath: Assets.icons.share,
           ),
           BottomSheetOption(

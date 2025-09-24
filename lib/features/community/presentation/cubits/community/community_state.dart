@@ -3,7 +3,7 @@ part of 'community_cubit.dart';
 @freezed
 abstract class CommunityState with _$CommunityState {
   const factory CommunityState({
-    required CommunityEntity selectedCommunity,
+    CommunityEntity? selectedCommunity,
     @Default([]) List<CommunityEntity> communities,
     @Default([]) List<ParticipantEntity> participants,
     @Default(ApiState<List<ParticipantEntity>>.initial())
@@ -15,15 +15,4 @@ abstract class CommunityState with _$CommunityState {
     @Default(ApiState<UserEntity>.initial())
     ApiState<UserEntity> createCommunityState,
   }) = _CommunityState;
-
-  factory CommunityState.initial() => CommunityState(
-        selectedCommunity: CommunityEntity(
-          id: 0,
-          name: '',
-          status: '',
-          joinCode: '',
-          createdBy: '',
-          createdAt: DateTime.now(),
-        ),
-      );
 }

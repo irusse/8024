@@ -47,7 +47,7 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final user =
         context.select<UserCubit, UserEntity>((cubit) => cubit.state.user);
-    final property = context.read<PropertiesCubit>().getUserProperty(user.id);
+    final property = context.read<PropertiesCubit>().getMyProperty(user.id);
     final community = user.communities.firstOrNull;
     final hasUnreadNotifications = context.select<NotificationCubit, bool>(
         (cubit) => cubit.hasUnreadNotifications);

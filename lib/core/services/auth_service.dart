@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:injectable/injectable.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:neighbours/core/logging/logger.dart';
 
 @singleton
 class AuthService {
@@ -70,9 +70,9 @@ class AuthService {
   Future<String?> getAccessToken() async {
     try {
       final token = await _storage.read(key: _accessTokenKey);
+      if (token != null) AppLogger.info(token);
       return token?.isNotEmpty == true ? token : null;
     } catch (e) {
-      debugPrint('[AuthService] Error getting access token: $e');
       return null;
     }
   }

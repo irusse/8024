@@ -17,7 +17,7 @@ class BottomPanel extends StatelessWidget {
   void _onHomeClick(BuildContext context, bool onDoubleTap) {
     final homeCubit = context.read<HomeCubit>();
     final userId = context.read<UserCubit>().state.user.id;
-    final property = context.read<PropertiesCubit>().getUserProperty(userId);
+    final property = context.read<PropertiesCubit>().getMyProperty(userId);
     if (property == null) {
       homeCubit
         ..setIdle()

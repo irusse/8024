@@ -9,7 +9,8 @@ abstract class AppRoutePath {
   static const community = 'community/:communityId';
   static const resourceForm = 'resource-form';
   static const sms = '/sms/:phone';
-  static const profile = '/profile';
+  static const myProfile = '/my-profile';
+  static const otherProfile = '/other-profile/:userId';
   static const editProfile = 'edit';
   static const myEvents = 'my-events';
   static const notFound = '/not-found';
@@ -30,10 +31,12 @@ abstract class AppRoutePath {
 
 abstract class AppRouteBuilder {
   static String documentPage(String key) =>
-      '${AppRoutePath.profile}/document-page/$key';
+      '${AppRoutePath.myProfile}/document-page/$key';
 
   static String propertyDetails(int propertyId) =>
       '/property-details/$propertyId';
+
+  static String otherProfile(int userId) => '/other-profile/$userId';
 
   static String chatPage(int eventId, String eventTitle) =>
       '${AppRoutePath.chatListPage}/${AppRoutePath.chatPage}'

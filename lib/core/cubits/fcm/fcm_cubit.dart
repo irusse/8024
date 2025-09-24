@@ -20,7 +20,7 @@ class FcmCubit extends Cubit<FcmState> {
 
   FcmCubit(this._pushRepository, this._fcmService) : super(const FcmState());
 
-  Future<void> initFCM() async {
+  Future<void> init() async {
     await _fcmService.init();
     _tokenSub ??= _fcmService.onTokenRefresh.listen((token) async {
       await saveFcmToken(token);

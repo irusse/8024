@@ -78,6 +78,16 @@ import '../../features/notification/domain/repositories/notification_repository.
     as _i630;
 import '../../features/notification/presentation/cubits/notification_cubit.dart'
     as _i882;
+import '../../features/other_profile/data/datasources/other_profile_remote_datasource.dart'
+    as _i459;
+import '../../features/other_profile/data/repositories/other_profile_repository_impl.dart'
+    as _i593;
+import '../../features/other_profile/domain/repositories/other_profile_repository.dart'
+    as _i165;
+import '../../features/other_profile/presentation/cubits/other_profile/other_profile_cubit.dart'
+    as _i375;
+import '../../features/other_profile/presentation/cubits/other_properties/other_properties_cubit.dart'
+    as _i720;
 import '../../features/profile/data/datasources/document_data_source.dart'
     as _i609;
 import '../../features/profile/data/repositories/document_repository_impl.dart'
@@ -188,6 +198,8 @@ extension GetItInjectableX on _i174.GetIt {
       instanceName: 'PROPERTY_VERIFIED',
     );
     gh.singleton<_i768.ImageService>(() => _i768.ImageServiceImpl());
+    gh.singleton<_i459.OtherProfileRemoteDataSource>(
+        () => _i459.OtherProfileRemoteDataSourceImpl(gh<_i361.Dio>()));
     gh.singleton<_i111.NotificationHandler>(
       () => _i630.UserJoinedCommunityHandler(),
       instanceName: 'USER_JOINED_COMMUNITY',
@@ -196,6 +208,9 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i278.HomeRemoteDataSourceImpl(gh<_i361.Dio>()));
     gh.singleton<_i129.ResourceRemoteDataSource>(
         () => _i129.ResourceRemoteDataSourceImpl(gh<_i361.Dio>()));
+    gh.singleton<_i165.OtherProfileRepository>(() =>
+        _i593.OtherProfileRepositoryImpl(
+            gh<_i459.OtherProfileRemoteDataSource>()));
     gh.singleton<_i189.PushRemoteDataSource>(
         () => _i189.PushRemoteDataSourceImpl(gh<_i361.Dio>()));
     gh.singleton<_i0.HomeRepository>(
@@ -260,6 +275,8 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i1037.AuthLocationCubit(gh<_i0.HomeRepository>()));
     gh.singleton<_i715.HomeCubit>(
         () => _i715.HomeCubit(gh<_i0.HomeRepository>()));
+    gh.factory<_i375.OtherProfileCubit>(
+        () => _i375.OtherProfileCubit(gh<_i165.OtherProfileRepository>()));
     gh.singleton<_i882.NotificationCubit>(() => _i882.NotificationCubit(
           gh<_i630.NotificationRepository>(),
           gh<_i941.NotificationService>(),
@@ -283,6 +300,8 @@ extension GetItInjectableX on _i174.GetIt {
         ));
     gh.lazySingleton<_i549.ResourcesCubit>(
         () => _i549.ResourcesCubit(gh<_i50.ResourceRepository>()));
+    gh.factory<_i720.OtherPropertiesCubit>(
+        () => _i720.OtherPropertiesCubit(gh<_i61.PropertyRepository>()));
     gh.singleton<_i660.EventRepository>(
         () => _i429.EventRepositoryImpl(gh<_i698.EventRemoteDataSource>()));
     gh.singleton<_i787.AuthRepository>(() => _i153.AuthRepositoryImpl(

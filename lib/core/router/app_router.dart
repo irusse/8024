@@ -32,6 +32,9 @@ import 'package:neighbours/features/event/presentation/screens/notification_form
 import 'package:neighbours/features/home/presentation/pages/home.dart';
 import 'package:neighbours/features/notification/presentation/cubits/notification_cubit.dart';
 import 'package:neighbours/features/notification/presentation/screens/notification_screen.dart';
+import 'package:neighbours/features/other_profile/presentation/cubits/other_profile/other_profile_cubit.dart';
+import 'package:neighbours/features/other_profile/presentation/cubits/other_properties/other_properties_cubit.dart';
+import 'package:neighbours/features/other_profile/presentation/screens/other_profile_screen.dart';
 import 'package:neighbours/features/profile/presentation/cubits/document/document_cubit.dart';
 import 'package:neighbours/features/profile/presentation/cubits/edit_profile/edit_profile_cubit.dart';
 import 'package:neighbours/features/profile/presentation/cubits/profile/profile_cubit.dart';
@@ -474,7 +477,7 @@ class AppRouter {
             ),
           ]),
       GoRoute(
-          path: AppRoutePath.profile,
+          path: AppRoutePath.myProfile,
           pageBuilder: (context, state) => CustomPageTransition.slideFromLeft(
                 key: state.pageKey,
                 child: MultiBlocProvider(
@@ -635,6 +638,32 @@ class AppRouter {
               },
             ),
           ]),
+      GoRoute(
+        path: AppRoutePath.otherProfile,
+        pageBuilder: (context, state) {
+          final userId = int.parse(state.pathParameters['userId']!);
+          return CustomPageTransition.slideFromRight(
+              key: state.pageKey,
+              child: MultiBlocProvider(
+                  providers: [
+                    BlocProvider(
+                      create: (_) => getIt<OtherProfileCubit>(),
+                    ),
+                    BlocProvider(
+                      create: (_) => getIt<OtherPropertiesCubit>(),
+                    ),
+                    BlocProvider.value(
+                      value: getIt<UserCubit>(),
+                    ),
+                    BlocProvider.value(
+                      value: getIt<PropertiesCubit>(),
+                    ),
+                  ],
+                  child: OtherProfileScreen(
+                    userId: userId,
+                  )));
+        },
+      ),
     ],
     errorBuilder: (context, state) => Scaffold(
       body: Center(
@@ -651,7 +680,6 @@ class AppRouter {
 class GoRouterRefreshStream extends ChangeNotifier {
   GoRouterRefreshStream(Stream<dynamic> stream) {
     _subscription = stream.listen((_) {
-      // on ANY event (в т.ч. null) триггерим redirect
       notifyListeners();
     });
   }

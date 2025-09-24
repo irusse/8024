@@ -56,7 +56,10 @@ class _PropertyDetailsState extends State<PropertyDetails> {
             BottomSheetOption(
                 text: 'Поделиться',
                 iconPath: Assets.icons.share,
-                onClick: () => PropertyShareService.shareProperty(property.id)),
+                onClick: () {
+                  context.pop();
+                  PropertyShareService.shareProperty(property.id);
+                }),
             if (isUserProperty)
               BottomSheetOption(
                 text: 'Удалить',

@@ -8,6 +8,7 @@ import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/constants/notification_constants.dart';
 import 'package:neighbours/core/data/models/app_notification/app_notification_model.dart';
 import 'package:neighbours/core/di/injection.dart';
+import 'package:neighbours/core/logging/logger.dart';
 import '../notifications/notification_handler.dart';
 
 @singleton
@@ -17,6 +18,7 @@ class NotificationService {
   bool _isInitialized = false;
 
   final _controller = StreamController<AppNotificationModel>.broadcast();
+  final _tag = "Notification Service";
 
   Stream<AppNotificationModel> get stream => _controller.stream;
 
@@ -76,8 +78,6 @@ class NotificationService {
         AppNotificationModel.fromRemoteMessage(message);
 
     _controller.add(appNotificationModel);
-
-    // показываем только "системные" уведомления сразу
     if (appNotificationModel.type != NotificationConstants.messageReceived) {
       showBasicNotification(appNotificationModel);
     }
@@ -121,8 +121,12 @@ class NotificationService {
   void handleNotificationTap(Map<String, dynamic> payload) {
     final type = payload["type"];
     if (type == null) return;
-
-    final handler = getIt<NotificationHandler>(instanceName: type);
-    handler.handle(payload);
+    if (getIt.isRegistered<NotificationHandler>(instanceName: type)) {
+      final handler = getIt<NotificationHandler>(instanceName: type);
+      handler.handle(payload);
+    } else {
+      AppLogger.warning("No NotificationHandler registered for type: $type",
+          tag: _tag);
+    }
   }
 }

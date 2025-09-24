@@ -5,6 +5,7 @@ import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/error/failures.dart';
 import 'package:neighbours/core/network/network_handler.dart';
 import 'package:neighbours/features/property/data/models/property/property_model.dart';
+import 'package:neighbours/features/property/data/models/light_property/light_property_model.dart';
 import 'package:neighbours/features/property/data/models/user_verified_property/user_verified_property_model.dart';
 
 abstract class PropertyRemoteDataSource {
@@ -59,6 +60,9 @@ abstract class PropertyRemoteDataSource {
       getUserVerifications();
 
   Future<Either<Failure, PropertyModel>> getPropertyById(int id);
+
+  /// Получить список объектов пользователя
+  Future<Either<Failure, List<LightPropertyModel>>> getUserProperties(int userId);
 }
 
 @Singleton(as: PropertyRemoteDataSource)
@@ -268,6 +272,16 @@ class PropertyRemoteDataSourceImpl implements PropertyRemoteDataSource {
     return NetworkHandler.handleRequest(() async {
       final response = await _dio.get('/properties/$id');
       return PropertyModel.fromJson(response.data);
+    });
+  }
+
+  @override
+  Future<Either<Failure, List<LightPropertyModel>>> getUserProperties(int userId) async {
+    return NetworkHandler.handleRequest(() async {
+      final response = await _dio.get('/api/users/$userId/properties');
+      
+      final data = response.data as List;
+      return data.map((json) => LightPropertyModel.fromJson(json)).toList();
     });
   }
 }

@@ -15,7 +15,7 @@ part 'community_state.dart';
 class CommunityCubit extends Cubit<CommunityState> {
   final CommunityRepository _repository;
 
-  CommunityCubit(this._repository) : super(CommunityState.initial());
+  CommunityCubit(this._repository) : super(CommunityState());
 
   Future<void> fetchCommunityParticipants(int communityId) async {
     emit(state.copyWith(

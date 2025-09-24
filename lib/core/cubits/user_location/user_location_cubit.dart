@@ -40,14 +40,12 @@ class UserLocationCubit extends Cubit<UserLocationState> {
 
       return coordinates;
     } on TimeoutException {
-      //Todo Решить проблему с долго загрузкой геопозиции
       final cachedLocation = await fetchLocalLocation();
       if (cachedLocation != null) {
         await _updateUserLocation(cachedLocation);
       }
       return cachedLocation;
     } on LocationServiceDisabledException {
-      //Todo Решить проблему с долго загрузкой геопозиции
       final cachedLocation = await fetchLocalLocation();
       if (cachedLocation != null) {
         await _updateUserLocation(cachedLocation);

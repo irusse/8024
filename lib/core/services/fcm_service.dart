@@ -15,7 +15,7 @@ class FCMService {
   final _tokenController = StreamController<String>.broadcast();
 
   Stream<String> get onTokenRefresh => _tokenController.stream;
-  final String _tag = "FCM SERVICE";
+  final _tag = "FCM SERVICE";
 
   Future<void> init() async {
     try {

@@ -142,7 +142,7 @@ class PropertiesCubit extends Cubit<PropertiesState> {
     }
   }
 
-  PropertyEntity? getUserProperty(int userId) {
+  PropertyEntity? getMyProperty(int userId) {
     return state.properties.values.firstWhereOrNull(
       (prop) => prop.createdById == userId,
     );
