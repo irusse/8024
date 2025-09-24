@@ -642,6 +642,7 @@ class AppRouter {
         path: AppRoutePath.otherProfile,
         pageBuilder: (context, state) {
           final userId = int.parse(state.pathParameters['userId']!);
+          final key = state.extra is Key ? state.extra as Key : null;
           return CustomPageTransition.slideFromRight(
               key: state.pageKey,
               child: MultiBlocProvider(
@@ -660,6 +661,7 @@ class AppRouter {
                     ),
                   ],
                   child: OtherProfileScreen(
+                    key: key,
                     userId: userId,
                   )));
         },

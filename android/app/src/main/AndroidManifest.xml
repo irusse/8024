@@ -73,6 +73,10 @@
                     android:scheme="https" />
                 <data
                     android:host="8024.tech"
+                    android:pathPrefix="/other-profile"
+                    android:scheme="https" />
+                <data
+                    android:host="8024.tech"
                     android:pathPrefix="/event-details"
                     android:scheme="https" />
 

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/extensions/color_ext.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
+import 'package:neighbours/core/router/app_routes.dart';
 import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
 
 import '../../../../core/components/default_circle_avatar.dart';
@@ -24,14 +26,18 @@ class MessageItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!isMyMessage) ...[
-            DefaultCircleAvatar(
-              id: message.userId,
-              name: message.user.firstName,
-              url: message.user.avatar,
-              textStyle: context.text.labelLarge.copyWith(
-                fontWeight: FontWeight.w500,
+            GestureDetector(
+              onTap: () =>
+                  context.push(AppRouteBuilder.otherProfile(message.userId)),
+              child: DefaultCircleAvatar(
+                id: message.userId,
+                name: message.user.firstName,
+                url: message.user.avatar,
+                textStyle: context.text.labelLarge.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+                radius: 18,
               ),
-              radius: 18,
             ),
             const HorizontalGap(8),
           ],

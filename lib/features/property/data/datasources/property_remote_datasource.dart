@@ -62,7 +62,8 @@ abstract class PropertyRemoteDataSource {
   Future<Either<Failure, PropertyModel>> getPropertyById(int id);
 
   /// Получить список объектов пользователя
-  Future<Either<Failure, List<LightPropertyModel>>> getUserProperties(int userId);
+  Future<Either<Failure, List<LightPropertyModel>>> getUserProperties(
+      int userId);
 }
 
 @Singleton(as: PropertyRemoteDataSource)
@@ -276,10 +277,11 @@ class PropertyRemoteDataSourceImpl implements PropertyRemoteDataSource {
   }
 
   @override
-  Future<Either<Failure, List<LightPropertyModel>>> getUserProperties(int userId) async {
+  Future<Either<Failure, List<LightPropertyModel>>> getUserProperties(
+      int userId) async {
     return NetworkHandler.handleRequest(() async {
-      final response = await _dio.get('/api/users/$userId/properties');
-      
+      final response = await _dio.get('/users/$userId/properties');
+
       final data = response.data as List;
       return data.map((json) => LightPropertyModel.fromJson(json)).toList();
     });

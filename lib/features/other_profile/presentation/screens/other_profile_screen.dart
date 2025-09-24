@@ -16,6 +16,9 @@ import 'package:neighbours/core/router/app_routes.dart';
 import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/features/community/presentation/widgets/light_community_item.dart';
 import 'package:neighbours/features/other_profile/presentation/cubits/other_profile/other_profile_cubit.dart';
+import 'package:neighbours/features/other_profile/presentation/cubits/other_properties/other_properties_cubit.dart';
+import 'package:neighbours/features/other_profile/presentation/services/other_profile_share_service.dart';
+import 'package:neighbours/features/property/presentation/widgets/light_property_item.dart';
 
 import '../../../../core/components/bottom_sheet_dialog.dart';
 import '../../../../core/components/bottom_sheet_option.dart';
@@ -62,6 +65,7 @@ class _OtherProfileScreenState extends State<OtherProfileScreen> {
                 iconPath: Assets.icons.share,
                 onClick: () {
                   context.pop();
+                  OtherProfileShareService.shareEvent(userId);
                 }),
           ],
         ));
@@ -80,7 +84,9 @@ class _OtherProfileScreenState extends State<OtherProfileScreen> {
       listener: (context, state) {
         state.fetchUserState.handleApiState(
           onSuccess: () {
-            // Успешно загружен пользователь
+            context
+                .read<OtherPropertiesCubit>()
+                .fetchUserProperties(widget.userId);
           },
           onError: (error) => context.snackbar.error(
             context,
@@ -106,14 +112,14 @@ class _OtherProfileScreenState extends State<OtherProfileScreen> {
           );
         }
         final otherUser = state.user!;
-
+        final sameUser = otherUser.id == me.id;
         return Scaffold(
           appBar: DefaultAppBar(
             showBackButton: true,
             actions: [
               CustomButton(
-                onPressed: () => _onOptionsClick(
-                    context, otherUser.id, me.id == otherUser.id),
+                onPressed: () =>
+                    _onOptionsClick(context, otherUser.id, sameUser),
                 svgIcon: CustomSvg(
                     asset: Assets.icons.option,
                     color: context.color.secondaryText),
@@ -125,12 +131,12 @@ class _OtherProfileScreenState extends State<OtherProfileScreen> {
             children: [
               ShapedCachedImage(
                 radius: 48,
-                url: otherUser.avatar,
+                url: sameUser ? me.avatar : otherUser.avatar,
                 border: Border.all(width: 2, color: context.color.primary),
               ),
               const VerticalGap(16),
               Text(
-                otherUser.fullName,
+                sameUser ? me.fullName : otherUser.fullName,
                 style: context.text.titleSmall,
               ),
               const VerticalGap(8),
@@ -160,7 +166,7 @@ class _OtherProfileScreenState extends State<OtherProfileScreen> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Ваши общие сообщетсва',
+                    sameUser ? "Ваши сообщества" : 'Ваши общие сообщетсва',
                     style: context.text.bodyMedium.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
@@ -175,27 +181,45 @@ class _OtherProfileScreenState extends State<OtherProfileScreen> {
                 ),
                 const VerticalGap(16),
               ],
-              if (otherUser.communities.isNotEmpty) ...[
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Объекты недвижимости',
-                    style: context.text.bodyMedium.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                const VerticalGap(8),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: otherUser.communities.map((community) {
-                    return LightCommunityItem(community: community);
-                  }).toList(),
-                ),
-                const VerticalGap(24),
-              ],
+              BlocBuilder<OtherPropertiesCubit, OtherPropertiesState>(
+                builder: (context, propertiesState) {
+                  if (propertiesState.fetchPropertiesState.isLoading) {
+                    return DefaultLoadingOverlay();
+                  }
+                  if (propertiesState.properties.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
+
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Объекты недвижимости',
+                          style: context.text.bodyMedium.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      const VerticalGap(8),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: propertiesState.properties.map((property) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: LightPropertyItem(property: property),
+                          );
+                        }).toList(),
+                      ),
+                      const VerticalGap(24),
+                    ],
+                  );
+                },
+              ),
               const Spacer(),
-              CustomOutlinedButton(onPressed: () {}, text: "Написать"),
+              if (!sameUser)
+                CustomOutlinedButton(onPressed: () {}, text: "Написать"),
               const VerticalGap(16)
             ],
           ),
