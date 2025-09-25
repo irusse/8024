@@ -50,10 +50,9 @@ abstract class PropertyRemoteDataSource {
     required double radius,
   });
 
-  Future<Either<Failure, PropertyModel>> verifyProperty({
+  Future<Either<Failure, PropertyModel>> confirmPropertyByCode({
     required int propertyId,
-    required double userLatitude,
-    required double userLongitude,
+    required String code,
   });
 
   Future<Either<Failure, List<UserVerifiedPropertyModel>>>
@@ -234,17 +233,15 @@ class PropertyRemoteDataSourceImpl implements PropertyRemoteDataSource {
   }
 
   @override
-  Future<Either<Failure, PropertyModel>> verifyProperty({
+  Future<Either<Failure, PropertyModel>> confirmPropertyByCode({
     required int propertyId,
-    required double userLatitude,
-    required double userLongitude,
+    required String code,
   }) async {
     return NetworkHandler.handleRequest(() async {
       final response = await _dio.post(
-        '/properties/$propertyId/verify',
+        '/properties/$propertyId/confirm',
         data: {
-          'userLatitude': userLatitude,
-          'userLongitude': userLongitude,
+          'code': code,
         },
       );
       return PropertyModel.fromJson(response.data);

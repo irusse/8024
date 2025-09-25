@@ -106,15 +106,13 @@ class PropertyRepositoryImpl implements PropertyRepository {
   }
 
   @override
-  Future<Either<Failure, PropertyEntity>> verifyProperty({
+  Future<Either<Failure, PropertyEntity>> confirmPropertyByCode({
     required int propertyId,
-    required double userLatitude,
-    required double userLongitude,
+    required String code,
   }) async {
-    final result = await _remoteDataSource.verifyProperty(
+    final result = await _remoteDataSource.confirmPropertyByCode(
       propertyId: propertyId,
-      userLatitude: userLatitude,
-      userLongitude: userLongitude,
+      code: code,
     );
 
     return result.fold(

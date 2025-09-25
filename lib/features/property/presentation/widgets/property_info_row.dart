@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 
-import '../../../../core/components/custom_gap.dart';
-
 class PropertyInfoRow extends StatelessWidget {
-  final IconData icon;
   final String label;
   final String value;
+  final IconData icon;
 
-  const PropertyInfoRow(
-      {super.key,
-      required this.icon,
-      required this.label,
-      required this.value});
+  const PropertyInfoRow({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +20,7 @@ class PropertyInfoRow extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: context.color.primary.withValues(alpha: .1),
+            color: context.color.primary.withOpacity(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
@@ -37,15 +36,15 @@ class PropertyInfoRow extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: context.text.bodySmall.copyWith(
+                style: context.text.bodySmall?.copyWith(
                   color: context.color.secondaryText,
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              const HorizontalGap(2),
+              const SizedBox(height: 2),
               Text(
                 value,
-                style: context.text.bodyMedium.copyWith(
+                style: context.text.bodyMedium?.copyWith(
                   color: context.color.primaryText,
                   fontWeight: FontWeight.w600,
                 ),

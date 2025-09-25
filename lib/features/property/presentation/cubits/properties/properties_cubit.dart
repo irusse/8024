@@ -191,18 +191,16 @@ class PropertiesCubit extends Cubit<PropertiesState> {
         verifyState: const ApiState.initial()));
   }
 
-  Future<PropertyEntity?> verifyProperty({
+  Future<PropertyEntity?> confirmPropertyByCode({
     required int propertyId,
-    required double userLatitude,
-    required double userLongitude,
+    required String code,
   }) async {
     _resetStates();
     emit(state.copyWith(verifyState: const ApiState.loading()));
 
-    final result = await _propertyRepository.verifyProperty(
+    final result = await _propertyRepository.confirmPropertyByCode(
       propertyId: propertyId,
-      userLatitude: userLatitude,
-      userLongitude: userLongitude,
+      code: code,
     );
 
     return result.fold(
@@ -219,15 +217,15 @@ class PropertiesCubit extends Cubit<PropertiesState> {
         emit(state.copyWith(verifyState: ApiState.failure(failure.message)));
         return null;
       },
-      (verifiedProperty) {
+      (confirmedProperty) {
         final updatedProperties =
             Map<int, PropertyEntity>.from(state.properties)
-              ..[propertyId] = verifiedProperty;
+              ..[propertyId] = confirmedProperty;
         emit(state.copyWith(
           properties: updatedProperties,
           verifyState: const ApiState.success(null),
         ));
-        return verifiedProperty;
+        return confirmedProperty;
       },
     );
   }

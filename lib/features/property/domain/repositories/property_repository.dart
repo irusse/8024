@@ -39,10 +39,9 @@ abstract class PropertyRepository {
     required double radius,
   });
 
-  Future<Either<Failure, PropertyEntity>> verifyProperty({
+  Future<Either<Failure, PropertyEntity>> confirmPropertyByCode({
     required int propertyId,
-    required double userLatitude,
-    required double userLongitude,
+    required String code,
   });
 
   Future<Either<Failure, List<UserVerifiedPropertyEntity>>>
