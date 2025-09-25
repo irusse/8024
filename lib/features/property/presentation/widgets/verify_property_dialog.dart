@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
+import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/features/property/presentation/cubits/properties/properties_cubit.dart';
 
 import '../../../../core/components/bottom_sheet_dialog.dart';
@@ -14,9 +16,11 @@ import '../../../../core/di/injection.dart';
 import '../../../auth/presentation/widgets/pin_code_text_field.dart';
 
 class VerifyPropertyDialog extends StatefulWidget {
-  const VerifyPropertyDialog({super.key});
+  final int propertyId;
 
-  static void showDialog(BuildContext context) {
+  const VerifyPropertyDialog({super.key, required this.propertyId});
+
+  static void showDialog(BuildContext context, int propertyId) {
     showBaseBottomSheet(
         context: context,
         child: MultiBlocProvider(providers: [
@@ -29,7 +33,7 @@ class VerifyPropertyDialog extends StatefulWidget {
           BlocProvider.value(
             value: getIt<PropertiesCubit>(),
           ),
-        ], child: VerifyPropertyDialog()));
+        ], child: VerifyPropertyDialog(propertyId: propertyId)));
   }
 
   @override
@@ -38,33 +42,74 @@ class VerifyPropertyDialog extends StatefulWidget {
 
 class _VerifyPropertyDialogState extends State<VerifyPropertyDialog> {
   final _codeController = TextEditingController();
+  late final ValueNotifier<String> _codeNotifier;
+  late final ValueNotifier<bool> _isEnabledNotifier;
+
+  @override
+  void initState() {
+    super.initState();
+    _codeNotifier = ValueNotifier<String>('');
+    _isEnabledNotifier = ValueNotifier<bool>(false);
+
+    _codeController.addListener(() {
+      _codeNotifier.value = _codeController.text;
+      _isEnabledNotifier.value = _codeController.text.length == 6;
+    });
+  }
 
   @override
   void dispose() {
     _codeController.dispose();
+    _codeNotifier.dispose();
+    _isEnabledNotifier.dispose();
     super.dispose();
   }
 
-  void _onConfirm() {}
+  Future<void> _onConfirm() async {
+    if (_codeController.text.length == 6) {
+      await context.read<PropertiesCubit>().confirmPropertyByCode(
+            propertyId: widget.propertyId,
+            code: _codeController.text,
+          );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const VerticalGap(8),
-        const CustomLabel(text: 'Введите код'),
-        const VerticalGap(8),
-        _buildCodeField(context, false, false),
-        const VerticalGap(8),
-        PrimaryButton(
-          text: 'Подтвердить',
-          isEnabled: true,
-          isLoading: false,
-          onPressed: _onConfirm,
-        ),
-      ],
+    return BlocConsumer<PropertiesCubit, PropertiesState>(
+      listenWhen: (prev, curr) => prev.verifyState != curr.verifyState,
+      listener: (context, state) {
+        if (state.verifyState.isSuccess) {
+          context.pop();
+        }
+      },
+      builder: (context, state) {
+        final isLoading = state.verifyState.isLoading;
+        final hasError = state.verifyState.isFailure;
+
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const VerticalGap(8),
+            const CustomLabel(text: 'Введите код'),
+            const VerticalGap(8),
+            _buildCodeField(context, isLoading, hasError),
+            const VerticalGap(8),
+            ValueListenableBuilder<bool>(
+              valueListenable: _isEnabledNotifier,
+              builder: (context, isEnabled, _) {
+                return PrimaryButton(
+                  text: 'Подтвердить',
+                  isEnabled: isEnabled && !isLoading,
+                  isLoading: isLoading,
+                  onPressed: isEnabled ? _onConfirm : () {},
+                );
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -88,8 +133,12 @@ class _VerifyPropertyDialogState extends State<VerifyPropertyDialog> {
           activeBorderColor: context.color.primary,
           borderRadius: BorderRadius.circular(12),
           textStyle: context.text.titleSmall,
-          onChange: (value) {},
-          onComplete: (value) {},
+          onChange: (value) {
+            // ValueNotifier обновляется автоматически через контроллер
+          },
+          onComplete: (value) {
+            // Автоматически вызовем подтверждение при заполнении всех полей
+          },
         );
       },
     );

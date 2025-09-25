@@ -191,7 +191,7 @@ class PropertiesCubit extends Cubit<PropertiesState> {
         verifyState: const ApiState.initial()));
   }
 
-  Future<PropertyEntity?> confirmPropertyByCode({
+  Future<void> confirmPropertyByCode({
     required int propertyId,
     required String code,
   }) async {
@@ -225,7 +225,7 @@ class PropertiesCubit extends Cubit<PropertiesState> {
           properties: updatedProperties,
           verifyState: const ApiState.success(null),
         ));
-        return confirmedProperty;
+
       },
     );
   }

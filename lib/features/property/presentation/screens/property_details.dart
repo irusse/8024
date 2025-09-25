@@ -132,9 +132,9 @@ class _PropertyDetailsState extends State<PropertyDetails> {
     final isVerifying = context.select<PropertiesCubit, bool>(
         (cubit) => cubit.state.verifyState.isLoading);
 
-    void _onVerifyClick() {
-      VerifyPropertyDialog.showDialog(context);
-    }
+     void _onVerifyClick() {
+       VerifyPropertyDialog.showDialog(context, widget.propertyId);
+     }
 
     return BlocConsumer<PropertiesCubit, PropertiesState>(
         listener: (context, state) {
