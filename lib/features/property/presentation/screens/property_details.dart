@@ -7,7 +7,6 @@ import 'package:neighbours/core/components/custom_svg.dart';
 import 'package:neighbours/core/components/default_app_bar.dart';
 import 'package:neighbours/core/components/default_loading_overlay.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
-import 'package:neighbours/core/cubits/user_location/user_location_cubit.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/router/app_routes.dart';
 import 'package:neighbours/core/state/api_state.dart';
@@ -17,6 +16,7 @@ import 'package:neighbours/features/property/presentation/cubits/properties/prop
 import 'package:neighbours/features/property/presentation/cubits/resources/resources_cubit.dart';
 import 'package:neighbours/features/property/presentation/services/property_share_service.dart';
 import 'package:neighbours/features/property/presentation/widgets/property_confirmation_banner.dart';
+import 'package:neighbours/features/property/presentation/widgets/property_info_row.dart';
 import 'package:neighbours/features/property/presentation/widgets/property_resources.dart';
 import '../../../../core/components/bottom_sheet_dialog.dart';
 import '../../../../core/components/bottom_sheet_option.dart';
@@ -26,7 +26,6 @@ import '../../../../core/components/shaped_cached_image.dart';
 import '../../../../core/constants/assets.dart';
 import '../../../../core/constants/default_constants.dart';
 import '../../../../core/constants/ui_constants.dart';
-import '../widgets/label_value_text.dart';
 
 class PropertyDetails extends StatefulWidget {
   final int propertyId;
@@ -38,6 +37,25 @@ class PropertyDetails extends StatefulWidget {
 }
 
 class _PropertyDetailsState extends State<PropertyDetails> {
+  String _formatDate(DateTime date) {
+    final months = [
+      'января',
+      'февраля',
+      'марта',
+      'апреля',
+      'мая',
+      'июня',
+      'июля',
+      'августа',
+      'сентября',
+      'октября',
+      'ноября',
+      'декабря'
+    ];
+
+    return '${date.day} ${months[date.month - 1]} ${date.year}';
+  }
+
   void _onOptionsClick(
       BuildContext context, PropertyEntity property, bool isUserProperty) {
     showBaseBottomSheet(
@@ -113,8 +131,8 @@ class _PropertyDetailsState extends State<PropertyDetails> {
     final isVerifying = context.select<PropertiesCubit, bool>(
         (cubit) => cubit.state.verifyState.isLoading);
 
-    final isGettingPosition = context
-        .select<UserLocationCubit, bool>((cubit) => cubit.state.isLoading);
+    // final isGettingPosition = context
+    //     .select<UserLocationCubit, bool>((cubit) => cubit.state.isLoading);
 
     return BlocConsumer<PropertiesCubit, PropertiesState>(
         listener: (context, state) {
@@ -178,101 +196,289 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                       )
                     ],
                   ),
-                  bottomNavigationBar: currentProperty.canVerify(userId)
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: UIConstants.defaultHorizontalPadding,
-                            vertical: 12,
-                          ),
-                          child: CustomOutlinedButton(
-                              isLoading: isGettingPosition || isVerifying,
-                              onPressed: () async {
-                                final userLocation = await context
-                                    .read<UserLocationCubit>()
-                                    .getPosition();
-                                if (userLocation != null && context.mounted) {
-                                  await context
-                                      .read<PropertiesCubit>()
-                                      .verifyProperty(
-                                          propertyId: currentProperty.id,
-                                          userLatitude: userLocation.latitude,
-                                          userLongitude:
-                                              userLocation.longitude);
-                                } else {
-                                  if (!context.mounted) return;
-                                  context.snackbar.info(context,
-                                      "Не удалось получить геопозицию пользователя.\nПопробуйте позже");
-                                }
-                              },
-                              text: 'Подтвердить'))
-                      : null,
-                  body: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        // Информационный контейнер на всю ширину
-                        if (!currentProperty.isVerified &&
-                            currentProperty.createdById == userId &&
-                            currentProperty.confirmationCode != null) ...[
-                          PropertyConfirmationBanner(
-                            confirmationCode: currentProperty.confirmationCode!,
-                          ),
-                          const VerticalGap(16)
+                  bottomNavigationBar: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: UIConstants.defaultHorizontalPadding,
+                      vertical: 12,
+                    ),
+                    child: CustomOutlinedButton(
+                        text: 'Подтвердить', onPressed: () {}),
+                  ),
+                  body: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          context.color.secondary,
+                          context.color.secondary.withValues(alpha: .95),
+                          context.color.secondary.withValues(alpha: .1),
                         ],
+                      ),
+                    ),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          // Информационный баннер
+                          if (!currentProperty.isVerified &&
+                              currentProperty.createdById == userId &&
+                              currentProperty.confirmationCode != null)
+                            PropertyConfirmationBanner(
+                              confirmationCode:
+                                  currentProperty.confirmationCode!,
+                            ),
 
-                        // Основное содержимое с padding
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: UIConstants.defaultHorizontalPadding),
-                          child: Column(
-                            children: [
-                              Container(
-                                alignment: Alignment.centerLeft,
-                                child: ShapedCachedImage(
-                                  radius: 40,
-                                  url: currentProperty.photo,
-                                  border: Border.all(
-                                      width: 2,
-                                      color: currentProperty.isVerified
-                                          ? context.color.primary
-                                          : CommonModeColors.orange),
+                          // Hero секция с фото объекта
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: UIConstants.defaultHorizontalPadding,
+                            ),
+                            child: Container(
+                              width: double.infinity,
+                              margin:
+                                  const EdgeInsets.only(bottom: 24, top: 24),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: currentProperty.isVerified
+                                      ? [
+                                          context.color.primary
+                                              .withValues(alpha: .1),
+                                          context.color.primary
+                                              .withValues(alpha: 0.05),
+                                        ]
+                                      : [
+                                          CommonModeColors.orange
+                                              .withValues(alpha: 0.1),
+                                          CommonModeColors.orange
+                                              .withValues(alpha: 0.05),
+                                        ],
+                                ),
+                                borderRadius: BorderRadius.circular(24),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: context.color.tertiary
+                                        .withValues(alpha: .1),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 8),
+                                  ),
+                                ],
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(24),
+                                child: Column(
+                                  children: [
+                                    // Фото объекта с красивой рамкой
+                                    ShapedCachedImage(
+                                      radius: 24,
+                                      url: currentProperty.photo,
+                                      width: 120,
+                                      height: 120,
+                                      border: Border.all(
+                                        width: 3,
+                                        color: currentProperty.isVerified
+                                            ? context.color.primary
+                                            : CommonModeColors.orange,
+                                      ),
+                                    ),
+                                    const VerticalGap(8),
+
+                                    // Название объекта
+                                    Text(
+                                      currentProperty.name,
+                                      style: context.text.titleSmall.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                        color: context.color.primaryText,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const VerticalGap(16),
+
+                                    // Статус верификации
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 8,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: currentProperty.isVerified
+                                            ? context.color.primary
+                                                .withValues(alpha: .1)
+                                            : CommonModeColors.orange
+                                                .withValues(alpha: .1),
+                                        borderRadius: BorderRadius.circular(20),
+                                        border: Border.all(
+                                          color: currentProperty.isVerified
+                                              ? context.color.primary
+                                              : CommonModeColors.orange,
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            currentProperty.isVerified
+                                                ? Icons.verified_rounded
+                                                : Icons.pending_rounded,
+                                            size: 16,
+                                            color: currentProperty.isVerified
+                                                ? context.color.primary
+                                                : CommonModeColors.orange,
+                                          ),
+                                          const HorizontalGap(6),
+                                          Text(
+                                            currentProperty
+                                                .buildVerificationStatusText(),
+                                            style:
+                                                context.text.bodySmall.copyWith(
+                                              color: currentProperty.isVerified
+                                                  ? context.color.primary
+                                                  : CommonModeColors.orange,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              const VerticalGap(16),
-                              LabelValueText(
-                                  label: 'Тип',
-                                  value: DefaultConstants.propertyTypeOptions[
-                                          currentProperty.category] ??
-                                      'Неизвестно'),
-                              const VerticalGap(8),
-                              LabelValueText(
-                                label: 'Состояние',
-                                value: currentProperty
-                                    .buildVerificationStatusText(),
-                                valueColor: currentProperty
-                                    .verificationStatusColor(context),
-                              ),
-                              const VerticalGap(8),
-                              LabelValueText(
-                                  label: 'Пользователь',
-                                  value: currentProperty.createdBy),
-                              const VerticalGap(24),
-                              Container(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  'Ресурсы',
-                                  style: context.text.titleSmall,
-                                ),
-                              ),
-                              const VerticalGap(16),
-                              PropertyResources(
-                                propertyId: widget.propertyId,
-                                isUserProperty: isUserProperty,
-                              ),
-                              const VerticalGap(16),
-                            ],
+                            ),
                           ),
-                        ),
-                      ],
+
+                          // Карточка с информацией об объекте
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: UIConstants.defaultHorizontalPadding,
+                            ),
+                            child: Container(
+                              width: double.infinity,
+                              margin: const EdgeInsets.only(bottom: 24),
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: context.color.secondary,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: context.color.tertiary
+                                        .withValues(alpha: .08),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                                border: Border.all(
+                                  color: context.color.tertiary
+                                      .withValues(alpha: .1),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.info_outline_rounded,
+                                        color: context.color.primary,
+                                        size: 20,
+                                      ),
+                                      const HorizontalGap(8),
+                                      Text(
+                                        'Информация об объекте',
+                                        style: context.text.titleSmall.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                          color: context.color.primaryText,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const VerticalGap(20),
+                                  PropertyInfoRow(
+                                    label: 'Тип объекта',
+                                    value: DefaultConstants.propertyTypeOptions[
+                                            currentProperty.category] ??
+                                        'Неизвестно',
+                                    icon: Icons.home_work_outlined,
+                                  ),
+                                  const VerticalGap(16),
+                                  PropertyInfoRow(
+                                    label: 'Создал объект',
+                                    value: currentProperty.createdBy,
+                                    icon: Icons.person_outline_rounded,
+                                  ),
+                                  const VerticalGap(16),
+                                  PropertyInfoRow(
+                                    label: 'Дата создания',
+                                    value:
+                                        _formatDate(currentProperty.createdAt),
+                                    icon: Icons.calendar_today_outlined,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          // Секция ресурсов
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: UIConstants.defaultHorizontalPadding,
+                            ),
+                            child: Container(
+                              width: double.infinity,
+                              margin: const EdgeInsets.only(bottom: 24),
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: context.color.secondary,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: context.color.tertiary
+                                        .withValues(alpha: .08),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                                border: Border.all(
+                                  color: context.color.tertiary
+                                      .withValues(alpha: .1),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.inventory_2_outlined,
+                                        color: context.color.primary,
+                                        size: 20,
+                                      ),
+                                      const HorizontalGap(8),
+                                      Text(
+                                        'Ресурсы объекта',
+                                        style: context.text.titleSmall.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                          color: context.color.primaryText,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const VerticalGap(16),
+                                  PropertyResources(
+                                    propertyId: widget.propertyId,
+                                    isUserProperty: isUserProperty,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          const VerticalGap(24),
+                        ],
+                      ),
                     ),
                   )),
               if (isDeleting || isUpdating || isVerifying)
