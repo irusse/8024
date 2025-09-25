@@ -22,14 +22,13 @@ abstract class PropertyEntity with _$PropertyEntity {
     required DateTime updatedAt,
     required List<int> verifiedUserIds,
     required String photo,
+    String? confirmationCode,
   }) = _PropertyEntity;
 }
 
 extension PropertyEntityX on PropertyEntity {
   bool canVerify(int userId) =>
-      createdById != userId &&
-      verificationStatus != DefaultConstants.verified &&
-      !verifiedUserIds.contains(userId);
+      createdById != userId && !isVerified && !verifiedUserIds.contains(userId);
 
   String buildVerificationStatusText() {
     final statusText =
@@ -47,4 +46,6 @@ extension PropertyEntityX on PropertyEntity {
     }
     return context.color.primary;
   }
+
+  bool get isVerified => verificationStatus == DefaultConstants.verified;
 }

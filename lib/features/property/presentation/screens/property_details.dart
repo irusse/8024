@@ -16,6 +16,7 @@ import 'package:neighbours/features/property/domain/entities/property/property_e
 import 'package:neighbours/features/property/presentation/cubits/properties/properties_cubit.dart';
 import 'package:neighbours/features/property/presentation/cubits/resources/resources_cubit.dart';
 import 'package:neighbours/features/property/presentation/services/property_share_service.dart';
+import 'package:neighbours/features/property/presentation/widgets/property_confirmation_banner.dart';
 import 'package:neighbours/features/property/presentation/widgets/property_resources.dart';
 import '../../../../core/components/bottom_sheet_dialog.dart';
 import '../../../../core/components/bottom_sheet_option.dart';
@@ -206,59 +207,72 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                               text: 'Подтвердить'))
                       : null,
                   body: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: UIConstants.defaultHorizontalPadding),
-                      child: Column(
-                        children: [
-                          const VerticalGap(8),
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            child: ShapedCachedImage(
-                              radius: 32,
-                              url: currentProperty.photo,
-                              border: Border.all(
-                                  width: 2,
-                                  color: currentProperty.verificationStatus ==
-                                          DefaultConstants.verified
-                                      ? context.color.primary
-                                      : CommonModeColors.orange),
-                            ),
+                    child: Column(
+                      children: [
+                        // Информационный контейнер на всю ширину
+                        if (!currentProperty.isVerified &&
+                            currentProperty.createdById == userId &&
+                            currentProperty.confirmationCode != null) ...[
+                          PropertyConfirmationBanner(
+                            confirmationCode: currentProperty.confirmationCode!,
                           ),
-                          const VerticalGap(16),
-                          LabelValueText(
-                              label: 'Тип',
-                              value: DefaultConstants.propertyTypeOptions[
-                                      currentProperty.category] ??
-                                  'Неизвестно'),
-                          const VerticalGap(8),
-                          LabelValueText(
-                            label: 'Состояние',
-                            value:
-                                currentProperty.buildVerificationStatusText(),
-                            valueColor: currentProperty
-                                .verificationStatusColor(context),
-                          ),
-                          const VerticalGap(8),
-                          LabelValueText(
-                              label: 'Пользователь',
-                              value: currentProperty.createdBy),
-                          const VerticalGap(24),
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              'Ресурсы',
-                              style: context.text.titleSmall,
-                            ),
-                          ),
-                          const VerticalGap(16),
-                          PropertyResources(
-                            propertyId: widget.propertyId,
-                            isUserProperty: isUserProperty,
-                          ),
-                          const VerticalGap(16),
+                          const VerticalGap(16)
                         ],
-                      ),
+
+                        // Основное содержимое с padding
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: UIConstants.defaultHorizontalPadding),
+                          child: Column(
+                            children: [
+                              Container(
+                                alignment: Alignment.centerLeft,
+                                child: ShapedCachedImage(
+                                  radius: 40,
+                                  url: currentProperty.photo,
+                                  border: Border.all(
+                                      width: 2,
+                                      color: currentProperty.isVerified
+                                          ? context.color.primary
+                                          : CommonModeColors.orange),
+                                ),
+                              ),
+                              const VerticalGap(16),
+                              LabelValueText(
+                                  label: 'Тип',
+                                  value: DefaultConstants.propertyTypeOptions[
+                                          currentProperty.category] ??
+                                      'Неизвестно'),
+                              const VerticalGap(8),
+                              LabelValueText(
+                                label: 'Состояние',
+                                value: currentProperty
+                                    .buildVerificationStatusText(),
+                                valueColor: currentProperty
+                                    .verificationStatusColor(context),
+                              ),
+                              const VerticalGap(8),
+                              LabelValueText(
+                                  label: 'Пользователь',
+                                  value: currentProperty.createdBy),
+                              const VerticalGap(24),
+                              Container(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  'Ресурсы',
+                                  style: context.text.titleSmall,
+                                ),
+                              ),
+                              const VerticalGap(16),
+                              PropertyResources(
+                                propertyId: widget.propertyId,
+                                isUserProperty: isUserProperty,
+                              ),
+                              const VerticalGap(16),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   )),
               if (isDeleting || isUpdating || isVerifying)

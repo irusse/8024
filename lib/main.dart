@@ -19,7 +19,6 @@ import 'firebase_options.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // Никаких initializeApp/configureDependencies/init тут.
   final model = AppNotificationModel.fromRemoteMessage(message);
   NotificationService().showBasicNotification(model);
 }
@@ -40,7 +39,8 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   runApp(BlocProvider.value(
-    value: getIt<ThemeCubit>()..loadTheme(),
+    value: getIt<ThemeCubit>()
+      ..loadTheme(),
     child: const MyApp(),
   ));
 }

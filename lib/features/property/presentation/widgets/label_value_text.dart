@@ -1,18 +1,23 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
+
+import '../../../../core/services/clipboard_service.dart';
 
 class LabelValueText extends StatelessWidget {
   final String label;
   final String value;
   final Color? valueColor;
   final TextStyle? textStyle;
+  final bool copyOnClick;
 
   const LabelValueText(
       {super.key,
       required this.label,
       required this.value,
       this.valueColor,
-      this.textStyle});
+      this.textStyle,
+      this.copyOnClick = false});
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +37,15 @@ class LabelValueText extends StatelessWidget {
                 fontWeight: FontWeight.w500,
                 color: valueColor ?? context.color.primary,
               ),
+              recognizer: TapGestureRecognizer()
+                ..onTap = () {
+                  if (copyOnClick) {
+                    ClipboardService.copyToClipboard(
+                      context: context,
+                      text: value,
+                    );
+                  }
+                },
             ),
           ],
         ),

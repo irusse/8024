@@ -1,6 +1,5 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/components/default_app_bar.dart';
@@ -9,8 +8,7 @@ import 'package:neighbours/core/cubits/user/user_cubit.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/features/community/presentation/widgets/error_with_try_btn.dart';
-
-import '../../../../core/services/snackbar_service.dart';
+import '../../../../core/services/clipboard_service.dart';
 import '../cubits/community/community_cubit.dart';
 import '../widgets/notifications_tab.dart';
 import '../widgets/events_tab.dart';
@@ -117,19 +115,8 @@ class _CommunityState extends State<Community> {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                onTap: () {
-                  Clipboard.setData(
-                    ClipboardData(text: communityEntity.joinCode),
-                  ).then((_) {
-                    if (context.mounted) {
-                      context.snackbar.info(
-                        context,
-                        'Скопировано в буфер обмена',
-                        position: SnackBarPosition.bottom,
-                      );
-                    }
-                  });
-                },
+                onTap: () => ClipboardService.copyToClipboard(
+                    context: context, text: 'Скопировано в буфер обмена'),
               )
             ],
           ),

@@ -18,6 +18,7 @@ class PropertyModel {
   final double longitude;
   final String photo;
   final List<int> verifiedUserIds;
+  final String? confirmationCode;
   @DateTimeConverter()
   final DateTime createdAt;
 
@@ -38,6 +39,7 @@ class PropertyModel {
     required this.updatedAt,
     required this.verifiedUserIds,
     required this.photo,
+    this.confirmationCode,
   });
 
   factory PropertyModel.fromJson(
@@ -64,6 +66,7 @@ class PropertyModel {
       updatedAt: model.updatedAt,
       verifiedUserIds: model.verifiedUserIds,
       photo: normalizedPhoto,
+      confirmationCode: model.confirmationCode,
     );
   }
 
@@ -83,6 +86,7 @@ class PropertyModel {
         createdAt: createdAt,
         updatedAt: updatedAt,
         verifiedUserIds: verifiedUserIds,
+        confirmationCode: confirmationCode,
       );
 
   factory PropertyModel.fromEntity(PropertyEntity entity) => PropertyModel(
@@ -99,5 +103,6 @@ class PropertyModel {
         createdAt: entity.createdAt,
         updatedAt: entity.updatedAt,
         verifiedUserIds: entity.verifiedUserIds,
+        confirmationCode: entity.confirmationCode,
       );
 }
