@@ -17,6 +17,9 @@ class PropertiesCubit extends Cubit<PropertiesState> {
   final PropertyRepository _propertyRepository;
 
   PropertiesCubit(this._propertyRepository) : super(const PropertiesState());
+  final int _propertyVerificationCodeLength = 6;
+
+  int get propertyVerificationCodeLength => _propertyVerificationCodeLength;
 
   Future<void> fetchMyProperties() async {
     _resetStates();

@@ -10,7 +10,9 @@ part 'community_access_cubit.freezed.dart';
 class CommunityAccessCubit extends Cubit<CommunityAccessState> {
   CommunityAccessCubit() : super(const CommunityAccessState());
 
-  final int communityCodeLength = 6;
+  final int _communityCodeLength = 6;
+
+  int get communityCodeLength => _communityCodeLength;
 
   void onNameChanged(String value) {
     emit(state.copyWith(
@@ -48,7 +50,7 @@ class CommunityAccessCubit extends Cubit<CommunityAccessState> {
     if (value == null || value.trim().isEmpty) {
       return 'Введите пригласительный код';
     }
-    if (value.trim().length != communityCodeLength) {
+    if (value.trim().length != _communityCodeLength) {
       return 'Некорректный код';
     }
     return null;

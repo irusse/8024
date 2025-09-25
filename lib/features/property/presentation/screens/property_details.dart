@@ -18,6 +18,7 @@ import 'package:neighbours/features/property/presentation/services/property_shar
 import 'package:neighbours/features/property/presentation/widgets/property_confirmation_banner.dart';
 import 'package:neighbours/features/property/presentation/widgets/property_info_row.dart';
 import 'package:neighbours/features/property/presentation/widgets/property_resources.dart';
+import 'package:neighbours/features/property/presentation/widgets/verify_property_dialog.dart';
 import '../../../../core/components/bottom_sheet_dialog.dart';
 import '../../../../core/components/bottom_sheet_option.dart';
 import '../../../../core/components/custom_alert_dialog.dart';
@@ -131,8 +132,9 @@ class _PropertyDetailsState extends State<PropertyDetails> {
     final isVerifying = context.select<PropertiesCubit, bool>(
         (cubit) => cubit.state.verifyState.isLoading);
 
-    // final isGettingPosition = context
-    //     .select<UserLocationCubit, bool>((cubit) => cubit.state.isLoading);
+    void _onVerifyClick() {
+      VerifyPropertyDialog.showDialog(context);
+    }
 
     return BlocConsumer<PropertiesCubit, PropertiesState>(
         listener: (context, state) {
@@ -196,14 +198,16 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                       )
                     ],
                   ),
-                  bottomNavigationBar: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: UIConstants.defaultHorizontalPadding,
-                      vertical: 12,
-                    ),
-                    child: CustomOutlinedButton(
-                        text: 'Подтвердить', onPressed: () {}),
-                  ),
+                  bottomNavigationBar: currentProperty.canVerify(userId)
+                      ? Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: UIConstants.defaultHorizontalPadding,
+                            vertical: 12,
+                          ),
+                          child: CustomOutlinedButton(
+                              text: 'Подтвердить', onPressed: _onVerifyClick),
+                        )
+                      : null,
                   body: Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -466,7 +470,6 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                       ),
                                     ],
                                   ),
-                                  const VerticalGap(16),
                                   PropertyResources(
                                     propertyId: widget.propertyId,
                                     isUserProperty: isUserProperty,

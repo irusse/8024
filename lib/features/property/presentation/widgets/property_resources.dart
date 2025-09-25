@@ -51,6 +51,7 @@ class PropertyResources extends StatelessWidget {
 
         return Column(
           children: [
+            const VerticalGap(16),
             GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -66,8 +67,8 @@ class PropertyResources extends StatelessWidget {
                 resourceEntity: resources[index],
               ),
             ),
-            const VerticalGap(16),
-            if (isUserProperty)
+            if (isUserProperty) ...[
+              const VerticalGap(16),
               Center(
                 child: CustomButton(
                   onPressed: () => context.push(
@@ -82,6 +83,7 @@ class PropertyResources extends StatelessWidget {
                   icon: const Icon(Icons.add, color: Colors.white),
                 ),
               ),
+            ]
           ],
         );
       },
