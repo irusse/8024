@@ -18,18 +18,18 @@ class ChatList extends StatelessWidget {
     final allUserNotifications =
         context.read<EventsCubit>().allUserNotifications(userId);
     final communities = context.read<UserCubit>().state.user.communities;
+    final _tabs = ["Сообщества", "Мероприятия", "Оповещения"];
     return Scaffold(
       appBar: const DefaultAppBar(
         showBackButton: true,
         title: 'Чаты',
       ),
       body: DefaultTabController(
-        length: 2,
+        length: _tabs.length,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const DefaultTabBar(
-                tabs: ["Сообщества", "Мероприятия", "Оповещения"]),
+            DefaultTabBar(tabs: _tabs),
             const VerticalGap(16),
             Expanded(
               child: TabBarView(

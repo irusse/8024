@@ -8,6 +8,7 @@ import 'package:neighbours/core/constants/ui_constants.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/router/app_routes.dart';
 import 'package:neighbours/features/chat/presentation/cubits/event_chat/event_chat_cubit.dart';
+import 'package:neighbours/features/chat/presentation/widgets/unread_count.dart';
 import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
 
 class EventChatListItem extends StatelessWidget {
@@ -47,26 +48,10 @@ class EventChatListItem extends StatelessWidget {
             const HorizontalGap(16),
             BlocBuilder<EventChatCubit, EventChatState>(
               builder: (context, state) {
-                final unreadCount = state.unreadMessageCounts[entity.id] ?? 0;
-                if (unreadCount == 0) return const SizedBox.shrink();
-
-                return Container(
-                  width: 24,
-                  height: 24,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                      color: context.color.basicRed, shape: BoxShape.circle),
-                  constraints:
-                      const BoxConstraints(minWidth: 20, minHeight: 20),
-                  child: Text(
-                    unreadCount > 99 ? '99+' : unreadCount.toString(),
-                    style: context.text.labelLarge.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                );
+                final unreadCount = context
+                    .read<EventChatCubit>()
+                    .getUnreadCountForEvent(entity.id);
+                return UnreadCount(count: unreadCount);
               },
             ),
           ],

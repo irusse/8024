@@ -255,8 +255,8 @@ class AppRouter {
                         BlocProvider.value(value: getIt<UserCubit>()),
                       ],
                       child: Chat(
-                        eventId: eventId,
-                        eventTitle: eventTitle,
+                        id: eventId,
+                        title: eventTitle,
                       ),
                     ));
               }),

@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/constants/notification_constants.dart';
 import 'package:neighbours/core/di/injection.dart';
 import 'package:neighbours/core/services/notification_service.dart';
@@ -14,6 +15,7 @@ import 'package:neighbours/features/chat/domain/repositories/event_chat_socket_r
 part 'community_chat_state.dart';
 part 'community_chat_cubit.freezed.dart';
 
+@singleton
 class CommunityChatCubit extends Cubit<CommunityChatState> {
   final CommunityChatRepository _chatRepository;
   final EventChatSocketRepository _socketRepository;

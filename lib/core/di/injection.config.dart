@@ -42,6 +42,8 @@ import '../../features/chat/domain/repositories/event_chat_repository.dart'
     as _i934;
 import '../../features/chat/domain/repositories/event_chat_socket_repository.dart'
     as _i580;
+import '../../features/chat/presentation/cubits/community_chat/community_chat_cubit.dart'
+    as _i519;
 import '../../features/chat/presentation/cubits/event_chat/event_chat_cubit.dart'
     as _i638;
 import '../../features/community/data/datasources/community_remote_datasource.dart'
@@ -344,6 +346,10 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i502.VoteCubit(gh<_i221.VoteRepository>()));
     gh.singleton<_i580.EventChatSocketRepository>(
         () => _i615.EventChatRepositoryImpl(gh<_i466.ChatSocket>()));
+    gh.singleton<_i519.CommunityChatCubit>(() => _i519.CommunityChatCubit(
+          gh<_i250.CommunityChatRepository>(),
+          gh<_i580.EventChatSocketRepository>(),
+        ));
     gh.singleton<_i235.AuthCubit>(
         () => _i235.AuthCubit(gh<_i787.AuthRepository>()));
     gh.factory<_i470.ProfileCubit>(
