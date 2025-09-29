@@ -1,24 +1,29 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:injectable/injectable.dart';
-import 'package:neighbours/features/chat/data/models/message/message_model.dart';
+import 'package:neighbours/core/logging/logger.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:neighbours/core/config/app_config.dart';
 import 'package:neighbours/core/services/auth_service.dart';
 
-@singleton
-class ChatSocketDataSource {
+@Singleton()
+class ChatSocket {
   final AuthService _authService;
 
-  ChatSocketDataSource(this._authService);
+  ChatSocket(this._authService);
 
   io.Socket? _socket;
   bool _isConnected = false;
   StreamSubscription<String?>? _tokenSub;
 
-  final Set<int> _roomsToJoin = <int>{};
+  final Map<String, Set<int>> _roomsToJoin = {
+    'event': <int>{},
+    'community': <int>{},
+  };
 
   io.Socket? get socket => _socket;
+
+  bool get isConnected => _isConnected;
 
   Future<void> initializeSocket() async {
     _tokenSub ??= _authService.accessTokenStream.listen((token) async {
@@ -51,71 +56,51 @@ class ChatSocketDataSource {
     _socket = io.io(AppConfig.socketUrl, opts);
     _setupSocketListeners();
     _socket!.connect();
+    AppLogger.info("Socket Initialized");
   }
 
   void _setupSocketListeners() {
     _socket?.onConnect((_) {
       _isConnected = true;
-      for (final id in _roomsToJoin) {
-        _emitJoin(id);
+
+      // при реконнекте автоматически восстанавливаем комнаты
+      for (final entry in _roomsToJoin.entries) {
+        final type = entry.key;
+        for (final id in entry.value) {
+          emit('$type:join', id);
+        }
       }
     });
 
-    _socket?.onDisconnect((_) {
-      _isConnected = false;
-    });
-
-    _socket?.onConnectError((error) {
-      _isConnected = false;
-    });
+    _socket?.onDisconnect((_) => _isConnected = false);
+    _socket?.onConnectError((_) => _isConnected = false);
   }
 
-  void _emitJoin(int eventId) {
-    _socket!.emit('joinEvent', eventId);
-  }
-
-  void joinEvent(int eventId) {
-    if (_socket == null) {
-      _roomsToJoin.add(eventId);
-      debugPrint('Socket not initialized yet. Queued join for $eventId');
+  void emit(String event, dynamic data) {
+    if (!_isConnected || _socket == null) {
+      debugPrint('Emit failed: socket not connected [$event]');
       return;
     }
-    if (!_isConnected) {
-      _roomsToJoin.add(eventId);
-      debugPrint('Socket not connected. Queued join for $eventId');
-      return;
-    }
-    // Уже подключены — вступаем сразу
-    _emitJoin(eventId);
-    debugPrint('Joined event chat: $eventId');
+    _socket!.emit(event, data);
   }
 
-  void leaveEvent(int eventId) {
-    // удаляем намерение, чтобы при реконнекте не вступать снова
-    _roomsToJoin.remove(eventId);
-
-    if (_socket == null || !_isConnected) {
-      return;
-    }
-    _socket!.emit('leaveEvent', eventId);
+  void on(String event, Function(dynamic) handler) {
+    _socket?.on(event, handler);
   }
 
-  void sendMessage(int eventId, String messageText) {
-    if (_socket == null || !_isConnected) {
-      debugPrint('Socket not connected. Cannot send message.');
-      return;
+  void joinRoom(String type, int id) {
+    _roomsToJoin.putIfAbsent(type, () => <int>{}).add(id);
+    if (_isConnected) {
+      AppLogger.info("Socket joined ${type}");
+      emit(type, id);
     }
-    final messageData = {
-      'eventId': eventId,
-      'message': {'text': messageText}
-    };
-    _socket!.emit('sendMessage', messageData);
   }
 
-  void listenToNewMessages(Function(MessageModel) onNewMessage) {
-    _socket?.on('newMessage', (data) {
-      onNewMessage(MessageModel.fromJson(data));
-    });
+  void leaveRoom(String type, int id) {
+    _roomsToJoin[type]?.remove(id);
+    if (_isConnected) {
+      emit(type, id);
+    }
   }
 
   void disconnect() {

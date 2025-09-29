@@ -6,7 +6,6 @@ import 'package:neighbours/core/components/full_screen_map_view.dart';
 import 'package:neighbours/core/components/lost_connection_screen.dart';
 import 'package:neighbours/core/components/unexpected_error_screen.dart';
 import 'package:neighbours/core/services/auth_service.dart';
-import 'package:neighbours/features/chat/presentation/cubits/chat/chat_cubit.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
 import 'package:neighbours/core/cubits/user_location/user_location_cubit.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
@@ -17,6 +16,8 @@ import 'package:neighbours/features/auth/presentation/cubits/auth/auth_cubit.dar
 import 'package:neighbours/features/auth/presentation/cubits/otp/otp_cubit.dart';
 import 'package:neighbours/features/auth/presentation/pages/auth_welcome_page.dart';
 import 'package:neighbours/features/auth/presentation/pages/country_code_select.dart';
+import 'package:neighbours/features/chat/presentation/cubits/community_chat/community_chat_cubit.dart';
+import 'package:neighbours/features/chat/presentation/cubits/event_chat/event_chat_cubit.dart';
 import 'package:neighbours/features/chat/presentation/screens/chat_list.dart';
 import 'package:neighbours/features/community/presentation/cubits/community/community_cubit.dart';
 import 'package:neighbours/features/community/presentation/screens/community.dart';
@@ -246,7 +247,10 @@ class AppRouter {
                     child: MultiBlocProvider(
                       providers: [
                         BlocProvider.value(
-                          value: getIt<ChatCubit>(),
+                          value: getIt<EventChatCubit>(),
+                        ),
+                        BlocProvider.value(
+                          value: getIt<CommunityChatCubit>(),
                         ),
                         BlocProvider.value(value: getIt<UserCubit>()),
                       ],
@@ -262,7 +266,10 @@ class AppRouter {
               key: state.pageKey,
               child: MultiBlocProvider(providers: [
                 BlocProvider.value(value: getIt<EventsCubit>()),
-                BlocProvider.value(value: getIt<ChatCubit>()),
+                BlocProvider.value(value: getIt<EventChatCubit>()),
+                BlocProvider.value(
+                  value: getIt<CommunityChatCubit>(),
+                ),
                 BlocProvider.value(value: getIt<UserCubit>()),
               ], child: const ChatList()));
         },
@@ -347,7 +354,10 @@ class AppRouter {
                     value: getIt<UserCubit>(),
                   ),
                   BlocProvider.value(
-                    value: getIt<ChatCubit>(),
+                    value: getIt<EventChatCubit>(),
+                  ),
+                  BlocProvider.value(
+                    value: getIt<CommunityChatCubit>(),
                   ),
                   BlocProvider.value(
                     value: getIt<UserLocationCubit>(),
@@ -391,7 +401,7 @@ class AppRouter {
                     child: MultiBlocProvider(providers: [
                       BlocProvider.value(value: getIt<EventsCubit>()),
                       BlocProvider.value(value: getIt<UserCubit>()),
-                      BlocProvider.value(value: getIt<ChatCubit>()),
+                      BlocProvider.value(value: getIt<EventChatCubit>()),
                       BlocProvider<VoteCubit>(
                         create: (_) => getIt<VoteCubit>(),
                       ),

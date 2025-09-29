@@ -3,7 +3,7 @@ import 'package:neighbours/core/domain/entities/unread_summary/unread_summary_en
 import 'package:neighbours/core/error/failures.dart';
 import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
 
-abstract class ChatRepository {
+abstract class EventChatRepository {
   Future<Either<Failure, List<MessageEntity>>> fetchEventMessages({
     required int eventId,
     required int page,

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:neighbours/features/chat/presentation/cubits/chat/chat_cubit.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/state/api_state.dart';
+import 'package:neighbours/features/chat/presentation/cubits/event_chat/event_chat_cubit.dart';
 import 'package:neighbours/features/chat/presentation/widgets/message_input.dart';
 import 'package:neighbours/features/chat/presentation/widgets/message_list.dart';
 
@@ -19,27 +19,27 @@ class _ChatWidgetState extends State<ChatWidget> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   double _prevMaxExtent = 0;
-  late ChatCubit _chatCubit;
+  late EventChatCubit _eventChatCubit;
 
   @override
   void initState() {
     super.initState();
 
-    _chatCubit = context.read<ChatCubit>();
-    _chatCubit.fetchEventMessages(widget.eventId);
+    _eventChatCubit = context.read<EventChatCubit>();
+    _eventChatCubit.fetchEventMessages(widget.eventId);
     _scrollController.addListener(_onScroll);
 
     // Присоединяемся к чату события
-    _chatCubit.joinEvent(widget.eventId);
+    _eventChatCubit.joinEvent(widget.eventId);
 
     // Устанавливаем текущий открытый чат
     // Это предотвратит показ уведомлений для сообщений из этого чата
     // и позволит добавлять сообщения в состояние только для этого чата
-    _chatCubit.setCurrentChat(widget.eventId);
+    _eventChatCubit.setCurrentChat(widget.eventId);
 
     // Отмечаем сообщения как прочитанные
-    if (_chatCubit.getUnreadCountForEvent(widget.eventId) != 0) {
-      _chatCubit.markEventMessagesAsRead(widget.eventId);
+    if (_eventChatCubit.getUnreadCountForEvent(widget.eventId) != 0) {
+      _eventChatCubit.markEventMessagesAsRead(widget.eventId);
     }
   }
 
@@ -48,7 +48,7 @@ class _ChatWidgetState extends State<ChatWidget> {
     const threshold = 120.0;
     // при reverse:true "верх" -> maxScrollExtent
     if (pos.pixels >= pos.maxScrollExtent - threshold) {
-      _chatCubit.loadMoreMessages(widget.eventId);
+      _eventChatCubit.loadMoreMessages(widget.eventId);
     }
   }
 
@@ -74,13 +74,13 @@ class _ChatWidgetState extends State<ChatWidget> {
     final text = _messageController.text.trim();
     if (text.isEmpty) return;
 
-    _chatCubit.addSocketMessage(widget.eventId, text);
+    _eventChatCubit.addSocketMessage(widget.eventId, text);
     _messageController.clear();
   }
 
   @override
   void dispose() {
-    _chatCubit.setCurrentChat(null);
+    _eventChatCubit.setCurrentChat(null);
     _scrollController.dispose();
     _messageController.dispose();
     super.dispose();
@@ -88,7 +88,7 @@ class _ChatWidgetState extends State<ChatWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<ChatCubit, ChatState>(
+    return BlocListener<EventChatCubit, EventChatState>(
       listenWhen: (p, c) =>
           p.fetchMessagesState != c.fetchMessagesState ||
           p.sendMessageState != c.sendMessageState,
@@ -114,13 +114,13 @@ class _ChatWidgetState extends State<ChatWidget> {
         children: [
           Expanded(
             child: MessageList(
-              messages:
-                  context.select((ChatCubit cubit) => cubit.state.messages),
+              messages: context
+                  .select((EventChatCubit cubit) => cubit.state.messages),
               controller: _scrollController,
-              isLoading: context.select((ChatCubit cubit) =>
+              isLoading: context.select((EventChatCubit cubit) =>
                   cubit.state.fetchMessagesState.isLoading),
               isLoadingMore: context
-                  .select((ChatCubit cubit) => cubit.state.isLoadingMore),
+                  .select((EventChatCubit cubit) => cubit.state.isLoadingMore),
             ),
           ),
           MessageInput(

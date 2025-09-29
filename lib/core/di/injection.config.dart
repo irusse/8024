@@ -21,18 +21,29 @@ import '../../features/auth/data/repositories/auth_repository_impl.dart'
     as _i153;
 import '../../features/auth/domain/repositories/auth_repository.dart' as _i787;
 import '../../features/auth/presentation/cubits/auth/auth_cubit.dart' as _i235;
-import '../../features/chat/data/datasources/chat_remote_datasource.dart'
-    as _i159;
-import '../../features/chat/data/datasources/chat_socket_datasource.dart'
-    as _i1037;
-import '../../features/chat/data/repositories/chat_repository_impl.dart'
-    as _i504;
-import '../../features/chat/data/repositories/chat_socket_repository_impl.dart'
-    as _i560;
-import '../../features/chat/domain/repositories/chat_repository.dart' as _i420;
-import '../../features/chat/domain/repositories/chat_socket_repository.dart'
-    as _i587;
-import '../../features/chat/presentation/cubits/chat/chat_cubit.dart' as _i266;
+import '../../features/chat/data/datasources/community_chat_datasource.dart'
+    as _i573;
+import '../../features/chat/data/datasources/event_chat_datasource.dart'
+    as _i334;
+import '../../features/chat/data/repositories/community_chat_repository_impl.dart'
+    as _i574;
+import '../../features/chat/data/repositories/community_chat_socket_repository_impl.dart'
+    as _i351;
+import '../../features/chat/data/repositories/event_chat_repository_impl.dart'
+    as _i970;
+import '../../features/chat/data/repositories/event_chat_socket_repository_impl.dart'
+    as _i615;
+import '../../features/chat/data/socket/chat_socket.dart' as _i466;
+import '../../features/chat/domain/repositories/community_chat_repository.dart'
+    as _i250;
+import '../../features/chat/domain/repositories/community_chat_socket_repository.dart'
+    as _i515;
+import '../../features/chat/domain/repositories/event_chat_repository.dart'
+    as _i934;
+import '../../features/chat/domain/repositories/event_chat_socket_repository.dart'
+    as _i580;
+import '../../features/chat/presentation/cubits/event_chat/event_chat_cubit.dart'
+    as _i638;
 import '../../features/community/data/datasources/community_remote_datasource.dart'
     as _i158;
 import '../../features/community/data/repositories/community_repository_impl.dart'
@@ -192,6 +203,8 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i835.NotificationLayerService(gh<_i485.MapIconService>()));
     gh.factory<_i346.EventLayerService>(
         () => _i346.EventLayerService(gh<_i485.MapIconService>()));
+    gh.singleton<_i334.EventChatDataSource>(
+        () => _i334.EventChatDataSourceImpl(gh<_i361.Dio>()));
     gh.lazySingleton<_i569.MapService>(() => _i569.MapboxService());
     gh.singleton<_i111.NotificationHandler>(
       () => _i536.PropertyVerifiedHandler(),
@@ -200,6 +213,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i768.ImageService>(() => _i768.ImageServiceImpl());
     gh.singleton<_i459.OtherProfileRemoteDataSource>(
         () => _i459.OtherProfileRemoteDataSourceImpl(gh<_i361.Dio>()));
+    gh.singleton<_i573.CommunityChatDataSource>(
+        () => _i573.CommunityChatDataSourceImpl(gh<_i361.Dio>()));
     gh.singleton<_i111.NotificationHandler>(
       () => _i630.UserJoinedCommunityHandler(),
       instanceName: 'USER_JOINED_COMMUNITY',
@@ -218,8 +233,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i342.SnackbarService>(() => _i342.SnackbarServiceImpl());
     gh.singleton<_i227.NotificationRemoteDataSource>(
         () => _i227.NotificationRemoteDataSourceImpl(gh<_i361.Dio>()));
-    gh.singleton<_i159.ChatRemoteDataSource>(
-        () => _i159.ChatRemoteDataSourceImpl(gh<_i361.Dio>()));
     gh.singleton<_i111.NotificationHandler>(
       () => _i89.MessageReceivedHandler(),
       instanceName: 'MESSAGE_RECEIVED',
@@ -234,6 +247,8 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i609.DocumentDataSourceImpl(gh<_i361.Dio>()));
     gh.singleton<_i107.AuthRemoteDataSource>(
         () => _i107.AuthRemoteDataSourceImpl(gh<_i361.Dio>()));
+    gh.singleton<_i250.CommunityChatRepository>(() =>
+        _i574.CommunityChatRepositoryImpl(gh<_i573.CommunityChatDataSource>()));
     gh.singleton<_i637.PushRepository>(
         () => _i1041.PushRepositoryImpl(gh<_i189.PushRemoteDataSource>()));
     gh.singleton<_i698.EventRemoteDataSource>(
@@ -263,8 +278,6 @@ extension GetItInjectableX on _i174.GetIt {
         _i758.PropertyRepositoryImpl(gh<_i954.PropertyRemoteDataSource>()));
     gh.singleton<_i745.AuthService>(
         () => _i745.AuthService(gh<_i558.FlutterSecureStorage>()));
-    gh.singleton<_i420.ChatRepository>(
-        () => _i504.ChatRepositoryImpl(gh<_i159.ChatRemoteDataSource>()));
     gh.factory<_i526.UserVerifiedPropertiesCubit>(
         () => _i526.UserVerifiedPropertiesCubit(gh<_i61.PropertyRepository>()));
     gh.singleton<_i468.PropertiesCubit>(
@@ -294,6 +307,8 @@ extension GetItInjectableX on _i174.GetIt {
         ));
     gh.singleton<_i221.VoteRepository>(
         () => _i630.VoteRepositoryImpl(gh<_i990.VoteRemoteDatasource>()));
+    gh.singleton<_i934.EventChatRepository>(
+        () => _i970.EventChatRepositoryImpl(gh<_i334.EventChatDataSource>()));
     gh.singleton<_i791.FcmCubit>(() => _i791.FcmCubit(
           gh<_i637.PushRepository>(),
           gh<_i928.FCMService>(),
@@ -309,8 +324,10 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i745.AuthService>(),
         ));
     gh.singleton<_i81.AppRouter>(() => _i81.AppRouter(gh<_i745.AuthService>()));
-    gh.singleton<_i1037.ChatSocketDataSource>(
-        () => _i1037.ChatSocketDataSource(gh<_i745.AuthService>()));
+    gh.singleton<_i466.ChatSocket>(
+        () => _i466.ChatSocket(gh<_i745.AuthService>()));
+    gh.singleton<_i515.CommunityChatSocketRepository>(
+        () => _i351.CommunityChatSocketRepositoryImpl(gh<_i466.ChatSocket>()));
     gh.singleton<_i667.DioClient>(() => _i667.DioClient(
           gh<_i361.Dio>(),
           gh<_i260.JWTInterceptor>(),
@@ -325,16 +342,16 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i1067.UserCubit(gh<_i544.UserRepository>()));
     gh.factory<_i502.VoteCubit>(
         () => _i502.VoteCubit(gh<_i221.VoteRepository>()));
-    gh.singleton<_i587.ChatSocketRepository>(() =>
-        _i560.ChatSocketRepositoryImpl(gh<_i1037.ChatSocketDataSource>()));
-    gh.singleton<_i266.ChatCubit>(() => _i266.ChatCubit(
-          gh<_i420.ChatRepository>(),
-          gh<_i587.ChatSocketRepository>(),
-        ));
+    gh.singleton<_i580.EventChatSocketRepository>(
+        () => _i615.EventChatRepositoryImpl(gh<_i466.ChatSocket>()));
     gh.singleton<_i235.AuthCubit>(
         () => _i235.AuthCubit(gh<_i787.AuthRepository>()));
     gh.factory<_i470.ProfileCubit>(
         () => _i470.ProfileCubit(gh<_i787.AuthRepository>()));
+    gh.singleton<_i638.EventChatCubit>(() => _i638.EventChatCubit(
+          gh<_i934.EventChatRepository>(),
+          gh<_i580.EventChatSocketRepository>(),
+        ));
     return this;
   }
 }

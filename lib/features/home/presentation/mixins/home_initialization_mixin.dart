@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:neighbours/core/cubits/fcm/fcm_cubit.dart';
-import 'package:neighbours/features/chat/presentation/cubits/chat/chat_cubit.dart';
 import 'dart:async';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
 import 'package:neighbours/core/cubits/user_location/user_location_cubit.dart';
@@ -10,6 +9,8 @@ import 'package:neighbours/core/exceptions/exceptions.dart';
 import 'package:neighbours/core/router/app_routes.dart';
 import 'package:neighbours/core/services/map_service.dart';
 import 'package:neighbours/core/di/injection.dart';
+import 'package:neighbours/features/chat/data/socket/chat_socket.dart';
+import 'package:neighbours/features/chat/presentation/cubits/event_chat/event_chat_cubit.dart';
 import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart';
 import 'package:neighbours/features/home/data/services/event_layer_service.dart';
 import 'package:neighbours/features/home/data/services/property_layer_service.dart';
@@ -94,7 +95,7 @@ mixin HomeInitializationMixin<T extends StatefulWidget> on State<Home> {
     final propertiesCubit = context.read<PropertiesCubit>();
     final eventsCubit = context.read<EventsCubit>();
     final locationCubit = context.read<UserLocationCubit>();
-    final chatCubit = context.read<ChatCubit>();
+    final eventChatCubit = context.read<EventChatCubit>();
     final notificationCubit = context.read<NotificationCubit>();
 
     try {
@@ -103,10 +104,10 @@ mixin HomeInitializationMixin<T extends StatefulWidget> on State<Home> {
         userCubit.fetchUser(),
       ]);
       if (firstInit) {
-        await chatCubit.initializeSocket().then((_) {
-          chatCubit.listenEventMessages();
+        await getIt<ChatSocket>().initializeSocket().then((_) {
+          eventChatCubit.listenEventMessages();
         });
-        chatCubit.fetchUnreadMessageCounts(userCubit.state.user.id);
+        eventChatCubit.fetchUnreadMessageCounts(userCubit.state.user.id);
         getIt<FcmCubit>().saveFcmToken();
 
         notificationCubit.fetchUnreadCount();

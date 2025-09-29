@@ -116,7 +116,7 @@ class _CommunityState extends State<Community> {
                   ),
                 ),
                 onTap: () => ClipboardService.copyToClipboard(
-                    context: context, text: 'Скопировано в буфер обмена'),
+                    context: context, text:communityEntity.joinCode),
               )
             ],
           ),

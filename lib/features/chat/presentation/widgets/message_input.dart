@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:neighbours/core/state/api_state.dart';
-import 'package:neighbours/features/chat/presentation/cubits/chat/chat_cubit.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
+import 'package:neighbours/features/chat/presentation/cubits/event_chat/event_chat_cubit.dart';
 
 class MessageInput extends StatelessWidget {
   final TextEditingController messageController;
@@ -13,7 +13,7 @@ class MessageInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ChatCubit, ChatState>(
+    return BlocBuilder<EventChatCubit, EventChatState>(
       builder: (context, state) {
         return Container(
           padding: const EdgeInsets.all(16),

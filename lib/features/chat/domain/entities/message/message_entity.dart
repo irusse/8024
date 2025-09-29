@@ -10,7 +10,9 @@ abstract class MessageEntity with _$MessageEntity {
     required String text,
     required DateTime createdAt,
     required DateTime updatedAt,
-    required int eventId,
+    int? eventId,
+    int? communityId,
+    int? conversationId,
     required int userId,
     required ParticipantEntity user,
   }) = _MessageEntity;

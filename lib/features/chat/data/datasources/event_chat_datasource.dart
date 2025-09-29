@@ -6,7 +6,7 @@ import 'package:neighbours/core/error/failures.dart';
 import 'package:neighbours/core/network/network_handler.dart';
 import 'package:neighbours/features/chat/data/models/message/message_model.dart';
 
-abstract class ChatRemoteDataSource {
+abstract class EventChatDataSource {
   Future<Either<Failure, List<MessageModel>>> fetchEventMessages({
     required int eventId,
     required int page,
@@ -23,11 +23,11 @@ abstract class ChatRemoteDataSource {
   Future<Either<Failure, void>> markEventMessagesAsRead(int eventId);
 }
 
-@Singleton(as: ChatRemoteDataSource)
-class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
+@Singleton(as: EventChatDataSource)
+class EventChatDataSourceImpl implements EventChatDataSource {
   final Dio _dio;
 
-  ChatRemoteDataSourceImpl(this._dio);
+  EventChatDataSourceImpl(this._dio);
 
   @override
   Future<Either<Failure, List<MessageModel>>> fetchEventMessages({

@@ -13,6 +13,7 @@ import 'package:neighbours/core/router/app_routes.dart';
 import 'package:neighbours/core/services/map_service.dart';
 import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/core/utils/map_camera_utils.dart';
+import 'package:neighbours/features/chat/presentation/cubits/event_chat/event_chat_cubit.dart';
 import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart';
 import 'package:neighbours/features/home/data/services/event_layer_service.dart';
 import 'package:neighbours/features/home/data/services/property_layer_service.dart';
@@ -28,7 +29,6 @@ import 'package:neighbours/features/home/presentation/widgets/top_panel.dart';
 import 'package:neighbours/features/home/presentation/mixins/home_map_mixin.dart';
 import 'package:neighbours/features/home/presentation/mixins/home_initialization_mixin.dart';
 import 'package:neighbours/features/home/presentation/widgets/view_switcher.dart';
-import 'package:neighbours/features/chat/presentation/cubits/chat/chat_cubit.dart';
 import 'package:neighbours/features/property/presentation/cubits/properties/properties_cubit.dart';
 import 'package:neighbours/features/property/presentation/cubits/property_form/property_form_cubit.dart';
 import '../../../../core/cubits/theme/theme_cubit.dart';
@@ -231,7 +231,7 @@ class _HomeState extends State<Home>
                 ),
                 BlocListener<EventsCubit, EventsState>(
                   listener: (context, state) {
-                    final chatCubit = context.read<ChatCubit>();
+                    final chatCubit = context.read<EventChatCubit>();
 
                     state.joinEventState.mapOrNull(success: (res) {
                       chatCubit.joinEvent(res.data.id);

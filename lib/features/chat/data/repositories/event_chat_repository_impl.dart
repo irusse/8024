@@ -1,16 +1,16 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/error/failures.dart';
+import 'package:neighbours/features/chat/data/datasources/event_chat_datasource.dart';
 import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
 import '../../../../core/domain/entities/unread_summary/unread_summary_entity.dart';
-import '../../domain/repositories/chat_repository.dart';
-import '../datasources/chat_remote_datasource.dart';
+import '../../domain/repositories/event_chat_repository.dart';
 
-@Singleton(as: ChatRepository)
-class ChatRepositoryImpl implements ChatRepository {
-  final ChatRemoteDataSource _remoteDataSource;
+@Singleton(as: EventChatRepository)
+class EventChatRepositoryImpl implements EventChatRepository {
+  final EventChatDataSource _remoteDataSource;
 
-  ChatRepositoryImpl(this._remoteDataSource);
+  EventChatRepositoryImpl(this._remoteDataSource);
 
   @override
   Future<Either<Failure, List<MessageEntity>>> fetchEventMessages({

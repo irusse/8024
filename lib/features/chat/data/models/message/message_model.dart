@@ -13,7 +13,9 @@ class MessageModel {
   final DateTime createdAt;
   @DateTimeConverter()
   final DateTime updatedAt;
-  final int eventId;
+  final int? eventId;
+  final int? communityId;
+  final int? conversationId;
   final int userId;
   final ParticipantModel user;
 
@@ -22,7 +24,9 @@ class MessageModel {
     required this.text,
     required this.createdAt,
     required this.updatedAt,
-    required this.eventId,
+    this.eventId,
+    this.communityId,
+    this.conversationId,
     required this.userId,
     required this.user,
   });
@@ -38,6 +42,8 @@ class MessageModel {
         createdAt: createdAt.toLocal(),
         updatedAt: updatedAt,
         eventId: eventId,
+        communityId: communityId,
+        conversationId: conversationId,
         userId: userId,
         user: user.toEntity(),
       );
@@ -48,6 +54,8 @@ class MessageModel {
         createdAt: entity.createdAt,
         updatedAt: entity.updatedAt,
         eventId: entity.eventId,
+        communityId: entity.communityId,
+        conversationId: entity.conversationId,
         userId: entity.userId,
         user: ParticipantModel.fromEntity(entity.user),
       );

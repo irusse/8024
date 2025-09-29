@@ -1,8 +1,8 @@
-part of 'chat_cubit.dart';
+part of 'community_chat_cubit.dart';
 
 @freezed
-abstract class ChatState with _$ChatState {
-  const factory ChatState(
+abstract class CommunityChatState with _$CommunityChatState {
+  const factory CommunityChatState(
       {@Default([]) List<MessageEntity> messages,
       @Default(ApiState.initial())
       ApiState<List<MessageEntity>> fetchMessagesState,
@@ -13,7 +13,6 @@ abstract class ChatState with _$ChatState {
       @Default(40) int limit,
       @Default(false) bool hasMoreMessages,
       @Default({}) Map<int, int> unreadMessageCounts,
-      @Default(0) int unreadEventsTotal,
-      @Default(0) int unreadNotificationsTotal,
-      @Default(false) bool isLoadingMore}) = _ChatState;
+      @Default(0) int unreadTotal,
+      @Default(false) bool isLoadingMore}) = _CommunityChatState;
 }

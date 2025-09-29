@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:bloc/bloc.dart';
-import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/constants/notification_constants.dart';
@@ -10,24 +8,22 @@ import 'package:neighbours/core/di/injection.dart';
 import 'package:neighbours/core/services/notification_service.dart';
 import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
-import 'package:neighbours/features/chat/domain/repositories/chat_repository.dart';
-import 'package:neighbours/features/chat/domain/repositories/chat_socket_repository.dart';
+import 'package:neighbours/features/chat/domain/repositories/event_chat_repository.dart';
+import 'package:neighbours/features/chat/domain/repositories/event_chat_socket_repository.dart';
 
-part 'chat_cubit.freezed.dart';
+part 'event_chat_state.dart';
 
-part 'chat_state.dart';
+part 'event_chat_cubit.freezed.dart';
 
 @singleton
-class ChatCubit extends Cubit<ChatState> {
-  final ChatRepository _chatRepository;
-  final ChatSocketRepository _chatSocketRepository;
+class EventChatCubit extends Cubit<EventChatState> {
+  final EventChatRepository _chatRepository;
+  final EventChatSocketRepository _socketRepository;
   int? _currentOpenChatId;
   StreamSubscription? _notificationSub;
 
-  ChatCubit(
-    this._chatRepository,
-    this._chatSocketRepository,
-  ) : super(const ChatState()) {
+  EventChatCubit(this._chatRepository, this._socketRepository)
+      : super(EventChatState()) {
     _notificationSub =
         getIt<NotificationService>().stream.listen((notification) {
       if (notification.type == NotificationConstants.messageReceived) {
@@ -103,11 +99,11 @@ class ChatCubit extends Cubit<ChatState> {
   }
 
   void addSocketMessage(int eventId, String text) {
-    _chatSocketRepository.sendMessage(eventId, text);
+    _socketRepository.sendMessage(eventId, text);
   }
 
   void listenEventMessages() {
-    _chatSocketRepository.listenAllMessages((message) {
+    _socketRepository.listenMessages((message) {
       // Если открыт конкретный чат и сообщение из него
       if (_currentOpenChatId != null && message.eventId == _currentOpenChatId) {
         // Добавляем сообщение в состояние
@@ -116,7 +112,7 @@ class ChatCubit extends Cubit<ChatState> {
 
       // Показываем уведомление только если сообщение не из текущего открытого чата
       if (_currentOpenChatId == null || message.eventId != _currentOpenChatId) {
-        _incrementUnreadCount(message.eventId);
+        _incrementUnreadCount(message.eventId!);
       }
     });
   }
@@ -130,15 +126,11 @@ class ChatCubit extends Cubit<ChatState> {
   int? get currentOpenChatId => _currentOpenChatId;
 
   void joinEvent(int eventId) {
-    _chatSocketRepository.joinEvent(eventId);
+    _socketRepository.join(eventId);
   }
 
   void leaveEvent(int eventId) {
-    _chatSocketRepository.leaveEvent(eventId);
-  }
-
-  Future<void> initializeSocket() async {
-    await _chatSocketRepository.initialize();
+    _socketRepository.leave(eventId);
   }
 
   /// Получает количество непрочитанных сообщений для всех событий
