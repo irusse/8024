@@ -20,7 +20,7 @@ class EventChatListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () =>
-          context.push(AppRouteBuilder.chatPage(entity.id, entity.title)),
+          context.push(AppRouteBuilder.eventChatPage(entity.id, entity.title)),
       child: Container(
         color: Colors.transparent,
         height: 56,

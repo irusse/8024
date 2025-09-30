@@ -34,6 +34,10 @@ class CommunityCubit extends Cubit<CommunityState> {
     );
   }
 
+  void setCommunitiesLocally(List<CommunityEntity> communities) {
+    emit(state.copyWith(communities: communities));
+  }
+
   Future<void> getCommunityById(int id) async {
     _reset();
     emit(state.copyWith(

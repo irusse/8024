@@ -23,6 +23,9 @@ abstract class AppRoutePath {
   static const documentPage = 'document-page/:key';
   static const chatListPage = '/chat-list-page';
   static const chatPage = 'chat-page/:eventId/:eventTitle';
+  static const eventChatPage = 'event-chat/:eventId/:eventTitle';
+  static const communityChatPage =
+      'community-chat/:communityId/:communityTitle';
   static const settingsPage = 'settings';
   static const deleteSmsCode = 'delete-sms-code';
   static const countryCodeSelect = '/countryCodeSelect';
@@ -38,8 +41,8 @@ abstract class AppRouteBuilder {
 
   static String otherProfile(int userId) => '/profile/$userId';
 
-  static String chatPage(int eventId, String eventTitle) =>
-      '${AppRoutePath.chatListPage}/${AppRoutePath.chatPage}'
+  static String eventChatPage(int eventId, String eventTitle) =>
+      '${AppRoutePath.chatListPage}/${AppRoutePath.eventChatPage}'
           .replaceAll(
             ':eventId',
             eventId.toString(),
@@ -47,6 +50,17 @@ abstract class AppRouteBuilder {
           .replaceAll(
             ':eventTitle',
             Uri.encodeComponent(eventTitle),
+          );
+
+  static String communityChatPage(int communityId, String communityTitle) =>
+      '${AppRoutePath.chatListPage}/${AppRoutePath.communityChatPage}'
+          .replaceAll(
+            ':communityId',
+            communityId.toString(),
+          )
+          .replaceAll(
+            ':communityTitle',
+            Uri.encodeComponent(communityTitle),
           );
 
   static String propertyEdit(int propertyId) =>

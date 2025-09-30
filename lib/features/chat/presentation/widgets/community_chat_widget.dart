@@ -2,44 +2,45 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/state/api_state.dart';
-import 'package:neighbours/features/chat/presentation/cubits/event_chat/event_chat_cubit.dart';
+import 'package:neighbours/features/chat/presentation/cubits/community_chat/community_chat_cubit.dart';
 import 'package:neighbours/features/chat/presentation/widgets/message_input.dart';
 import 'package:neighbours/features/chat/presentation/widgets/message_list.dart';
 
-class ChatWidget extends StatefulWidget {
-  final int eventId;
+class CommunityChatWidget extends StatefulWidget {
+  final int communityId;
 
-  const ChatWidget({super.key, required this.eventId});
+  const CommunityChatWidget({super.key, required this.communityId});
 
   @override
-  State<ChatWidget> createState() => _ChatWidgetState();
+  State<CommunityChatWidget> createState() => _CommunityChatWidgetState();
 }
 
-class _ChatWidgetState extends State<ChatWidget> {
+class _CommunityChatWidgetState extends State<CommunityChatWidget> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   double _prevMaxExtent = 0;
-  late EventChatCubit _eventChatCubit;
+  late CommunityChatCubit _communityChatCubit;
 
   @override
   void initState() {
     super.initState();
 
-    _eventChatCubit = context.read<EventChatCubit>();
-    _eventChatCubit.fetchEventMessages(widget.eventId);
+    _communityChatCubit = context.read<CommunityChatCubit>();
+    _communityChatCubit.fetchCommunityMessages(widget.communityId);
     _scrollController.addListener(_onScroll);
 
-    // Присоединяемся к чату события
-    _eventChatCubit.joinEvent(widget.eventId);
+    // Присоединяемся к чату сообщества
+    _communityChatCubit.join(widget.communityId);
 
     // Устанавливаем текущий открытый чат
     // Это предотвратит показ уведомлений для сообщений из этого чата
     // и позволит добавлять сообщения в состояние только для этого чата
-    _eventChatCubit.setCurrentChat(widget.eventId);
+    _communityChatCubit.setCurrentChat(widget.communityId);
 
     // Отмечаем сообщения как прочитанные
-    if (_eventChatCubit.getUnreadCountForEvent(widget.eventId) != 0) {
-      _eventChatCubit.markEventMessagesAsRead(widget.eventId);
+    if (_communityChatCubit.getUnreadCountForCommunity(widget.communityId) !=
+        0) {
+      _communityChatCubit.removeCommunityCount(widget.communityId);
     }
   }
 
@@ -48,7 +49,7 @@ class _ChatWidgetState extends State<ChatWidget> {
     const threshold = 120.0;
     // при reverse:true "верх" -> maxScrollExtent
     if (pos.pixels >= pos.maxScrollExtent - threshold) {
-      _eventChatCubit.loadMoreMessages(widget.eventId);
+      _communityChatCubit.loadMoreMessages(widget.communityId);
     }
   }
 
@@ -74,13 +75,13 @@ class _ChatWidgetState extends State<ChatWidget> {
     final text = _messageController.text.trim();
     if (text.isEmpty) return;
 
-    _eventChatCubit.addSocketMessage(widget.eventId, text);
+    _communityChatCubit.addSocketMessage(widget.communityId, text);
     _messageController.clear();
   }
 
   @override
   void dispose() {
-    _eventChatCubit.setCurrentChat(null);
+    _communityChatCubit.setCurrentChat(null);
     _scrollController.dispose();
     _messageController.dispose();
     super.dispose();
@@ -88,7 +89,7 @@ class _ChatWidgetState extends State<ChatWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<EventChatCubit, EventChatState>(
+    return BlocListener<CommunityChatCubit, CommunityChatState>(
       listenWhen: (p, c) =>
           p.fetchMessagesState != c.fetchMessagesState ||
           p.sendMessageState != c.sendMessageState,
@@ -97,10 +98,10 @@ class _ChatWidgetState extends State<ChatWidget> {
           context.snackbar.error(context, state.sendMessageState.error!);
         }
         if (state.fetchMessagesState.isFailure) {
-          context.snackbar.error(context, state.sendMessageState.error!);
+          context.snackbar.error(context, state.fetchMessagesState.error!);
         }
         if (state.markMessagesAsReadState.isFailure) {
-          context.snackbar.error(context, state.sendMessageState.error!);
+          context.snackbar.error(context, state.markMessagesAsReadState.error!);
         }
 
         // если это была догрузка (не первый фетч) — восстановим позицию
@@ -115,17 +116,19 @@ class _ChatWidgetState extends State<ChatWidget> {
           Expanded(
             child: MessageList(
               messages: context
-                  .select((EventChatCubit cubit) => cubit.state.messages),
+                  .select((CommunityChatCubit cubit) => cubit.state.messages),
               controller: _scrollController,
-              isLoading: context.select((EventChatCubit cubit) =>
+              isLoading: context.select((CommunityChatCubit cubit) =>
                   cubit.state.fetchMessagesState.isLoading),
-              isLoadingMore: context
-                  .select((EventChatCubit cubit) => cubit.state.isLoadingMore),
+              isLoadingMore: context.select(
+                  (CommunityChatCubit cubit) => cubit.state.isLoadingMore),
             ),
           ),
           MessageInput(
             messageController: _messageController,
             sendMessage: _sendMessage,
+            isLoading: context.select((CommunityChatCubit cubit) =>
+                cubit.state.sendMessageState.isLoading),
           ),
         ],
       ),

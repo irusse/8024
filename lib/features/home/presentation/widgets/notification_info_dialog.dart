@@ -91,7 +91,7 @@ class NotificationInfoDialog extends StatelessWidget {
           Expanded(
               child: CustomOutlinedButton(
             onPressed: () =>
-                context.push(AppRouteBuilder.chatPage(eventId, eventTitle)),
+                context.push(AppRouteBuilder.eventChatPage(eventId, eventTitle)),
             text: 'Чат',
             verticalPadding: 12,
           )),
@@ -117,7 +117,7 @@ class NotificationInfoDialog extends StatelessWidget {
                 Expanded(
                   child: CustomOutlinedButton(
                     onPressed: () => context
-                        .push(AppRouteBuilder.chatPage(eventId, eventTitle)),
+                        .push(AppRouteBuilder.eventChatPage(eventId, eventTitle)),
                     text: 'Чат',
                     verticalPadding: 12,
                   ),

@@ -70,6 +70,7 @@ class AuthService {
   Future<String?> getAccessToken() async {
     try {
       final token = await _storage.read(key: _accessTokenKey);
+
       if (token != null) AppLogger.info(token);
       return token?.isNotEmpty == true ? token : null;
     } catch (e) {

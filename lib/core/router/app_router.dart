@@ -19,6 +19,8 @@ import 'package:neighbours/features/auth/presentation/pages/country_code_select.
 import 'package:neighbours/features/chat/presentation/cubits/community_chat/community_chat_cubit.dart';
 import 'package:neighbours/features/chat/presentation/cubits/event_chat/event_chat_cubit.dart';
 import 'package:neighbours/features/chat/presentation/screens/chat_list.dart';
+import 'package:neighbours/features/chat/presentation/screens/event_chat_page.dart';
+import 'package:neighbours/features/chat/presentation/screens/community_chat_page.dart';
 import 'package:neighbours/features/community/presentation/cubits/community/community_cubit.dart';
 import 'package:neighbours/features/community/presentation/screens/community.dart';
 import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
@@ -53,7 +55,6 @@ import 'package:neighbours/features/property/presentation/screens/edit_property.
 import 'package:neighbours/features/property/presentation/screens/property_details.dart';
 import 'package:neighbours/features/property/presentation/screens/resource_form.dart';
 import '../../features/auth/presentation/pages/phone_auth_page.dart';
-import '../../features/chat/presentation/screens/chat.dart';
 import '../../features/home/presentation/cubits/home/home_cubit.dart';
 import '../../features/profile/presentation/pages/profile_screen.dart';
 import '../../features/property/domain/entities/resource/resource_entity.dart';
@@ -237,10 +238,10 @@ class AppRouter {
         path: AppRoutePath.chatListPage,
         routes: [
           GoRoute(
-              path: AppRoutePath.chatPage,
+              path: AppRoutePath.eventChatPage,
               pageBuilder: (context, state) {
                 final eventId = int.parse(state.pathParameters['eventId']!);
-                final eventTitle = state.pathParameters['eventTitle'] ?? 'Чат';
+                final eventTitle = state.pathParameters['eventTitle'] ?? 'Чат события';
 
                 return CustomPageTransition.slideFromRight(
                     key: state.pageKey,
@@ -249,14 +250,32 @@ class AppRouter {
                         BlocProvider.value(
                           value: getIt<EventChatCubit>(),
                         ),
+                        BlocProvider.value(value: getIt<UserCubit>()),
+                      ],
+                      child: EventChatPage(
+                        eventId: eventId,
+                        title: eventTitle,
+                      ),
+                    ));
+              }),
+          GoRoute(
+              path: AppRoutePath.communityChatPage,
+              pageBuilder: (context, state) {
+                final communityId = int.parse(state.pathParameters['communityId']!);
+                final communityTitle = state.pathParameters['communityTitle'] ?? 'Чат сообщества';
+
+                return CustomPageTransition.slideFromRight(
+                    key: state.pageKey,
+                    child: MultiBlocProvider(
+                      providers: [
                         BlocProvider.value(
                           value: getIt<CommunityChatCubit>(),
                         ),
                         BlocProvider.value(value: getIt<UserCubit>()),
                       ],
-                      child: Chat(
-                        id: eventId,
-                        title: eventTitle,
+                      child: CommunityChatPage(
+                        communityId: communityId,
+                        title: communityTitle,
                       ),
                     ));
               }),
@@ -350,6 +369,7 @@ class AppRouter {
                     value: getIt<NotificationCubit>(),
                   ),
                   BlocProvider.value(value: getIt<EventsCubit>()),
+                  BlocProvider.value(value: getIt<CommunityCubit>()),
                   BlocProvider.value(
                     value: getIt<UserCubit>(),
                   ),

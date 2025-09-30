@@ -18,7 +18,7 @@ class CommunityChatListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () =>
-          context.push(AppRouteBuilder.chatPage(entity.id, entity.name)),
+          context.push(AppRouteBuilder.communityChatPage(entity.id, entity.name)),
       child: Container(
         padding: const EdgeInsets.symmetric(
           horizontal: UIConstants.defaultHorizontalPadding,

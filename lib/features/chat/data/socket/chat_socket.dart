@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/cupertino.dart';
 import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/logging/logger.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
@@ -67,18 +66,24 @@ class ChatSocket {
       for (final entry in _roomsToJoin.entries) {
         final type = entry.key;
         for (final id in entry.value) {
-          emit('$type:join', id);
+          emit(type, id);
         }
       }
     });
 
-    _socket?.onDisconnect((_) => _isConnected = false);
-    _socket?.onConnectError((_) => _isConnected = false);
+    _socket?.onDisconnect((error) {
+      _isConnected = false;
+      AppLogger.error(error);
+    });
+    _socket?.onConnectError((error) {
+      _isConnected = false;
+      AppLogger.error(error);
+    });
   }
 
   void emit(String event, dynamic data) {
     if (!_isConnected || _socket == null) {
-      debugPrint('Emit failed: socket not connected [$event]');
+      AppLogger.error('Emit failed: socket not connected [$event]');
       return;
     }
     _socket!.emit(event, data);

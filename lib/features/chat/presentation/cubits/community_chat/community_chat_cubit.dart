@@ -10,15 +10,16 @@ import 'package:neighbours/core/services/notification_service.dart';
 import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
 import 'package:neighbours/features/chat/domain/repositories/community_chat_repository.dart';
-import 'package:neighbours/features/chat/domain/repositories/event_chat_socket_repository.dart';
+import 'package:neighbours/features/chat/domain/repositories/community_chat_socket_repository.dart';
 
 part 'community_chat_state.dart';
+
 part 'community_chat_cubit.freezed.dart';
 
 @singleton
 class CommunityChatCubit extends Cubit<CommunityChatState> {
   final CommunityChatRepository _chatRepository;
-  final EventChatSocketRepository _socketRepository;
+  final CommunityChatSocketRepository _socketRepository;
   int? _currentOpenChatId;
   StreamSubscription? _notificationSub;
 

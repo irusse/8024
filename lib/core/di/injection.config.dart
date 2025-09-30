@@ -344,12 +344,12 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i1067.UserCubit(gh<_i544.UserRepository>()));
     gh.factory<_i502.VoteCubit>(
         () => _i502.VoteCubit(gh<_i221.VoteRepository>()));
-    gh.singleton<_i580.EventChatSocketRepository>(
-        () => _i615.EventChatRepositoryImpl(gh<_i466.ChatSocket>()));
     gh.singleton<_i519.CommunityChatCubit>(() => _i519.CommunityChatCubit(
           gh<_i250.CommunityChatRepository>(),
-          gh<_i580.EventChatSocketRepository>(),
+          gh<_i515.CommunityChatSocketRepository>(),
         ));
+    gh.singleton<_i580.EventChatSocketRepository>(
+        () => _i615.EventChatRepositoryImpl(gh<_i466.ChatSocket>()));
     gh.singleton<_i235.AuthCubit>(
         () => _i235.AuthCubit(gh<_i787.AuthRepository>()));
     gh.factory<_i470.ProfileCubit>(

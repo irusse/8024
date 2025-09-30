@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:neighbours/features/chat/presentation/widgets/chat_widget.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
+import 'package:neighbours/features/chat/presentation/widgets/event_chat_widget.dart';
 
 class ChatTab extends StatelessWidget {
   final int eventId;
@@ -13,7 +13,7 @@ class ChatTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return isChatAvailable
-        ? ChatWidget(eventId: eventId)
+        ? EventChatWidget(eventId: eventId)
         : Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,

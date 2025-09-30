@@ -12,8 +12,9 @@ class CommunityChatSocketRepositoryImpl
   CommunityChatSocketRepositoryImpl(this._chatSocket);
 
   @override
-  void join(int communityId) =>
-      _chatSocket.joinRoom('joinCommunity', communityId);
+  void join(int communityId) {
+    _chatSocket.joinRoom('joinCommunity', communityId);
+  }
 
   @override
   void leave(int communityId) =>

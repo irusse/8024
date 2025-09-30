@@ -9,3 +9,4 @@ abstract class CommunityChatRepository {
     required int limit,
   });
 }
+

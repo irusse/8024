@@ -9,11 +9,14 @@ import 'package:neighbours/core/cubits/user/user_cubit.dart';
 import 'package:neighbours/core/cubits/user_location/user_location_cubit.dart';
 import 'package:neighbours/core/error/failures.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
+import 'package:neighbours/core/logging/logger.dart';
 import 'package:neighbours/core/router/app_routes.dart';
 import 'package:neighbours/core/services/map_service.dart';
 import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/core/utils/map_camera_utils.dart';
+import 'package:neighbours/features/chat/presentation/cubits/community_chat/community_chat_cubit.dart';
 import 'package:neighbours/features/chat/presentation/cubits/event_chat/event_chat_cubit.dart';
+import 'package:neighbours/features/community/presentation/cubits/community/community_cubit.dart';
 import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart';
 import 'package:neighbours/features/home/data/services/event_layer_service.dart';
 import 'package:neighbours/features/home/data/services/property_layer_service.dart';
@@ -278,6 +281,16 @@ class _HomeState extends State<Home>
                           }
                         },
                         orElse: () {});
+                  },
+                ),
+                BlocListener<CommunityCubit, CommunityState>(
+                  listenWhen: (prev, curr) =>
+                      prev.communities != curr.communities,
+                  listener: (context, state) async {
+                    final chatCubit = context.read<CommunityChatCubit>();
+                    for (final community in state.communities) {
+                      chatCubit.join(community.id);
+                    }
                   },
                 ),
                 BlocListener<EventsCubit, EventsState>(

@@ -16,8 +16,30 @@ class MessageReceivedHandler implements NotificationHandler {
   @override
   void handle(Map<String, dynamic> payload) {
     final eventId = payload['eventId'] as int?;
-    if (eventId == null) return;
-    getIt<AppRouter>().router.navigateUnique(
-        AppRouteBuilder.chatPage(eventId, payload['eventTitle']));
+    final communityId = payload['communityId'] as int?;
+    final conversationId = payload['conversationId'] as int?;
+
+    // Обрабатываем сообщения событий
+    if (eventId != null) {
+      final eventTitle = payload['eventTitle'] ?? 'Чат события';
+      getIt<AppRouter>().router.navigateUnique(
+          AppRouteBuilder.eventChatPage(eventId, eventTitle));
+      return;
+    }
+
+    // Обрабатываем сообщения сообществ
+    if (communityId != null) {
+      final communityTitle = payload['communityTitle'] ?? 'Чат сообщества';
+      getIt<AppRouter>().router.navigateUnique(
+          AppRouteBuilder.communityChatPage(communityId, communityTitle));
+      return;
+    }
+
+    // TODO: Добавить обработку conversationId для личных чатов в будущем
+    if (conversationId != null) {
+      // Пока что логируем, что такой тип сообщений не поддерживается
+      // В будущем здесь будет роутинг к личным чатам
+      return;
+    }
   }
 }

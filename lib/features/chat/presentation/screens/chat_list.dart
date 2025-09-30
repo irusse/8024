@@ -5,6 +5,8 @@ import 'package:neighbours/core/components/default_app_bar.dart';
 import 'package:neighbours/core/components/default_tab_bar.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
 import 'package:neighbours/features/chat/presentation/widgets/community_chat_list_item.dart';
+import 'package:neighbours/features/community/domain/entities/community/community_entity.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
 import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart';
 import '../widgets/event_chat_list_item.dart';
 
@@ -14,10 +16,12 @@ class ChatList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userId = context.read<UserCubit>().state.user.id;
-    final allUserEvents = context.read<EventsCubit>().allUserFullEvents(userId);
-    final allUserNotifications =
-        context.read<EventsCubit>().allUserNotifications(userId);
-    final communities = context.read<UserCubit>().state.user.communities;
+    final allUserEvents = context.select<EventsCubit, List<EventEntity>>(
+        (cubit) => cubit.allUserFullEvents(userId));
+    final allUserNotifications = context.select<EventsCubit, List<EventEntity>>(
+        (cubit) => cubit.allUserNotifications(userId));
+    final communities = context.select<UserCubit, List<CommunityEntity>>(
+        (cubit) => cubit.state.user.communities);
     final _tabs = ["Сообщества", "Мероприятия", "Оповещения"];
     return Scaffold(
       appBar: const DefaultAppBar(
