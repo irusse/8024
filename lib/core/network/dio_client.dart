@@ -35,7 +35,7 @@ class DioClient {
         settings: const TalkerDioLoggerSettings(
           printRequestHeaders: true,
           printResponseHeaders: true,
-          enabled: kDebugMode,
+          enabled: false,
           printResponseMessage: true,
           printResponseTime: true,
         ),

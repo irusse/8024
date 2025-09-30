@@ -16,8 +16,8 @@ class ChatSocket {
   StreamSubscription<String?>? _tokenSub;
 
   final Map<String, Set<int>> _roomsToJoin = {
-    'event': <int>{},
-    'community': <int>{},
+    'joinEvent': <int>{},
+    'joinCommunity': <int>{},
   };
 
   io.Socket? get socket => _socket;
@@ -52,10 +52,9 @@ class ChatSocket {
         .enableForceNew()
         .build();
 
-    _socket = io.io(AppConfig.socketUrl, opts);
+    _socket = io.io("${AppConfig.socketUrl}", opts);
     _setupSocketListeners();
     _socket!.connect();
-    AppLogger.info("Socket Initialized");
   }
 
   void _setupSocketListeners() {
@@ -66,6 +65,7 @@ class ChatSocket {
       for (final entry in _roomsToJoin.entries) {
         final type = entry.key;
         for (final id in entry.value) {
+          AppLogger.debug("Trying to $type $id");
           emit(type, id);
         }
       }
@@ -86,7 +86,11 @@ class ChatSocket {
       AppLogger.error('Emit failed: socket not connected [$event]');
       return;
     }
-    _socket!.emit(event, data);
+    _socket!.emitWithAck(event, data, ack: (res) {
+      AppLogger.info(event);
+      AppLogger.info(res.toString());
+      AppLogger.info(data.toString());
+    });
   }
 
   void on(String event, Function(dynamic) handler) {
@@ -94,11 +98,13 @@ class ChatSocket {
   }
 
   void joinRoom(String type, int id) {
+
     _roomsToJoin.putIfAbsent(type, () => <int>{}).add(id);
+    AppLogger.info(_roomsToJoin.toString());
     if (_isConnected) {
-      AppLogger.info("Socket joined ${type}");
       emit(type, id);
     }
+    AppLogger.info(_isConnected.toString()+" In chat socket");
   }
 
   void leaveRoom(String type, int id) {

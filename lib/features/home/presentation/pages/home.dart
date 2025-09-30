@@ -176,7 +176,8 @@ class _HomeState extends State<Home>
             if (state is Error) {
               context.snackbar.error(context, state.message);
             } else if (state is NetworkError) {
-              context.push(AppRoutePath.noInternet, extra: performDataFetch);
+              context.push(AppRoutePath.noInternet,
+                  extra: () => performDataFetch(firstInit: true));
             } else if (state is GetStepError) {
               context.push(AppRoutePath.unexpectedError,
                   extra: performDataFetch);
@@ -288,6 +289,7 @@ class _HomeState extends State<Home>
                       prev.communities != curr.communities,
                   listener: (context, state) async {
                     final chatCubit = context.read<CommunityChatCubit>();
+                    print(state.communities);
                     for (final community in state.communities) {
                       chatCubit.join(community.id);
                     }

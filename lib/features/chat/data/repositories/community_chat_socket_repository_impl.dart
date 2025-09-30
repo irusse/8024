@@ -1,4 +1,5 @@
 import 'package:injectable/injectable.dart';
+import 'package:neighbours/core/logging/logger.dart';
 import 'package:neighbours/features/chat/data/models/message/message_model.dart';
 import 'package:neighbours/features/chat/data/socket/chat_socket.dart';
 import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';

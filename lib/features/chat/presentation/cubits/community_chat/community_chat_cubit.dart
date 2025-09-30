@@ -6,6 +6,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/constants/notification_constants.dart';
 import 'package:neighbours/core/di/injection.dart';
+import 'package:neighbours/core/logging/logger.dart';
 import 'package:neighbours/core/services/notification_service.dart';
 import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';

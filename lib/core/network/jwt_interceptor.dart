@@ -37,7 +37,6 @@ class JWTInterceptor extends Interceptor {
       final accessToken = await _authService.getValidAccessToken();
       if (accessToken != null) {
         options.headers['Authorization'] = 'Bearer $accessToken';
-        AppLogger.info("Attached access token.", tag: _tag);
       } else {
         AppLogger.info("No valid access token found.", tag: _tag);
       }
