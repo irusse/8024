@@ -1,4 +1,6 @@
 import 'package:flutter/widgets.dart';
+import 'package:neighbours/core/di/injection.dart';
+import 'package:neighbours/features/chat/data/socket/chat_socket.dart';
 
 /// Интерфейс для кубитов, которые поддерживают autoRead функциональность
 abstract class AutoReadSupport {
@@ -40,6 +42,9 @@ class AppLifecycleObserver extends WidgetsBindingObserver {
         }
         break;
       case AppLifecycleState.resumed:
+        // Проверяем и переподключаем сокеты при возврате в приложение
+        _checkAndReconnectSockets();
+        
         // Включаем autoRead для всех активных чатов
         for (final cubit in _cubits) {
           if (cubit.currentOpenChatId != null) {
@@ -50,6 +55,21 @@ class AppLifecycleObserver extends WidgetsBindingObserver {
       case AppLifecycleState.inactive:
         // Не обрабатываем состояние inactive
         break;
+    }
+  }
+
+  /// Проверяет состояние сокетов и переподключает их при необходимости
+  void _checkAndReconnectSockets() {
+    try {
+      final chatSocket = getIt<ChatSocket>();
+      
+      // Проверяем, действительно ли сокет подключен
+      if (!chatSocket.isSocketReallyConnected) {
+        // Принудительно переподключаем сокет
+        chatSocket.forceReconnect();
+      }
+    } catch (e) {
+      // Игнорируем ошибки, если сервис еще не инициализирован
     }
   }
 }

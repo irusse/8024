@@ -93,6 +93,22 @@ class ChatSocket {
     });
   }
 
+  /// Проверяет, действительно ли сокет подключен
+  bool get isSocketReallyConnected {
+    return _socket?.connected ?? false;
+  }
+
+  /// Принудительно переподключает сокет
+  Future<void> forceReconnect() async {
+    AppLogger.info('Force reconnecting socket...');
+    _teardownSocket();
+    
+    final token = await _authService.getAccessToken();
+    if (token != null && token.isNotEmpty) {
+      await _reconnectWithToken(token);
+    }
+  }
+
   void on(String event, Function(dynamic) handler) {
     _socket?.on(event, handler);
   }
