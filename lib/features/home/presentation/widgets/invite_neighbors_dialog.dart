@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/components/primary_button.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/services/clipboard_service.dart';
-import 'package:neighbours/core/services/snackbar_service.dart';
 import 'package:neighbours/core/components/reusable_text_field.dart';
 import '../../../../core/utils/sheet_utils.dart';
 

@@ -9,7 +9,6 @@ import 'package:neighbours/core/cubits/user/user_cubit.dart';
 import 'package:neighbours/core/cubits/user_location/user_location_cubit.dart';
 import 'package:neighbours/core/error/failures.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
-import 'package:neighbours/core/logging/logger.dart';
 import 'package:neighbours/core/router/app_routes.dart';
 import 'package:neighbours/core/services/map_service.dart';
 import 'package:neighbours/core/state/api_state.dart';

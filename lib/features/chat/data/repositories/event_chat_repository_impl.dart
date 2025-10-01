@@ -3,7 +3,7 @@ import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/error/failures.dart';
 import 'package:neighbours/features/chat/data/datasources/event_chat_datasource.dart';
 import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
-import '../../../../core/domain/entities/unread_summary/unread_summary_entity.dart';
+import 'package:neighbours/features/chat/domain/entities/event_unread_summary/event_unread_summary_entity.dart';
 import '../../domain/repositories/event_chat_repository.dart';
 
 @Singleton(as: EventChatRepository)
@@ -48,7 +48,7 @@ class EventChatRepositoryImpl implements EventChatRepository {
   }
 
   @override
-  Future<Either<Failure, UnreadSummaryEntity>> fetchUnreadMessages(
+  Future<Either<Failure, EventUnreadSummaryEntity>> fetchUnreadMessages(
       int userId) async {
     final result = await _remoteDataSource.fetchUnreadMessages(userId);
 

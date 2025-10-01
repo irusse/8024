@@ -20,7 +20,7 @@ class PropertyInfoRow extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: context.color.primary.withOpacity(0.1),
+            color: context.color.primary.withValues(alpha: .1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
@@ -36,7 +36,7 @@ class PropertyInfoRow extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: context.text.bodySmall?.copyWith(
+                style: context.text.bodySmall.copyWith(
                   color: context.color.secondaryText,
                   fontWeight: FontWeight.w500,
                 ),
@@ -44,7 +44,7 @@ class PropertyInfoRow extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 value,
-                style: context.text.bodyMedium?.copyWith(
+                style: context.text.bodyMedium.copyWith(
                   color: context.color.primaryText,
                   fontWeight: FontWeight.w600,
                 ),

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:neighbours/core/logging/logger.dart';
 
 @singleton
 class AuthService {

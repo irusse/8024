@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
-import 'package:neighbours/core/data/models/unread_summary/unread_summary_model.dart';
+import 'package:neighbours/features/chat/data/models/event_unread_summary/event_unread_summary_model.dart';
 import 'package:neighbours/core/error/failures.dart';
 import 'package:neighbours/core/network/network_handler.dart';
 import 'package:neighbours/features/chat/data/models/message/message_model.dart';
@@ -18,7 +18,7 @@ abstract class EventChatDataSource {
     required String text,
   });
 
-  Future<Either<Failure, UnreadSummaryModel>> fetchUnreadMessages(int userId);
+  Future<Either<Failure, EventUnreadSummaryModel>> fetchUnreadMessages(int userId);
 
   Future<Either<Failure, void>> markEventMessagesAsRead(int eventId);
 }
@@ -65,13 +65,13 @@ class EventChatDataSourceImpl implements EventChatDataSource {
   }
 
   @override
-  Future<Either<Failure, UnreadSummaryModel>> fetchUnreadMessages(
+  Future<Either<Failure, EventUnreadSummaryModel>> fetchUnreadMessages(
       int userId) async {
     return NetworkHandler.handleRequest(() async {
       final response = await _dio
           .get('/events/messages/unread', queryParameters: {'userId': userId});
 
-      return UnreadSummaryModel.fromJson(response.data);
+      return EventUnreadSummaryModel.fromJson(response.data);
     });
   }
 

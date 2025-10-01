@@ -114,6 +114,7 @@ mixin HomeInitializationMixin<T extends StatefulWidget> on State<Home> {
           communityChatCubit.listenCommunityMessages();
         });
         eventChatCubit.fetchUnreadMessageCounts(userCubit.state.user.id);
+        communityChatCubit.fetchUnreadMessageCounts(userCubit.state.user.id);
         getIt<FcmCubit>().saveFcmToken();
 
         notificationCubit.fetchUnreadCount();

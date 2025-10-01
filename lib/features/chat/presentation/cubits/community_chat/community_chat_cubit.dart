@@ -6,7 +6,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/constants/notification_constants.dart';
 import 'package:neighbours/core/di/injection.dart';
-import 'package:neighbours/core/logging/logger.dart';
 import 'package:neighbours/core/services/notification_service.dart';
 import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
@@ -135,6 +134,42 @@ class CommunityChatCubit extends Cubit<CommunityChatState> {
 
   void leave(int communityId) {
     _socketRepository.leave(communityId);
+  }
+
+  /// Получает количество непрочитанных сообщений для всех сообществ
+  Future<void> fetchUnreadMessageCounts(int userId) async {
+    emit(state.copyWith(fetchUnreadCountsState: const ApiState.loading()));
+
+    final result = await _chatRepository.fetchUnreadMessages(userId);
+
+    result.fold(
+      (failure) => emit(state.copyWith(
+        fetchUnreadCountsState: ApiState.failure(failure.message),
+      )),
+      (entity) {
+
+        emit(state.copyWith(
+          unreadMessageCounts: entity.count,
+          fetchUnreadCountsState: const ApiState.success(null),
+        ));
+      },
+    );
+  }
+
+  Future<void> markCommunityMessagesAsRead(int communityId) async {
+    emit(state.copyWith(markMessagesAsReadState: const ApiState.loading()));
+
+    final result = await _chatRepository.markCommunityMessagesAsRead(communityId);
+
+    result.fold(
+      (failure) => emit(state.copyWith(
+          markMessagesAsReadState: ApiState.failure(failure.message))),
+      (_) {
+        emit(state.copyWith(
+            markMessagesAsReadState: const ApiState.success(null)));
+        removeCommunityCount(communityId);
+      },
+    );
   }
 
   void removeCommunityCount(communityId) {
