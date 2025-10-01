@@ -17,7 +17,7 @@ class ChatSocket {
 
   final Map<String, Set<int>> _roomsToJoin = {
     'joinEvent': <int>{},
-    'joinCommunity': <int>{},
+    'community:join': <int>{},
   };
 
   io.Socket? get socket => _socket;
@@ -73,11 +73,11 @@ class ChatSocket {
 
     _socket?.onDisconnect((error) {
       _isConnected = false;
-      AppLogger.error(error);
+      AppLogger.error(error.toString());
     });
     _socket?.onConnectError((error) {
       _isConnected = false;
-      AppLogger.error(error);
+      AppLogger.error(error.toString());
     });
   }
 
@@ -98,13 +98,11 @@ class ChatSocket {
   }
 
   void joinRoom(String type, int id) {
-
     _roomsToJoin.putIfAbsent(type, () => <int>{}).add(id);
     AppLogger.info(_roomsToJoin.toString());
     if (_isConnected) {
       emit(type, id);
     }
-    AppLogger.info(_isConnected.toString()+" In chat socket");
   }
 
   void leaveRoom(String type, int id) {

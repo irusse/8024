@@ -14,24 +14,26 @@ class CommunityChatSocketRepositoryImpl
 
   @override
   void join(int communityId) {
-    _chatSocket.joinRoom('joinCommunity', communityId);
+    _chatSocket.joinRoom('community:join', communityId);
   }
 
   @override
   void leave(int communityId) =>
-      _chatSocket.leaveRoom('leaveCommunity', communityId);
+      _chatSocket.leaveRoom('community:leave', communityId);
 
   @override
   void sendMessage(int communityId, String text) {
-    _chatSocket.emit('sendCommunityMessage', {
+    _chatSocket.emit('community:sendMessage', {
       'communityId': communityId,
-      'message': {'text': text},
+      'text': text,
     });
   }
 
   @override
   void listenMessages(Function(MessageEntity) onNewMessage) {
-    _chatSocket.on('newCommunityMessage', (data) {
+
+    _chatSocket.on('community:message', (data) {
+      AppLogger.info("Новое сообщение");
       onNewMessage(MessageModel.fromJson(data).toEntity());
     });
   }

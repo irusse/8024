@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:neighbours/core/components/custom_svg.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/router/app_routes.dart';
+import 'package:neighbours/features/chat/presentation/cubits/community_chat/community_chat_cubit.dart';
 import 'package:neighbours/features/chat/presentation/cubits/event_chat/event_chat_cubit.dart';
 
 import '../../../../core/constants/assets.dart';
@@ -13,8 +14,11 @@ class ChatButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final haveUnreadMessages = context
+    final hasEventUnreadMessages = context
         .select<EventChatCubit, bool>((cubit) => cubit.hasUnreadMessages);
+
+    final hasCommunityUnreadMessages = context
+        .select<CommunityChatCubit, bool>((cubit) => cubit.hasUnreadMessages);
     return GestureDetector(
       onTap: () => context.push(AppRoutePath.chatListPage),
       child: Stack(
@@ -43,7 +47,7 @@ class ChatButton extends StatelessWidget {
               ],
             ),
           ),
-          if (haveUnreadMessages)
+          if (hasCommunityUnreadMessages || hasEventUnreadMessages)
             Positioned(
               top: 6,
               right: 8,

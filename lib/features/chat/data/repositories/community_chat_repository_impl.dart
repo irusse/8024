@@ -30,4 +30,3 @@ class CommunityChatRepositoryImpl implements CommunityChatRepository {
     );
   }
 }
-
