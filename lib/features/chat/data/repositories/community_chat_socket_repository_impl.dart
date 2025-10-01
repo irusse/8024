@@ -37,4 +37,14 @@ class CommunityChatSocketRepositoryImpl
       onNewMessage(MessageModel.fromJson(data).toEntity());
     });
   }
+
+  @override
+  void enableAutoRead(int communityId) {
+    _chatSocket.emit('community:autoReadOn', {'communityId': communityId});
+  }
+
+  @override
+  void disableAutoRead(int communityId) {
+    _chatSocket.emit('community:autoReadOff', {'communityId': communityId});
+  }
 }

@@ -8,4 +8,8 @@ abstract class CommunityChatSocketRepository {
   void sendMessage(int communityId, String text);
 
   void listenMessages(Function(MessageEntity) onNewMessage);
+
+  void enableAutoRead(int communityId);
+
+  void disableAutoRead(int communityId);
 }

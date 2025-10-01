@@ -8,4 +8,8 @@ abstract class EventChatSocketRepository {
   void sendMessage(int eventId, String text);
 
   void listenMessages(Function(MessageEntity) onNewMessage);
+
+  void enableAutoRead(int eventId);
+
+  void disableAutoRead(int eventId);
 }

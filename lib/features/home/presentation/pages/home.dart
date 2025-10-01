@@ -145,12 +145,6 @@ class _HomeState extends State<Home>
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-    handleAppLifecycleStateChange(state);
-  }
-
-  @override
   Widget build(BuildContext context) {
     final userId =
         context.select<UserCubit, int>((cubit) => cubit.state.user.id);

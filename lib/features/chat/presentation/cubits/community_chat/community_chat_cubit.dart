@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter/widgets.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/constants/notification_constants.dart';
@@ -11,13 +12,14 @@ import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
 import 'package:neighbours/features/chat/domain/repositories/community_chat_repository.dart';
 import 'package:neighbours/features/chat/domain/repositories/community_chat_socket_repository.dart';
+import 'package:neighbours/core/observers/app_lifecycle_observer.dart';
 
 part 'community_chat_state.dart';
 
 part 'community_chat_cubit.freezed.dart';
 
 @singleton
-class CommunityChatCubit extends Cubit<CommunityChatState> {
+class CommunityChatCubit extends Cubit<CommunityChatState> implements AutoReadSupport {
   final CommunityChatRepository _chatRepository;
   final CommunityChatSocketRepository _socketRepository;
   int? _currentOpenChatId;
@@ -38,11 +40,15 @@ class CommunityChatCubit extends Cubit<CommunityChatState> {
         }
       }
     });
+
+    // Регистрируем кубит в едином observer
+    getIt<AppLifecycleObserver>().addCubit(this);
   }
 
   @override
   Future<void> close() {
     _notificationSub?.cancel();
+    getIt<AppLifecycleObserver>().removeCubit(this);
     return super.close();
   }
 
@@ -122,7 +128,17 @@ class CommunityChatCubit extends Cubit<CommunityChatState> {
 
   /// Устанавливает текущий открытый чат
   void setCurrentChat(int? communityId) {
+    // Отключаем autoRead для предыдущего чата
+    if (_currentOpenChatId != null) {
+      disableAutoRead(_currentOpenChatId!);
+    }
+    
     _currentOpenChatId = communityId;
+    
+    // Включаем autoRead для нового чата
+    if (communityId != null) {
+      enableAutoRead(communityId);
+    }
   }
 
   /// Получает ID текущего открытого чата
@@ -134,6 +150,16 @@ class CommunityChatCubit extends Cubit<CommunityChatState> {
 
   void leave(int communityId) {
     _socketRepository.leave(communityId);
+  }
+
+  /// Включает автоматическое прочитывание сообщений для сообщества
+  void enableAutoRead(int communityId) {
+    _socketRepository.enableAutoRead(communityId);
+  }
+
+  /// Выключает автоматическое прочитывание сообщений для сообщества
+  void disableAutoRead(int communityId) {
+    _socketRepository.disableAutoRead(communityId);
   }
 
   /// Получает количество непрочитанных сообщений для всех сообществ
@@ -190,3 +216,4 @@ class CommunityChatCubit extends Cubit<CommunityChatState> {
     return state.unreadMessageCounts[communityId] ?? 0;
   }
 }
+

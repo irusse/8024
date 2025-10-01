@@ -23,7 +23,6 @@ import '../../data/services/notification_layer_service.dart';
 import '../cubits/home/home_cubit.dart';
 
 mixin HomeInitializationMixin<T extends StatefulWidget> on State<Home> {
-  AppLifecycleState? _lastLifecycleState;
   Timer? _debounceTimer;
   bool _isDataFetching = false;
   DateTime? _lastDataFetchTime;
@@ -51,39 +50,6 @@ mixin HomeInitializationMixin<T extends StatefulWidget> on State<Home> {
     propertyLayerService = getIt<PropertyLayerService>();
     eventLayerService = getIt<EventLayerService>();
     mapService.initialize();
-    _initializeLifecycleObserver();
-  }
-
-  void _initializeLifecycleObserver() {
-    _lastLifecycleState = WidgetsBinding.instance.lifecycleState;
-  }
-
-  void handleAppLifecycleStateChange(AppLifecycleState state) {
-    // Перезагрузка данных при возврате в активное состояние приложения
-    // if (_lastLifecycleState != null &&
-    //     (_lastLifecycleState == AppLifecycleState.paused ||
-    //         _lastLifecycleState == AppLifecycleState.inactive) &&
-    //     state == AppLifecycleState.resumed) {
-    //   _debouncedDataFetch(firstInit: false);
-    // }
-    //
-    // _lastLifecycleState = state;
-  }
-
-  void _debouncedDataFetch({bool firstInit = true}) {
-    // Отменяем предыдущий таймер
-    _debounceTimer?.cancel();
-
-    // Проверяем, не выполнялся ли запрос недавно (менее 5 секунд назад)
-    if (_lastDataFetchTime != null &&
-        DateTime.now().difference(_lastDataFetchTime!).inSeconds < 10) {
-      return;
-    }
-
-    // Устанавливаем новый таймер с задержкой 500мс
-    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
-      performDataFetch(firstInit: firstInit);
-    });
   }
 
   Future<void> performDataFetch({bool firstInit = true}) async {

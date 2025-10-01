@@ -30,4 +30,14 @@ class EventChatRepositoryImpl implements EventChatSocketRepository {
       onNewMessage(MessageModel.fromJson(data).toEntity());
     });
   }
+
+  @override
+  void enableAutoRead(int eventId) {
+    _chatSocket.emit('event:autoReadOn', {'eventId': eventId});
+  }
+
+  @override
+  void disableAutoRead(int eventId) {
+    _chatSocket.emit('event:autoReadOff', {'eventId': eventId});
+  }
 }

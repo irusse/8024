@@ -10,13 +10,14 @@ import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
 import 'package:neighbours/features/chat/domain/repositories/event_chat_repository.dart';
 import 'package:neighbours/features/chat/domain/repositories/event_chat_socket_repository.dart';
+import 'package:neighbours/core/observers/app_lifecycle_observer.dart';
 
 part 'event_chat_state.dart';
 
 part 'event_chat_cubit.freezed.dart';
 
 @singleton
-class EventChatCubit extends Cubit<EventChatState> {
+class EventChatCubit extends Cubit<EventChatState> implements AutoReadSupport {
   final EventChatRepository _chatRepository;
   final EventChatSocketRepository _socketRepository;
   int? _currentOpenChatId;
@@ -37,11 +38,15 @@ class EventChatCubit extends Cubit<EventChatState> {
         }
       }
     });
+
+    // Регистрируем кубит в едином observer
+    getIt<AppLifecycleObserver>().addCubit(this);
   }
 
   @override
   Future<void> close() {
     _notificationSub?.cancel();
+    getIt<AppLifecycleObserver>().removeCubit(this);
     return super.close();
   }
 
@@ -119,7 +124,17 @@ class EventChatCubit extends Cubit<EventChatState> {
 
   /// Устанавливает текущий открытый чат
   void setCurrentChat(int? eventId) {
+    // Отключаем autoRead для предыдущего чата
+    if (_currentOpenChatId != null) {
+      disableAutoRead(_currentOpenChatId!);
+    }
+    
     _currentOpenChatId = eventId;
+    
+    // Включаем autoRead для нового чата
+    if (eventId != null) {
+      enableAutoRead(eventId);
+    }
   }
 
   /// Получает ID текущего открытого чата
@@ -131,6 +146,16 @@ class EventChatCubit extends Cubit<EventChatState> {
 
   void leaveEvent(int eventId) {
     _socketRepository.leave(eventId);
+  }
+
+  /// Включает автоматическое прочитывание сообщений для события
+  void enableAutoRead(int eventId) {
+    _socketRepository.enableAutoRead(eventId);
+  }
+
+  /// Выключает автоматическое прочитывание сообщений для события
+  void disableAutoRead(int eventId) {
+    _socketRepository.disableAutoRead(eventId);
   }
 
   /// Получает количество непрочитанных сообщений для всех событий

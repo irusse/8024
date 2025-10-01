@@ -153,6 +153,7 @@ import '../notifications/handlers/message_received_handler.dart' as _i89;
 import '../notifications/handlers/property_verified_handler.dart' as _i536;
 import '../notifications/handlers/user_joined_community_handler.dart' as _i630;
 import '../notifications/notification_handler.dart' as _i111;
+import '../observers/app_lifecycle_observer.dart' as _i716;
 import '../router/app_router.dart' as _i81;
 import '../services/auth_service.dart' as _i745;
 import '../services/fcm_service.dart' as _i928;
@@ -186,6 +187,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i245.ProfileCreateCubit>(() => _i245.ProfileCreateCubit());
     gh.singleton<_i558.FlutterSecureStorage>(
         () => registerModule.secureStorage);
+    gh.singleton<_i716.AppLifecycleObserver>(
+        () => registerModule.appLifecycleObserver);
     gh.singleton<_i361.Dio>(() => networkModule.dio);
     gh.singleton<_i941.NotificationService>(() => _i941.NotificationService());
     gh.singleton<_i928.FCMService>(() => _i928.FCMService());

@@ -10,6 +10,7 @@ import 'package:neighbours/core/cubits/theme/theme_cubit.dart';
 import 'package:neighbours/core/data/models/app_notification/app_notification_model.dart';
 import 'package:neighbours/core/services/notification_service.dart';
 import 'package:neighbours/core/components/connection_wrapper.dart';
+import 'package:neighbours/core/observers/app_lifecycle_observer.dart';
 import 'core/di/injection.dart';
 import 'core/router/app_router.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -36,6 +37,11 @@ void main() async {
 
   await getIt<FcmCubit>().init();
   await getIt<NotificationService>().init();
+  
+  // Инициализируем AppLifecycleObserver
+  final lifecycleObserver = getIt<AppLifecycleObserver>();
+  WidgetsBinding.instance.addObserver(lifecycleObserver);
+  
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   runApp(BlocProvider.value(
