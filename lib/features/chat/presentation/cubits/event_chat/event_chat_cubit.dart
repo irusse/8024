@@ -51,12 +51,15 @@ class EventChatCubit extends Cubit<EventChatState> implements AutoReadSupport {
   }
 
   Future<void> fetchEventMessages(int eventId) async {
-    emit(state
-        .copyWith(fetchMessagesState: const ApiState.loading(), messages: []));
+    emit(state.copyWith(
+      fetchMessagesState: const ApiState.loading(), 
+      messages: [],
+      currentPage: 1, // Сбрасываем на первую страницу
+    ));
 
     final result = await _chatRepository.fetchEventMessages(
       eventId: eventId,
-      page: state.currentPage,
+      page: 1, // Всегда начинаем с первой страницы
       limit: state.limit,
     );
 

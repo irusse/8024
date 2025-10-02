@@ -53,12 +53,15 @@ class CommunityChatCubit extends Cubit<CommunityChatState> implements AutoReadSu
   }
 
   Future<void> fetchCommunityMessages(int communityId) async {
-    emit(state
-        .copyWith(fetchMessagesState: const ApiState.loading(), messages: []));
+    emit(state.copyWith(
+      fetchMessagesState: const ApiState.loading(), 
+      messages: [],
+      currentPage: 1, // Сбрасываем на первую страницу
+    ));
 
     final result = await _chatRepository.fetchCommunityMessages(
       communityId: communityId,
-      page: state.currentPage,
+      page: 1, // Всегда начинаем с первой страницы
       limit: state.limit,
     );
 

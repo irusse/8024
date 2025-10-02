@@ -1,0 +1,41 @@
+import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
+import 'package:injectable/injectable.dart';
+import 'package:neighbours/core/error/failures.dart';
+import 'package:neighbours/core/network/network_handler.dart';
+import 'package:neighbours/features/chat/data/models/message/message_model.dart';
+
+abstract class PrivateChatDataSource {
+  Future<Either<Failure, List<MessageModel>>> fetchPrivateMessages({
+    required int conversationId,
+    required int page,
+    required int limit,
+  });
+}
+
+@Singleton(as: PrivateChatDataSource)
+class PrivateChatDataSourceImpl implements PrivateChatDataSource {
+  final Dio _dio;
+
+  PrivateChatDataSourceImpl(this._dio);
+
+  @override
+  Future<Either<Failure, List<MessageModel>>> fetchPrivateMessages({
+    required int conversationId,
+    required int page,
+    required int limit,
+  }) async {
+    return NetworkHandler.handleRequest(() async {
+      final response = await _dio.get(
+        '/private-chat/conversations/$conversationId/messages',
+        queryParameters: {
+          'page': page,
+          'limit': limit,
+        },
+      );
+
+      final data = response.data as List;
+      return data.map((json) => MessageModel.fromJson(json)).toList();
+    });
+  }
+}
