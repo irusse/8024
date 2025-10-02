@@ -94,9 +94,6 @@ class _CommunityChatWidgetState extends State<CommunityChatWidget> {
           p.fetchMessagesState != c.fetchMessagesState ||
           p.sendMessageState != c.sendMessageState,
       listener: (context, state) {
-        if (state.sendMessageState.isFailure) {
-          context.snackbar.error(context, state.sendMessageState.error!);
-        }
         if (state.fetchMessagesState.isFailure) {
           context.snackbar.error(context, state.fetchMessagesState.error!);
         }

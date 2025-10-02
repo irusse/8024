@@ -8,4 +8,6 @@ abstract class PrivateChatRepository {
     required int page,
     required int limit,
   });
+
+  Future<Either<Failure, void>> markPrivateMessagesAsRead(int conversationId);
 }

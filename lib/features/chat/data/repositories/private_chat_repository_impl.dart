@@ -29,4 +29,13 @@ class PrivateChatRepositoryImpl implements PrivateChatRepository {
           Right(messageModels.map((model) => model.toEntity()).toList()),
     );
   }
+
+  @override
+  Future<Either<Failure, void>> markPrivateMessagesAsRead(int conversationId) async {
+    final result = await _remoteDataSource.markPrivateMessagesAsRead(conversationId);
+    return result.fold(
+      (failure) => Left(failure),
+      (_) => const Right(null),
+    );
+  }
 }

@@ -25,6 +25,8 @@ import '../../features/chat/data/datasources/community_chat_datasource.dart'
     as _i573;
 import '../../features/chat/data/datasources/event_chat_datasource.dart'
     as _i334;
+import '../../features/chat/data/datasources/private_chat_datasource.dart'
+    as _i61;
 import '../../features/chat/data/repositories/community_chat_repository_impl.dart'
     as _i574;
 import '../../features/chat/data/repositories/community_chat_socket_repository_impl.dart'
@@ -33,6 +35,10 @@ import '../../features/chat/data/repositories/event_chat_repository_impl.dart'
     as _i970;
 import '../../features/chat/data/repositories/event_chat_socket_repository_impl.dart'
     as _i615;
+import '../../features/chat/data/repositories/private_chat_repository_impl.dart'
+    as _i360;
+import '../../features/chat/data/repositories/private_chat_socket_repository_impl.dart'
+    as _i287;
 import '../../features/chat/data/socket/chat_socket.dart' as _i466;
 import '../../features/chat/domain/repositories/community_chat_repository.dart'
     as _i250;
@@ -42,10 +48,16 @@ import '../../features/chat/domain/repositories/event_chat_repository.dart'
     as _i934;
 import '../../features/chat/domain/repositories/event_chat_socket_repository.dart'
     as _i580;
+import '../../features/chat/domain/repositories/private_chat_repository.dart'
+    as _i142;
+import '../../features/chat/domain/repositories/private_chat_socket_repository.dart'
+    as _i614;
 import '../../features/chat/presentation/cubits/community_chat/community_chat_cubit.dart'
     as _i519;
 import '../../features/chat/presentation/cubits/event_chat/event_chat_cubit.dart'
     as _i638;
+import '../../features/chat/presentation/cubits/private_message/private_message_cubit.dart'
+    as _i304;
 import '../../features/community/data/datasources/community_remote_datasource.dart'
     as _i158;
 import '../../features/community/data/repositories/community_repository_impl.dart'
@@ -202,6 +214,8 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i1044.EventCreatedHandler(),
       instanceName: 'EVENT_CREATED',
     );
+    gh.singleton<_i61.PrivateChatDataSource>(
+        () => _i61.PrivateChatDataSourceImpl(gh<_i361.Dio>()));
     gh.factory<_i166.PropertyLayerService>(
         () => _i166.PropertyLayerService(gh<_i485.MapIconService>()));
     gh.factory<_i835.NotificationLayerService>(
@@ -281,6 +295,8 @@ extension GetItInjectableX on _i174.GetIt {
             gh<_i558.FlutterSecureStorage>()));
     gh.singleton<_i61.PropertyRepository>(() =>
         _i758.PropertyRepositoryImpl(gh<_i954.PropertyRemoteDataSource>()));
+    gh.singleton<_i142.PrivateChatRepository>(() =>
+        _i360.PrivateChatRepositoryImpl(gh<_i61.PrivateChatDataSource>()));
     gh.singleton<_i745.AuthService>(
         () => _i745.AuthService(gh<_i558.FlutterSecureStorage>()));
     gh.factory<_i526.UserVerifiedPropertiesCubit>(
@@ -353,6 +369,8 @@ extension GetItInjectableX on _i174.GetIt {
         ));
     gh.singleton<_i580.EventChatSocketRepository>(
         () => _i615.EventChatRepositoryImpl(gh<_i466.ChatSocket>()));
+    gh.singleton<_i614.PrivateChatSocketRepository>(
+        () => _i287.PrivateChatSocketRepositoryImpl(gh<_i466.ChatSocket>()));
     gh.singleton<_i235.AuthCubit>(
         () => _i235.AuthCubit(gh<_i787.AuthRepository>()));
     gh.factory<_i470.ProfileCubit>(
@@ -360,6 +378,10 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i638.EventChatCubit>(() => _i638.EventChatCubit(
           gh<_i934.EventChatRepository>(),
           gh<_i580.EventChatSocketRepository>(),
+        ));
+    gh.singleton<_i304.PrivateMessageCubit>(() => _i304.PrivateMessageCubit(
+          gh<_i142.PrivateChatRepository>(),
+          gh<_i614.PrivateChatSocketRepository>(),
         ));
     return this;
   }

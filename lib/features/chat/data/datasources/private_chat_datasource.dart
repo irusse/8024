@@ -11,6 +11,8 @@ abstract class PrivateChatDataSource {
     required int page,
     required int limit,
   });
+
+  Future<Either<Failure, void>> markPrivateMessagesAsRead(int conversationId);
 }
 
 @Singleton(as: PrivateChatDataSource)
@@ -36,6 +38,15 @@ class PrivateChatDataSourceImpl implements PrivateChatDataSource {
 
       final data = response.data as List;
       return data.map((json) => MessageModel.fromJson(json)).toList();
+    });
+  }
+
+  @override
+  Future<Either<Failure, void>> markPrivateMessagesAsRead(
+      int conversationId) async {
+    return NetworkHandler.handleRequest(() async {
+      await _dio.post('/private-chat/$conversationId/read');
+      return null;
     });
   }
 }

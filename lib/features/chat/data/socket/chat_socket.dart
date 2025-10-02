@@ -18,6 +18,7 @@ class ChatSocket {
   final Map<String, Set<int>> _roomsToJoin = {
     'joinEvent': <int>{},
     'community:join': <int>{},
+    'private:join': <int>{},
   };
 
   io.Socket? get socket => _socket;
@@ -91,6 +92,14 @@ class ChatSocket {
       AppLogger.info(res.toString());
       AppLogger.info(data.toString());
     });
+  }
+
+  void emitWithAck(String event, dynamic data, Function(dynamic) ack) {
+    if (!_isConnected || _socket == null) {
+      AppLogger.error('EmitWithAck failed: socket not connected [$event]');
+      return;
+    }
+    _socket!.emitWithAck(event, data, ack: ack);
   }
 
   /// Проверяет, действительно ли сокет подключен
