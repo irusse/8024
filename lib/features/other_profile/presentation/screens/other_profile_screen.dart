@@ -219,7 +219,16 @@ class _OtherProfileScreenState extends State<OtherProfileScreen> {
               ),
               const Spacer(),
               if (!sameUser)
-                CustomOutlinedButton(onPressed: () {}, text: "Написать"),
+                CustomOutlinedButton(
+                    onPressed: () => context.push(
+                            AppRouteBuilder.privateChatPage(otherUser.id),
+                            extra: {
+                              "interlocutorName": otherUser.fullName,
+                              "receiverId": otherUser.id,
+                              "interlocutorAvatarUrl": otherUser.avatar,
+                              "interlocutorId": otherUser.id
+                            }),
+                    text: "Написать"),
               const VerticalGap(16)
             ],
           ),

@@ -26,6 +26,7 @@ abstract class AppRoutePath {
   static const eventChatPage = 'event-chat/:eventId/:eventTitle';
   static const communityChatPage =
       'community-chat/:communityId/:communityTitle';
+  static const privateChatPage = '/private-chat/:interlocutorId';
   static const settingsPage = 'settings';
   static const deleteSmsCode = 'delete-sms-code';
   static const countryCodeSelect = '/countryCodeSelect';
@@ -62,6 +63,9 @@ abstract class AppRouteBuilder {
             ':communityTitle',
             Uri.encodeComponent(communityTitle),
           );
+
+  static String privateChatPage(int interlocutorId) =>
+      '/private-chat/$interlocutorId';
 
   static String propertyEdit(int propertyId) =>
       '/property-details/$propertyId/${AppRoutePath.propertyEdit}';

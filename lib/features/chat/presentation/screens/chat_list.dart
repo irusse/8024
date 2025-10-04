@@ -5,6 +5,8 @@ import 'package:neighbours/core/components/default_app_bar.dart';
 import 'package:neighbours/core/components/default_tab_bar.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
 import 'package:neighbours/features/chat/presentation/widgets/community_chat_list_item.dart';
+import 'package:neighbours/features/chat/presentation/widgets/private_chat_list_item.dart';
+import 'package:neighbours/features/chat/presentation/cubits/private_message/private_message_cubit.dart';
 import 'package:neighbours/features/community/domain/entities/community/community_entity.dart';
 import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
 import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart';
@@ -22,7 +24,7 @@ class ChatList extends StatelessWidget {
         (cubit) => cubit.allUserNotifications(userId));
     final communities = context.select<UserCubit, List<CommunityEntity>>(
         (cubit) => cubit.state.user.communities);
-    final _tabs = ["Сообщества", "Мероприятия", "Оповещения"];
+    final _tabs = ["Сообщества", "Мероприятия", "Оповещения", "Личные"];
     return Scaffold(
       appBar: const DefaultAppBar(
         showBackButton: true,
@@ -52,13 +54,43 @@ class ChatList extends StatelessWidget {
                     itemBuilder: (context, index) =>
                         EventChatListItem(entity: allUserNotifications[index]),
                     itemCount: allUserNotifications.length,
-                  )
+                  ),
+                  _buildPrivateChatsList(context),
                 ],
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildPrivateChatsList(BuildContext context) {
+    return BlocBuilder<PrivateMessageCubit, PrivateMessageState>(
+      builder: (context, state) {
+        // TODO: Здесь нужно будет получать список бесед из API
+        // Пока что показываем заглушку
+        final privateConversations = <Map<String, dynamic>>[];
+        
+        if (privateConversations.isEmpty) {
+          return const Center(
+            child: Text('Пока нет личных сообщений'),
+          );
+        }
+
+        return ListView.builder(
+          itemBuilder: (context, index) {
+            final conversation = privateConversations[index];
+            return PrivateChatListItem(
+              conversationId: conversation['conversationId'],
+              interlocutor: conversation['interlocutor'],
+              lastMessage: conversation['lastMessage'],
+              lastMessageTime: conversation['lastMessageTime'],
+            );
+          },
+          itemCount: privateConversations.length,
+        );
+      },
     );
   }
 }

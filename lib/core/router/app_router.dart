@@ -18,9 +18,11 @@ import 'package:neighbours/features/auth/presentation/pages/auth_welcome_page.da
 import 'package:neighbours/features/auth/presentation/pages/country_code_select.dart';
 import 'package:neighbours/features/chat/presentation/cubits/community_chat/community_chat_cubit.dart';
 import 'package:neighbours/features/chat/presentation/cubits/event_chat/event_chat_cubit.dart';
+import 'package:neighbours/features/chat/presentation/cubits/private_message/private_message_cubit.dart';
 import 'package:neighbours/features/chat/presentation/screens/chat_list.dart';
 import 'package:neighbours/features/chat/presentation/screens/event_chat_page.dart';
 import 'package:neighbours/features/chat/presentation/screens/community_chat_page.dart';
+import 'package:neighbours/features/chat/presentation/screens/private_chat_page.dart';
 import 'package:neighbours/features/community/presentation/cubits/community/community_cubit.dart';
 import 'package:neighbours/features/community/presentation/screens/community.dart';
 import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
@@ -241,7 +243,8 @@ class AppRouter {
               path: AppRoutePath.eventChatPage,
               pageBuilder: (context, state) {
                 final eventId = int.parse(state.pathParameters['eventId']!);
-                final eventTitle = state.pathParameters['eventTitle'] ?? 'Чат события';
+                final eventTitle =
+                    state.pathParameters['eventTitle'] ?? 'Чат события';
 
                 return CustomPageTransition.slideFromRight(
                     key: state.pageKey,
@@ -261,8 +264,10 @@ class AppRouter {
           GoRoute(
               path: AppRoutePath.communityChatPage,
               pageBuilder: (context, state) {
-                final communityId = int.parse(state.pathParameters['communityId']!);
-                final communityTitle = state.pathParameters['communityTitle'] ?? 'Чат сообщества';
+                final communityId =
+                    int.parse(state.pathParameters['communityId']!);
+                final communityTitle =
+                    state.pathParameters['communityTitle'] ?? 'Чат сообщества';
 
                 return CustomPageTransition.slideFromRight(
                     key: state.pageKey,
@@ -289,10 +294,44 @@ class AppRouter {
                 BlocProvider.value(
                   value: getIt<CommunityChatCubit>(),
                 ),
+                BlocProvider.value(
+                  value: getIt<PrivateMessageCubit>(),
+                ),
                 BlocProvider.value(value: getIt<UserCubit>()),
               ], child: const ChatList()));
         },
       ),
+      GoRoute(
+          path: AppRoutePath.privateChatPage,
+          pageBuilder: (context, state) {
+            final interlocutorId =
+                int.parse(state.pathParameters['interlocutorId']!);
+            final extra = state.extra as Map<String, dynamic>?;
+            final conversationId = extra?['conversationId'] as int?;
+            final receiverId = extra?['receiverId'] as int? ??
+                interlocutorId; // Если нет receiverId, используем interlocutorId
+            final interlocutorName =
+                extra?['interlocutorName'] as String? ?? 'Пользователь';
+            final interlocutorAvatarUrl =
+                extra?['interlocutorAvatarUrl'] as String?;
+
+            return CustomPageTransition.slideFromRight(
+                key: state.pageKey,
+                child: MultiBlocProvider(
+                  providers: [
+                    BlocProvider.value(
+                      value: getIt<PrivateMessageCubit>(),
+                    ),
+                    BlocProvider.value(value: getIt<UserCubit>()),
+                  ],
+                  child: PrivateChatPage(
+                    conversationId: conversationId,
+                    receiverId: receiverId,
+                    interlocutorName: interlocutorName,
+                    interlocutorAvatarUrl: interlocutorAvatarUrl,
+                  ),
+                ));
+          }),
       GoRoute(
         path: AppRoutePath.notificationForm,
         pageBuilder: (context, state) {
