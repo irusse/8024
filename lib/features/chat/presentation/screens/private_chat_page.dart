@@ -64,3 +64,4 @@ class PrivateChatPage extends StatelessWidget {
     ));
   }
 }
+

@@ -3,6 +3,7 @@ import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/error/failures.dart';
 import 'package:neighbours/features/chat/data/datasources/private_chat_datasource.dart';
 import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
+import 'package:neighbours/features/chat/domain/entities/private_chat_list/private_chat_list_entity.dart';
 import '../../domain/repositories/private_chat_repository.dart';
 
 @Singleton(as: PrivateChatRepository)
@@ -31,8 +32,22 @@ class PrivateChatRepositoryImpl implements PrivateChatRepository {
   }
 
   @override
-  Future<Either<Failure, void>> markPrivateMessagesAsRead(int conversationId) async {
-    final result = await _remoteDataSource.markPrivateMessagesAsRead(conversationId);
+  Future<Either<Failure, List<PrivateChatListEntity>>>
+      fetchPrivateConversations() async {
+    final result = await _remoteDataSource.fetchPrivateConversations();
+    return result.fold(
+      (failure) => Left(failure),
+      (conversationModels) => Right(
+        conversationModels.map((model) => model.toEntity()).toList(),
+      ),
+    );
+  }
+
+  @override
+  Future<Either<Failure, void>> markPrivateMessagesAsRead(
+      int conversationId) async {
+    final result =
+        await _remoteDataSource.markPrivateMessagesAsRead(conversationId);
     return result.fold(
       (failure) => Left(failure),
       (_) => const Right(null),

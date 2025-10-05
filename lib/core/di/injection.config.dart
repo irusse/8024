@@ -56,8 +56,8 @@ import '../../features/chat/presentation/cubits/community_chat/community_chat_cu
     as _i519;
 import '../../features/chat/presentation/cubits/event_chat/event_chat_cubit.dart'
     as _i638;
-import '../../features/chat/presentation/cubits/private_message/private_message_cubit.dart'
-    as _i304;
+import '../../features/chat/presentation/cubits/private_chat/private_chat_cubit.dart'
+    as _i33;
 import '../../features/community/data/datasources/community_remote_datasource.dart'
     as _i158;
 import '../../features/community/data/repositories/community_repository_impl.dart'
@@ -379,7 +379,7 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i934.EventChatRepository>(),
           gh<_i580.EventChatSocketRepository>(),
         ));
-    gh.singleton<_i304.PrivateMessageCubit>(() => _i304.PrivateMessageCubit(
+    gh.singleton<_i33.PrivateChatCubit>(() => _i33.PrivateChatCubit(
           gh<_i142.PrivateChatRepository>(),
           gh<_i614.PrivateChatSocketRepository>(),
         ));

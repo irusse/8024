@@ -7,34 +7,28 @@ import 'package:neighbours/core/constants/ui_constants.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/extensions/full_name_ext.dart';
 import 'package:neighbours/core/router/app_routes.dart';
-import 'package:neighbours/features/chat/presentation/cubits/private_message/private_message_cubit.dart';
+import 'package:neighbours/features/chat/presentation/cubits/private_chat/private_chat_cubit.dart';
 import 'package:neighbours/features/chat/presentation/widgets/unread_count.dart';
-import 'package:neighbours/features/other_profile/domain/entities/other_user/other_user_entity.dart';
+import 'package:neighbours/features/chat/domain/entities/private_chat_list/private_chat_list_entity.dart';
 
 class PrivateChatListItem extends StatelessWidget {
-  final int conversationId;
-  final OtherUserEntity interlocutor;
-  final String? lastMessage;
-  final DateTime? lastMessageTime;
+  final PrivateChatListEntity conversation;
 
   const PrivateChatListItem({
     super.key,
-    required this.conversationId,
-    required this.interlocutor,
-    this.lastMessage,
-    this.lastMessageTime,
+    required this.conversation,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => context.push(
-        AppRouteBuilder.privateChatPage(interlocutor.id),
+        AppRouteBuilder.privateChatPage(conversation.user.id),
         extra: {
-          'conversationId': conversationId,
-          'receiverId': interlocutor.id, // Для новых бесед
-          'interlocutorName': interlocutor.firstName,
-          'interlocutorAvatarUrl': interlocutor.avatar,
+          'conversationId': conversation.id,
+          'receiverId': conversation.user.id, // Для новых бесед
+          'interlocutorName': conversation.user.firstName,
+          'interlocutorAvatarUrl': conversation.user.avatar,
         },
       ),
       child: Container(
@@ -51,37 +45,27 @@ class PrivateChatListItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    interlocutor.firstName,
+                    conversation.user.firstName,
                     style: context.text.bodyLarge.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  if (lastMessage != null) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      lastMessage!,
-                      style: context.text.bodySmall?.copyWith(
-                        color: context.color.secondaryText,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                  const SizedBox(height: 4),
+                  Text(
+                    conversation.lastMessage.text,
+                    style: context.text.bodySmall?.copyWith(
+                      color: context.color.secondaryText,
                     ),
-                  ],
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ],
               ),
             ),
             const HorizontalGap(8),
-            BlocBuilder<PrivateMessageCubit, PrivateMessageState>(
-              builder: (context, state) {
-                final unreadCount = context
-                    .read<PrivateMessageCubit>()
-                    .getUnreadCountForConversation(conversationId);
-
-                return UnreadCount(count: unreadCount);
-              },
-            ),
+            UnreadCount(count: conversation.unreadCount),
           ],
         ),
       ),
@@ -100,9 +84,9 @@ class PrivateChatListItem extends StatelessWidget {
         ),
       ),
       child: ClipOval(
-        child: interlocutor.avatar != null && interlocutor.avatar!.isNotEmpty
+        child: conversation.user.avatar != null && conversation.user.avatar!.isNotEmpty
             ? ShapedCachedImage(
-                url: interlocutor.avatar!,
+                url: conversation.user.avatar!,
                 radius: 24,
               )
             : Container(
@@ -118,7 +102,7 @@ class PrivateChatListItem extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    interlocutor.fullName,
+                    conversation.user.fullName,
                     style: context.text.titleSmall.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,

@@ -6,27 +6,29 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/constants/notification_constants.dart';
 import 'package:neighbours/core/di/injection.dart';
+import 'package:neighbours/core/logging/logger.dart';
 import 'package:neighbours/core/services/notification_service.dart';
 import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
+import 'package:neighbours/features/chat/domain/entities/private_chat_list/private_chat_list_entity.dart';
 import 'package:neighbours/features/chat/domain/repositories/private_chat_repository.dart';
 import 'package:neighbours/features/chat/domain/repositories/private_chat_socket_repository.dart';
 import 'package:neighbours/core/observers/app_lifecycle_observer.dart';
 
-part 'private_message_state.dart';
+part 'private_chat_state.dart';
 
-part 'private_message_cubit.freezed.dart';
+part 'private_chat_cubit.freezed.dart';
 
 @singleton
-class PrivateMessageCubit extends Cubit<PrivateMessageState>
+class PrivateChatCubit extends Cubit<PrivateChatState>
     implements AutoReadSupport {
   final PrivateChatRepository _chatRepository;
   final PrivateChatSocketRepository _socketRepository;
   int? _currentOpenChatId;
   StreamSubscription? _notificationSub;
 
-  PrivateMessageCubit(this._chatRepository, this._socketRepository)
-      : super(const PrivateMessageState()) {
+  PrivateChatCubit(this._chatRepository, this._socketRepository)
+      : super(const PrivateChatState()) {
     _notificationSub =
         getIt<NotificationService>().stream.listen((notification) {
       if (notification.type == NotificationConstants.messageReceived) {
@@ -57,7 +59,6 @@ class PrivateMessageCubit extends Cubit<PrivateMessageState>
       fetchMessagesState: const ApiState.loading(),
       messages: [],
       currentPage: 1, // Сбрасываем на первую страницу
-      currentConversationId: conversationId,
     ));
 
     final result = await _chatRepository.fetchPrivateMessages(
@@ -109,13 +110,31 @@ class PrivateMessageCubit extends Cubit<PrivateMessageState>
     );
   }
 
+  Future<void> fetchPrivateConversations() async {
+    emit(state.copyWith(
+      fetchConversationsState: const ApiState.loading(),
+    ));
+
+    final result = await _chatRepository.fetchPrivateConversations();
+
+    result.fold(
+      (failure) => emit(state.copyWith(
+        fetchConversationsState: ApiState.failure(failure.message),
+      )),
+      (conversations) => emit(state.copyWith(
+        conversations: conversations,
+        fetchConversationsState: ApiState.success(conversations),
+      )),
+    );
+  }
+
   void sendMessage({
     int? conversationId,
     int? receiverId,
     required String text,
   }) {
-    emit(state.copyWith(sendMessageState: const ApiState.loading()));
-
+    AppLogger.info(conversationId.toString());
+    AppLogger.info(receiverId.toString());
     _socketRepository.sendMessage(
       conversationId: conversationId,
       receiverId: receiverId,
@@ -127,6 +146,10 @@ class PrivateMessageCubit extends Cubit<PrivateMessageState>
           currentReceiverId: null, // Очищаем receiverId после создания беседы
           sendMessageState: const ApiState.success(null),
         ));
+
+        // Присоединяемся к новой беседе и загружаем сообщения
+        joinConversation(newConversationId);
+        setCurrentChat(newConversationId);
       },
     );
   }
@@ -161,6 +184,11 @@ class PrivateMessageCubit extends Cubit<PrivateMessageState>
     if (conversationId != null) {
       enableAutoRead(conversationId);
     }
+  }
+
+  /// Устанавливает текущий receiverId для новых бесед
+  void setCurrentReceiverId(int? receiverId) {
+    emit(state.copyWith(currentReceiverId: receiverId));
   }
 
   /// Получает ID текущего открытого чата

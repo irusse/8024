@@ -1,11 +1,14 @@
-part of 'private_message_cubit.dart';
+part of 'private_chat_cubit.dart';
 
 @freezed
-abstract class PrivateMessageState with _$PrivateMessageState {
-  const factory PrivateMessageState({
+abstract class PrivateChatState with _$PrivateChatState {
+  const factory PrivateChatState({
     @Default([]) List<MessageEntity> messages,
+    @Default([]) List<PrivateChatListEntity> conversations,
     @Default(ApiState.initial())
     ApiState<List<MessageEntity>> fetchMessagesState,
+    @Default(ApiState.initial())
+    ApiState<List<PrivateChatListEntity>> fetchConversationsState,
     @Default(ApiState.initial()) ApiState<void> sendMessageState,
     @Default(ApiState.initial()) ApiState<void> markMessagesAsReadState,
     @Default(1) int currentPage,
@@ -16,5 +19,5 @@ abstract class PrivateMessageState with _$PrivateMessageState {
     @Default(false) bool isLoadingMore,
     @Default(null) int? currentConversationId,
     @Default(null) int? currentReceiverId,
-  }) = _PrivateMessageState;
+  }) = _PrivateChatState;
 }

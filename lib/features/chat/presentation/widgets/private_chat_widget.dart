@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/state/api_state.dart';
-import 'package:neighbours/features/chat/presentation/cubits/private_message/private_message_cubit.dart';
+import 'package:neighbours/features/chat/presentation/cubits/private_chat/private_chat_cubit.dart';
 import 'package:neighbours/features/chat/presentation/widgets/message_input.dart';
 import 'package:neighbours/features/chat/presentation/widgets/message_list.dart';
 
@@ -24,34 +24,36 @@ class _PrivateChatWidgetState extends State<PrivateChatWidget> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   double _prevMaxExtent = 0;
-  late PrivateMessageCubit _privateMessageCubit;
+  late PrivateChatCubit _privateChatCubit;
 
   @override
   void initState() {
     super.initState();
 
-    _privateMessageCubit = context.read<PrivateMessageCubit>();
+    _privateChatCubit = context.read<PrivateChatCubit>();
     _scrollController.addListener(_onScroll);
 
     // Если есть conversationId, загружаем сообщения
     if (widget.conversationId != null) {
-      _privateMessageCubit.fetchPrivateMessages(widget.conversationId!);
-      _privateMessageCubit.joinConversation(widget.conversationId!);
-      _privateMessageCubit.setCurrentChat(widget.conversationId);
+      _privateChatCubit.fetchPrivateMessages(widget.conversationId!);
+      _privateChatCubit.joinConversation(widget.conversationId!);
+      _privateChatCubit.setCurrentChat(widget.conversationId);
 
       // Отмечаем сообщения как прочитанные
-      if (_privateMessageCubit
+      if (_privateChatCubit
               .getUnreadCountForConversation(widget.conversationId!) !=
           0) {
-        _privateMessageCubit.markPrivateMessagesAsRead(widget.conversationId!);
+        _privateChatCubit.markPrivateMessagesAsRead(widget.conversationId!);
       }
-    } else {
-      // Для новых бесед устанавливаем receiverId
-      _privateMessageCubit.setCurrentChat(null);
+    } else if (widget.receiverId != null) {
+      _privateChatCubit.fetchPrivateMessages(widget.receiverId!);
+      // Для новых бесед устанавливаем receiverId и подготавливаем соединение
+      _privateChatCubit.setCurrentChat(null);
+      _privateChatCubit.setCurrentReceiverId(widget.receiverId);
     }
 
     // Настраиваем прослушивание сообщений
-    _privateMessageCubit.listenPrivateMessages();
+    _privateChatCubit.listenPrivateMessages();
   }
 
   void _onScroll() {
@@ -60,9 +62,9 @@ class _PrivateChatWidgetState extends State<PrivateChatWidget> {
     // при reverse:true "верх" -> maxScrollExtent
     if (pos.pixels >= pos.maxScrollExtent - threshold) {
       if (widget.conversationId != null &&
-          _privateMessageCubit.state.hasMoreMessages &&
-          !_privateMessageCubit.state.isLoadingMore) {
-        _privateMessageCubit.loadMoreMessages(widget.conversationId!);
+          _privateChatCubit.state.hasMoreMessages &&
+          !_privateChatCubit.state.isLoadingMore) {
+        _privateChatCubit.loadMoreMessages(widget.conversationId!);
       }
     }
   }
@@ -89,9 +91,16 @@ class _PrivateChatWidgetState extends State<PrivateChatWidget> {
     final text = _messageController.text.trim();
     if (text.isEmpty) return;
 
-    _privateMessageCubit.sendMessage(
-      conversationId: widget.conversationId,
-      receiverId: widget.receiverId,
+    // Используем conversationId из widget или из состояния cubit
+    final conversationId =
+        widget.conversationId ?? _privateChatCubit.state.currentConversationId;
+    // Используем receiverId из widget или из состояния cubit
+    final receiverId =
+        widget.receiverId ?? _privateChatCubit.state.currentReceiverId;
+
+    _privateChatCubit.sendMessage(
+      conversationId: conversationId,
+      receiverId: receiverId,
       text: text,
     );
 
@@ -100,7 +109,8 @@ class _PrivateChatWidgetState extends State<PrivateChatWidget> {
 
   @override
   void dispose() {
-    _privateMessageCubit.setCurrentChat(null);
+    _privateChatCubit.setCurrentChat(null);
+    _privateChatCubit.setCurrentReceiverId(null);
     _scrollController.dispose();
     _messageController.dispose();
     super.dispose();
@@ -108,7 +118,7 @@ class _PrivateChatWidgetState extends State<PrivateChatWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<PrivateMessageCubit, PrivateMessageState>(
+    return BlocListener<PrivateChatCubit, PrivateChatState>(
       listenWhen: (p, c) =>
           p.fetchMessagesState != c.fetchMessagesState ||
           p.sendMessageState != c.sendMessageState,
@@ -135,18 +145,18 @@ class _PrivateChatWidgetState extends State<PrivateChatWidget> {
           Expanded(
             child: MessageList(
               messages: context
-                  .select((PrivateMessageCubit cubit) => cubit.state.messages),
+                  .select((PrivateChatCubit cubit) => cubit.state.messages),
               controller: _scrollController,
-              isLoading: context.select((PrivateMessageCubit cubit) =>
+              isLoading: context.select((PrivateChatCubit cubit) =>
                   cubit.state.fetchMessagesState.isLoading),
-              isLoadingMore: context
-                  .select((PrivateMessageCubit cubit) => cubit.state.isLoadingMore),
+              isLoadingMore: context.select(
+                  (PrivateChatCubit cubit) => cubit.state.isLoadingMore),
             ),
           ),
           MessageInput(
             messageController: _messageController,
             sendMessage: _sendMessage,
-            isLoading: context.select((PrivateMessageCubit cubit) =>
+            isLoading: context.select((PrivateChatCubit cubit) =>
                 cubit.state.sendMessageState.isLoading),
           ),
         ],

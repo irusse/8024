@@ -18,7 +18,7 @@ import 'package:neighbours/features/auth/presentation/pages/auth_welcome_page.da
 import 'package:neighbours/features/auth/presentation/pages/country_code_select.dart';
 import 'package:neighbours/features/chat/presentation/cubits/community_chat/community_chat_cubit.dart';
 import 'package:neighbours/features/chat/presentation/cubits/event_chat/event_chat_cubit.dart';
-import 'package:neighbours/features/chat/presentation/cubits/private_message/private_message_cubit.dart';
+import 'package:neighbours/features/chat/presentation/cubits/private_chat/private_chat_cubit.dart';
 import 'package:neighbours/features/chat/presentation/screens/chat_list.dart';
 import 'package:neighbours/features/chat/presentation/screens/event_chat_page.dart';
 import 'package:neighbours/features/chat/presentation/screens/community_chat_page.dart';
@@ -295,7 +295,7 @@ class AppRouter {
                   value: getIt<CommunityChatCubit>(),
                 ),
                 BlocProvider.value(
-                  value: getIt<PrivateMessageCubit>(),
+                  value: getIt<PrivateChatCubit>(),
                 ),
                 BlocProvider.value(value: getIt<UserCubit>()),
               ], child: const ChatList()));
@@ -320,7 +320,7 @@ class AppRouter {
                 child: MultiBlocProvider(
                   providers: [
                     BlocProvider.value(
-                      value: getIt<PrivateMessageCubit>(),
+                      value: getIt<PrivateChatCubit>(),
                     ),
                     BlocProvider.value(value: getIt<UserCubit>()),
                   ],
