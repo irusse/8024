@@ -1,20 +1,19 @@
 import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
 
 abstract class PrivateChatSocketRepository {
-  void join(int conversationId);
+  void join(int receiverId);
 
-  void leave(int conversationId);
+  void leave(int receiverId);
 
   void sendMessage({
-    int? conversationId,
-    int? receiverId,
+    required int receiverId,
     required String text,
-    Function(int conversationId)? onConversationCreated,
+    Function(int receiverId)? onConversationCreated,
   });
 
   void listenMessages(Function(MessageEntity) onNewMessage);
 
-  void enableAutoRead(int conversationId);
+  void enableAutoRead(int receiverId);
 
-  void disableAutoRead(int conversationId);
+  void disableAutoRead(int receiverId);
 }

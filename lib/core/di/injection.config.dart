@@ -66,6 +66,14 @@ import '../../features/community/domain/repositories/community_repository.dart'
     as _i121;
 import '../../features/community/presentation/cubits/community/community_cubit.dart'
     as _i491;
+import '../../features/document/data/datasources/document_data_source.dart'
+    as _i404;
+import '../../features/document/data/repositories/document_repository_impl.dart'
+    as _i44;
+import '../../features/document/domain/repository/document_repository.dart'
+    as _i261;
+import '../../features/document/presentation/cubits/document/document_cubit.dart'
+    as _i865;
 import '../../features/event/data/datasources/event_remote_datasource.dart'
     as _i698;
 import '../../features/event/data/datasources/vote_remote_datasource.dart'
@@ -113,14 +121,6 @@ import '../../features/other_profile/presentation/cubits/other_profile/other_pro
     as _i375;
 import '../../features/other_profile/presentation/cubits/other_properties/other_properties_cubit.dart'
     as _i720;
-import '../../features/profile/data/datasources/document_data_source.dart'
-    as _i609;
-import '../../features/profile/data/repositories/document_repository_impl.dart'
-    as _i35;
-import '../../features/profile/domain/repository/document_repository.dart'
-    as _i375;
-import '../../features/profile/presentation/cubits/document/document_cubit.dart'
-    as _i936;
 import '../../features/profile/presentation/cubits/profile/profile_cubit.dart'
     as _i470;
 import '../../features/profile/presentation/cubits/profile_create/profile_create_cubit.dart'
@@ -250,6 +250,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i0.HomeRepository>(
         () => _i76.HomeRepositoryImpl(gh<_i278.HomeRemoteDataSource>()));
     gh.singleton<_i342.SnackbarService>(() => _i342.SnackbarServiceImpl());
+    gh.singleton<_i404.DocumentDataSource>(
+        () => _i404.DocumentDataSourceImpl(gh<_i361.Dio>()));
     gh.singleton<_i227.NotificationRemoteDataSource>(
         () => _i227.NotificationRemoteDataSourceImpl(gh<_i361.Dio>()));
     gh.singleton<_i111.NotificationHandler>(
@@ -262,8 +264,6 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i643.EventJoinedHandler(),
       instanceName: 'USER_JOINED_EVENT',
     );
-    gh.singleton<_i609.DocumentDataSource>(
-        () => _i609.DocumentDataSourceImpl(gh<_i361.Dio>()));
     gh.singleton<_i107.AuthRemoteDataSource>(
         () => _i107.AuthRemoteDataSourceImpl(gh<_i361.Dio>()));
     gh.singleton<_i250.CommunityChatRepository>(() =>
@@ -284,12 +284,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i45.MarkerService>(() => _i45.MarkerServiceImpl());
     gh.singleton<_i158.CommunityRemoteDataSource>(
         () => _i158.CommunityRemoteDataSourceImpl(gh<_i361.Dio>()));
-    gh.singleton<_i375.DocumentRepository>(
-        () => _i35.DocumentRepositoryImpl(gh<_i609.DocumentDataSource>()));
     gh.singleton<_i121.CommunityRepository>(() =>
         _i321.CommunityRepositoryImpl(gh<_i158.CommunityRemoteDataSource>()));
-    gh.factory<_i936.DocumentCubit>(
-        () => _i936.DocumentCubit(gh<_i375.DocumentRepository>()));
     gh.singleton<_i392.UserLocationLocalDataSource>(() =>
         _i392.UserLocationLocalDataSourceImpl(
             gh<_i558.FlutterSecureStorage>()));
@@ -330,10 +326,14 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i630.VoteRepositoryImpl(gh<_i990.VoteRemoteDatasource>()));
     gh.singleton<_i934.EventChatRepository>(
         () => _i970.EventChatRepositoryImpl(gh<_i334.EventChatDataSource>()));
+    gh.singleton<_i261.DocumentRepository>(
+        () => _i44.DocumentRepositoryImpl(gh<_i404.DocumentDataSource>()));
     gh.singleton<_i791.FcmCubit>(() => _i791.FcmCubit(
           gh<_i637.PushRepository>(),
           gh<_i928.FCMService>(),
         ));
+    gh.factory<_i865.DocumentCubit>(
+        () => _i865.DocumentCubit(gh<_i261.DocumentRepository>()));
     gh.lazySingleton<_i549.ResourcesCubit>(
         () => _i549.ResourcesCubit(gh<_i50.ResourceRepository>()));
     gh.factory<_i720.OtherPropertiesCubit>(

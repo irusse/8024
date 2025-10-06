@@ -6,15 +6,13 @@ import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 
 class PrivateChatPage extends StatelessWidget {
-  final int? conversationId;
-  final int? receiverId;
+  final int interlocutorId;
   final String interlocutorName;
   final String? interlocutorAvatarUrl;
 
   const PrivateChatPage({
     super.key,
-    this.conversationId,
-    this.receiverId,
+    required this.interlocutorId,
     required this.interlocutorName,
     this.interlocutorAvatarUrl,
   });
@@ -28,8 +26,7 @@ class PrivateChatPage extends StatelessWidget {
         height: 80,
       ),
       body: PrivateChatWidget(
-        conversationId: conversationId,
-        receiverId: receiverId,
+        interlocutorId: interlocutorId,
       ),
     );
   }
@@ -40,7 +37,7 @@ class PrivateChatPage extends StatelessWidget {
       children: [
         DefaultCircleAvatar(
           name: interlocutorName,
-          id: receiverId,
+          id: interlocutorId,
           radius: 24,
           textStyle: context.text.bodyLarge,
           url: interlocutorAvatarUrl,
@@ -64,4 +61,3 @@ class PrivateChatPage extends StatelessWidget {
     ));
   }
 }
-

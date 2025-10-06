@@ -25,6 +25,7 @@ import 'package:neighbours/features/chat/presentation/screens/community_chat_pag
 import 'package:neighbours/features/chat/presentation/screens/private_chat_page.dart';
 import 'package:neighbours/features/community/presentation/cubits/community/community_cubit.dart';
 import 'package:neighbours/features/community/presentation/screens/community.dart';
+import 'package:neighbours/features/document/presentation/cubits/document/document_cubit.dart';
 import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
 import 'package:neighbours/features/event/presentation/cubits/event_form/event_form_cubit.dart';
 import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart'
@@ -40,16 +41,15 @@ import 'package:neighbours/features/notification/presentation/screens/notificati
 import 'package:neighbours/features/other_profile/presentation/cubits/other_profile/other_profile_cubit.dart';
 import 'package:neighbours/features/other_profile/presentation/cubits/other_properties/other_properties_cubit.dart';
 import 'package:neighbours/features/other_profile/presentation/screens/other_profile_screen.dart';
-import 'package:neighbours/features/profile/presentation/cubits/document/document_cubit.dart';
 import 'package:neighbours/features/profile/presentation/cubits/edit_profile/edit_profile_cubit.dart';
 import 'package:neighbours/features/profile/presentation/cubits/profile/profile_cubit.dart';
 import 'package:neighbours/features/profile/presentation/cubits/user_verified_properties/user_verified_properties_cubit.dart';
-import 'package:neighbours/features/profile/presentation/pages/document_page.dart';
+import 'package:neighbours/features/document/presentation/screens/document_page.dart';
 import 'package:neighbours/features/property/domain/entities/property/property_entity.dart';
 import 'package:neighbours/features/property/presentation/cubits/properties/properties_cubit.dart';
 import 'package:neighbours/features/property/presentation/cubits/property_form/property_form_cubit.dart';
 import 'package:neighbours/features/property/presentation/screens/property_verifications.dart';
-import 'package:neighbours/features/profile/presentation/pages/settings.dart';
+import 'package:neighbours/features/profile/presentation/screens/settings.dart';
 import 'package:neighbours/features/event/presentation/screens/user_events.dart';
 import 'package:neighbours/features/property/presentation/cubits/resource_form/resource_form_cubit.dart';
 import 'package:neighbours/features/property/presentation/cubits/resources/resources_cubit.dart';
@@ -58,13 +58,13 @@ import 'package:neighbours/features/property/presentation/screens/property_detai
 import 'package:neighbours/features/property/presentation/screens/resource_form.dart';
 import '../../features/auth/presentation/pages/phone_auth_page.dart';
 import '../../features/home/presentation/cubits/home/home_cubit.dart';
-import '../../features/profile/presentation/pages/profile_screen.dart';
+import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/property/domain/entities/resource/resource_entity.dart';
 import '../components/not_found_page.dart';
 import '../di/injection.dart';
 import '../../features/auth/presentation/pages/sms_code_page.dart';
 import '../../features/splash/presentation/pages/splash_screen.dart';
-import '../../features/profile/presentation/pages/edit_profile_screen.dart';
+import '../../features/profile/presentation/screens/edit_profile_screen.dart';
 import '../services/snackbar_service.dart';
 
 import 'dart:async';
@@ -307,9 +307,6 @@ class AppRouter {
             final interlocutorId =
                 int.parse(state.pathParameters['interlocutorId']!);
             final extra = state.extra as Map<String, dynamic>?;
-            final conversationId = extra?['conversationId'] as int?;
-            final receiverId = extra?['receiverId'] as int? ??
-                interlocutorId; // Если нет receiverId, используем interlocutorId
             final interlocutorName =
                 extra?['interlocutorName'] as String? ?? 'Пользователь';
             final interlocutorAvatarUrl =
@@ -325,8 +322,7 @@ class AppRouter {
                     BlocProvider.value(value: getIt<UserCubit>()),
                   ],
                   child: PrivateChatPage(
-                    conversationId: conversationId,
-                    receiverId: receiverId,
+                    interlocutorId: interlocutorId,
                     interlocutorName: interlocutorName,
                     interlocutorAvatarUrl: interlocutorAvatarUrl,
                   ),

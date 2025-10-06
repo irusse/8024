@@ -22,42 +22,29 @@ class PrivateChatSocketRepositoryImpl implements PrivateChatSocketRepository {
 
   @override
   void sendMessage({
-    int? conversationId,
-    int? receiverId,
+    required int receiverId,
     required String text,
     Function(int conversationId)? onConversationCreated,
   }) {
     final Map<String, dynamic> messageData = {'text': text};
 
-    if (conversationId != null) {
-      // Отправка в существующую беседу
-      messageData['conversationId'] = conversationId;
-      AppLogger.info(
-          'Sending message to existing conversation: $conversationId');
-      _chatSocket.emit('private:sendMessage', messageData);
-    } else if (receiverId != null) {
-      // Создание новой беседы
-      messageData['receiverId'] = receiverId;
-      AppLogger.info('Creating new conversation with user: $receiverId');
+    messageData['receiverId'] = receiverId;
+    AppLogger.info('Creating new conversation with user: $receiverId');
 
-      _chatSocket.emitWithAck('private:sendMessage', messageData, (response) {
-        AppLogger.info('Server response for new conversation: $response');
+    _chatSocket.emitWithAck('private:sendMessage', messageData, (response) {
+      AppLogger.info('Server response for new conversation: $response');
 
-        // Ожидаем, что сервер вернет conversationId в ответе
-        if (response != null && response is Map<String, dynamic>) {
-          final newConversationId = response['conversationId'];
-          if (newConversationId != null && onConversationCreated != null) {
-            AppLogger.info(
-                'New conversation created with ID: $newConversationId');
-            AppLogger.info(response.toString());
-            onConversationCreated(newConversationId);
-          }
+      // Ожидаем, что сервер вернет conversationId в ответе
+      if (response != null && response is Map<String, dynamic>) {
+        final newConversationId = response['conversationId'];
+        if (newConversationId != null && onConversationCreated != null) {
+          AppLogger.info(
+              'New conversation created with ID: $newConversationId');
+          AppLogger.info(response.toString());
+          onConversationCreated(newConversationId);
         }
-      });
-    } else {
-      AppLogger.error('Either conversationId or receiverId must be provided');
-      return;
-    }
+      }
+    });
   }
 
   @override

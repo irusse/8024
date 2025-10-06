@@ -14,12 +14,12 @@ class PrivateChatRepositoryImpl implements PrivateChatRepository {
 
   @override
   Future<Either<Failure, List<MessageEntity>>> fetchPrivateMessages({
-    required int conversationId,
+    required int receiverId,
     required int page,
     required int limit,
   }) async {
     final result = await _remoteDataSource.fetchPrivateMessages(
-      conversationId: conversationId,
+      receiverId: receiverId,
       page: page,
       limit: limit,
     );
@@ -45,9 +45,9 @@ class PrivateChatRepositoryImpl implements PrivateChatRepository {
 
   @override
   Future<Either<Failure, void>> markPrivateMessagesAsRead(
-      int conversationId) async {
+      int receiverId) async {
     final result =
-        await _remoteDataSource.markPrivateMessagesAsRead(conversationId);
+        await _remoteDataSource.markPrivateMessagesAsRead(receiverId);
     return result.fold(
       (failure) => Left(failure),
       (_) => const Right(null),

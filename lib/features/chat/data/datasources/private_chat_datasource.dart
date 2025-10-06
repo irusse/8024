@@ -8,31 +8,32 @@ import 'package:neighbours/features/chat/data/models/private_chat_list/private_c
 
 abstract class PrivateChatDataSource {
   Future<Either<Failure, List<MessageModel>>> fetchPrivateMessages({
-    required int conversationId,
+    required int receiverId,
     required int page,
     required int limit,
   });
 
-  Future<Either<Failure, List<PrivateChatListModel>>> fetchPrivateConversations();
+  Future<Either<Failure, List<PrivateChatListModel>>>
+      fetchPrivateConversations();
 
-  Future<Either<Failure, void>> markPrivateMessagesAsRead(int conversationId);
+  Future<Either<Failure, void>> markPrivateMessagesAsRead(int receiverId);
 }
 
 @Singleton(as: PrivateChatDataSource)
 class PrivateChatDataSourceImpl implements PrivateChatDataSource {
   final Dio _dio;
 
-  PrivateChatDataSourceImpl(this._dio); 
+  PrivateChatDataSourceImpl(this._dio);
 
   @override
   Future<Either<Failure, List<MessageModel>>> fetchPrivateMessages({
-    required int conversationId,
+    required int receiverId,
     required int page,
     required int limit,
   }) async {
     return NetworkHandler.handleRequest(() async {
       final response = await _dio.get(
-        '/private-chat/conversations/$conversationId/messages',
+        '/private-chat/conversations/$receiverId/messages',
         queryParameters: {
           'page': page,
           'limit': limit,
@@ -45,10 +46,11 @@ class PrivateChatDataSourceImpl implements PrivateChatDataSource {
   }
 
   @override
-  Future<Either<Failure, List<PrivateChatListModel>>> fetchPrivateConversations() async {
+  Future<Either<Failure, List<PrivateChatListModel>>>
+      fetchPrivateConversations() async {
     return NetworkHandler.handleRequest(() async {
       final response = await _dio.get('/private-chat/conversations');
-      
+
       final data = response.data as List;
       return data.map((json) => PrivateChatListModel.fromJson(json)).toList();
     });

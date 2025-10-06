@@ -54,7 +54,7 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
     return super.close();
   }
 
-  Future<void> fetchPrivateMessages(int conversationId) async {
+  Future<void> fetchPrivateMessages(int receiverId) async {
     emit(state.copyWith(
       fetchMessagesState: const ApiState.loading(),
       messages: [],
@@ -62,7 +62,7 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
     ));
 
     final result = await _chatRepository.fetchPrivateMessages(
-      conversationId: conversationId,
+      receiverId: receiverId,
       page: 1, // Всегда начинаем с первой страницы
       limit: state.limit,
     );
@@ -82,14 +82,14 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
     );
   }
 
-  Future<void> loadMoreMessages(int conversationId) async {
+  Future<void> loadMoreMessages(int receiverId) async {
     if (!state.hasMoreMessages || state.isLoadingMore) return;
 
     emit(state.copyWith(isLoadingMore: true));
     final nextPage = state.currentPage + 1;
 
     final result = await _chatRepository.fetchPrivateMessages(
-      conversationId: conversationId,
+      receiverId: receiverId,
       page: nextPage,
       limit: state.limit,
     );
@@ -129,14 +129,11 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
   }
 
   void sendMessage({
-    int? conversationId,
-    int? receiverId,
+    required int receiverId,
     required String text,
   }) {
-    AppLogger.info(conversationId.toString());
     AppLogger.info(receiverId.toString());
     _socketRepository.sendMessage(
-      conversationId: conversationId,
       receiverId: receiverId,
       text: text,
       onConversationCreated: (newConversationId) {
@@ -147,7 +144,7 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
           sendMessageState: const ApiState.success(null),
         ));
 
-        // Присоединяемся к новой беседе и загружаем сообщения
+        // ToDo id у event, private и community может быть ождинаковым тогда будет баг
         joinConversation(newConversationId);
         setCurrentChat(newConversationId);
       },
@@ -184,11 +181,6 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
     if (conversationId != null) {
       enableAutoRead(conversationId);
     }
-  }
-
-  /// Устанавливает текущий receiverId для новых бесед
-  void setCurrentReceiverId(int? receiverId) {
-    emit(state.copyWith(currentReceiverId: receiverId));
   }
 
   /// Получает ID текущего открытого чата

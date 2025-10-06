@@ -7,7 +7,7 @@ import 'package:neighbours/core/constants/ui_constants.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/features/community/presentation/widgets/error_with_try_btn.dart';
-import '../cubits/document/document_cubit.dart';
+import 'package:neighbours/features/document/presentation/cubits/document/document_cubit.dart';
 
 class DocumentPage extends StatefulWidget {
   final String documentKey;

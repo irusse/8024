@@ -40,7 +40,9 @@ class _CommunityChatWidgetState extends State<CommunityChatWidget> {
     // Отмечаем сообщения как прочитанные
     if (_communityChatCubit.getUnreadCountForCommunity(widget.communityId) !=
         0) {
-      _communityChatCubit.markCommunityMessagesAsRead(widget.communityId,);
+      _communityChatCubit.markCommunityMessagesAsRead(
+        widget.communityId,
+      );
     }
   }
 

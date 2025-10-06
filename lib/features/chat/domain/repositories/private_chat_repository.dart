@@ -5,12 +5,12 @@ import 'package:neighbours/features/chat/domain/entities/private_chat_list/priva
 
 abstract class PrivateChatRepository {
   Future<Either<Failure, List<MessageEntity>>> fetchPrivateMessages({
-    required int conversationId,
+    required int receiverId,
     required int page,
     required int limit,
   });
 
   Future<Either<Failure, List<PrivateChatListEntity>>> fetchPrivateConversations();
 
-  Future<Either<Failure, void>> markPrivateMessagesAsRead(int conversationId);
+  Future<Either<Failure, void>> markPrivateMessagesAsRead(int receiverId);
 }
