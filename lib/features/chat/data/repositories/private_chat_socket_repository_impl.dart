@@ -32,16 +32,6 @@ class PrivateChatSocketRepositoryImpl implements PrivateChatSocketRepository {
     AppLogger.info('Creating new conversation with user: $receiverId');
 
       // Ожидаем, что сервер вернет conversationId в ответе
-      if (response != null && response is Map<String, dynamic>) {
-        final newConversationId = response['conversationId'];
-        if (newConversationId != null && onConversationCreated != null) {
-          AppLogger.info(
-              'New conversation created with ID: $newConversationId');
-          AppLogger.info(response.toString());
-          onConversationCreated(newConversationId);
-        }
-      }
-    });
     _chatSocket.emit('private:sendMessage', messageData);
   }
 
