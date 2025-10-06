@@ -84,15 +84,24 @@ class MessageItem extends StatelessWidget {
                       ),
                     ),
                     const VerticalGap(4),
-                    Text(
-                      DateFormat("HH:mm").format(message.createdAt),
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: isMyMessage
-                            ? Colors.white.withValues(alpha: 0.7)
-                            : Colors.grey,
-                      ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          DateFormat("HH:mm").format(message.createdAt),
+                          textAlign: TextAlign.start,
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: isMyMessage
+                                ? Colors.white.withValues(alpha: 0.7)
+                                : Colors.grey,
+                          ),
+                        ),
+                        if (isMyMessage) ...[
+                          const HorizontalGap(4),
+                          _buildMessageStatusIcon(context, message),
+                        ],
+                      ],
                     ),
                   ],
                 ),
@@ -102,5 +111,18 @@ class MessageItem extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildMessageStatusIcon(BuildContext context, MessageEntity message) {
+    // Проверяем, есть ли пользователи в массиве seenUsers
+    final hasSeenUsers =
+        message.seenUsers != null && message.seenUsers!.isNotEmpty;
+
+    // Если seenUsers == null, проверяем isRead
+    final isMessageRead =
+        hasSeenUsers || (message.seenUsers == null && message.isRead == true);
+
+    return Icon(isMessageRead ? Icons.done_all : Icons.done,
+        color: Colors.white, size: 12);
   }
 }
