@@ -415,6 +415,9 @@ class AppRouter {
                     value: getIt<CommunityChatCubit>(),
                   ),
                   BlocProvider.value(
+                    value: getIt<PrivateChatCubit>(),
+                  ),
+                  BlocProvider.value(
                     value: getIt<UserLocationCubit>(),
                   ),
                   BlocProvider.value(

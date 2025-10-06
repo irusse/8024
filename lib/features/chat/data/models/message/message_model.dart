@@ -2,6 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:neighbours/core/data/models/participant/participant_model.dart';
 import 'package:neighbours/core/utils/date_time_converter.dart';
 import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
+import 'package:neighbours/features/chat/data/models/seen_user/seen_user_model.dart';
 
 part 'message_model.g.dart';
 
@@ -18,6 +19,8 @@ class MessageModel {
   final int? conversationId;
   final int userId;
   final ParticipantModel user;
+  final bool? isRead;
+  final List<SeenUserModel>? seenUsers;
 
   MessageModel({
     required this.id,
@@ -29,6 +32,8 @@ class MessageModel {
     this.conversationId,
     required this.userId,
     required this.user,
+    this.isRead,
+    this.seenUsers,
   });
 
   factory MessageModel.fromJson(Map<String, dynamic> json) =>
@@ -46,6 +51,8 @@ class MessageModel {
         conversationId: conversationId,
         userId: userId,
         user: user.toEntity(),
+        isRead: isRead,
+        seenUsers: seenUsers?.map((seenUser) => seenUser.toEntity()).toList(),
       );
 
   factory MessageModel.fromEntity(MessageEntity entity) => MessageModel(
@@ -58,5 +65,7 @@ class MessageModel {
         conversationId: entity.conversationId,
         userId: entity.userId,
         user: ParticipantModel.fromEntity(entity.user),
+        isRead: entity.isRead,
+        seenUsers: entity.seenUsers?.map((seenUser) => SeenUserModel.fromEntity(seenUser)).toList(),
       );
 }

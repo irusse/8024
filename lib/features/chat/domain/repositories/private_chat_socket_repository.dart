@@ -8,7 +8,6 @@ abstract class PrivateChatSocketRepository {
   void sendMessage({
     required int receiverId,
     required String text,
-    Function(int receiverId)? onConversationCreated,
   });
 
   void listenMessages(Function(MessageEntity) onNewMessage);

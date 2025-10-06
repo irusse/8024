@@ -19,7 +19,8 @@ part 'community_chat_state.dart';
 part 'community_chat_cubit.freezed.dart';
 
 @singleton
-class CommunityChatCubit extends Cubit<CommunityChatState> implements AutoReadSupport {
+class CommunityChatCubit extends Cubit<CommunityChatState>
+    implements AutoReadSupport {
   final CommunityChatRepository _chatRepository;
   final CommunityChatSocketRepository _socketRepository;
   int? _currentOpenChatId;
@@ -54,7 +55,7 @@ class CommunityChatCubit extends Cubit<CommunityChatState> implements AutoReadSu
 
   Future<void> fetchCommunityMessages(int communityId) async {
     emit(state.copyWith(
-      fetchMessagesState: const ApiState.loading(), 
+      fetchMessagesState: const ApiState.loading(),
       messages: [],
       currentPage: 1, // Сбрасываем на первую страницу
     ));
@@ -135,9 +136,9 @@ class CommunityChatCubit extends Cubit<CommunityChatState> implements AutoReadSu
     if (_currentOpenChatId != null) {
       disableAutoRead(_currentOpenChatId!);
     }
-    
+
     _currentOpenChatId = communityId;
-    
+
     // Включаем autoRead для нового чата
     if (communityId != null) {
       enableAutoRead(communityId);
@@ -176,7 +177,6 @@ class CommunityChatCubit extends Cubit<CommunityChatState> implements AutoReadSu
         fetchUnreadCountsState: ApiState.failure(failure.message),
       )),
       (entity) {
-
         emit(state.copyWith(
           unreadMessageCounts: entity.count,
           fetchUnreadCountsState: const ApiState.success(null),
@@ -188,7 +188,8 @@ class CommunityChatCubit extends Cubit<CommunityChatState> implements AutoReadSu
   Future<void> markCommunityMessagesAsRead(int communityId) async {
     emit(state.copyWith(markMessagesAsReadState: const ApiState.loading()));
 
-    final result = await _chatRepository.markCommunityMessagesAsRead(communityId);
+    final result =
+        await _chatRepository.markCommunityMessagesAsRead(communityId);
 
     result.fold(
       (failure) => emit(state.copyWith(
@@ -219,4 +220,3 @@ class CommunityChatCubit extends Cubit<CommunityChatState> implements AutoReadSu
     return state.unreadMessageCounts[communityId] ?? 0;
   }
 }
-

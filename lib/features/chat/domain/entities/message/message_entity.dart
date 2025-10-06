@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:neighbours/core/domain/entities/participant/participant_entity.dart';
+import 'package:neighbours/features/chat/domain/entities/seen_user/seen_user_entity.dart';
 
 part 'message_entity.freezed.dart';
 
@@ -15,5 +16,7 @@ abstract class MessageEntity with _$MessageEntity {
     int? conversationId,
     required int userId,
     required ParticipantEntity user,
+    bool? isRead,
+    List<SeenUserEntity>? seenUsers,
   }) = _MessageEntity;
 }

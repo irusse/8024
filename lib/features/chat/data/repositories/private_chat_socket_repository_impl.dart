@@ -12,13 +12,13 @@ class PrivateChatSocketRepositoryImpl implements PrivateChatSocketRepository {
   PrivateChatSocketRepositoryImpl(this._chatSocket);
 
   @override
-  void join(int conversationId) {
-    _chatSocket.joinRoom('private:join', conversationId);
+  void join(int receiverId) {
+    _chatSocket.joinRoom('private:join', receiverId);
   }
 
   @override
-  void leave(int conversationId) =>
-      _chatSocket.leaveRoom('private:leave', conversationId);
+  void leave(int receiverId) =>
+      _chatSocket.leaveRoom('private:leave', receiverId);
 
   @override
   void sendMessage({
@@ -31,9 +31,6 @@ class PrivateChatSocketRepositoryImpl implements PrivateChatSocketRepository {
     messageData['receiverId'] = receiverId;
     AppLogger.info('Creating new conversation with user: $receiverId');
 
-    _chatSocket.emitWithAck('private:sendMessage', messageData, (response) {
-      AppLogger.info('Server response for new conversation: $response');
-
       // Ожидаем, что сервер вернет conversationId в ответе
       if (response != null && response is Map<String, dynamic>) {
         final newConversationId = response['conversationId'];
@@ -45,6 +42,7 @@ class PrivateChatSocketRepositoryImpl implements PrivateChatSocketRepository {
         }
       }
     });
+    _chatSocket.emit('private:sendMessage', messageData);
   }
 
   @override
@@ -57,12 +55,12 @@ class PrivateChatSocketRepositoryImpl implements PrivateChatSocketRepository {
   }
 
   @override
-  void enableAutoRead(int conversationId) {
-    _chatSocket.emit('private:autoReadOn', {'conversationId': conversationId});
+  void enableAutoRead(int receiverId) {
+    _chatSocket.emit('private:autoReadOn', {'receiverId': receiverId});
   }
 
   @override
-  void disableAutoRead(int conversationId) {
-    _chatSocket.emit('private:autoReadOff', {'conversationId': conversationId});
+  void disableAutoRead(int receiverId) {
+    _chatSocket.emit('private:autoReadOff', {'receiverId': receiverId});
   }
 }

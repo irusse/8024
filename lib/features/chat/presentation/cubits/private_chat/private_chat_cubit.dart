@@ -136,80 +136,69 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
     _socketRepository.sendMessage(
       receiverId: receiverId,
       text: text,
-      onConversationCreated: (newConversationId) {
-        // Обновляем состояние с новым conversationId
-        emit(state.copyWith(
-          currentConversationId: newConversationId,
-          currentReceiverId: null, // Очищаем receiverId после создания беседы
-          sendMessageState: const ApiState.success(null),
-        ));
-
-        // ToDo id у event, private и community может быть ождинаковым тогда будет баг
-        joinConversation(newConversationId);
-        setCurrentChat(newConversationId);
-      },
     );
   }
 
-  void listenPrivateMessages() {
+  void listenPrivateMessages(int currentUserId) {
+    AppLogger.info("Listed");
     _socketRepository.listenMessages((message) {
+      final isFromCurrentChat = _currentOpenChatId != null &&
+          (
+              // 1️⃣ Собеседник прислал сообщение (он sender)
+              message.userId == _currentOpenChatId ||
+                  // 2️⃣ Я сам отправил сообщение собеседнику (receiver)
+                  (message.userId == currentUserId &&
+                      _currentOpenChatId != null));
       // Если открыт конкретный чат и сообщение из него
-      if (_currentOpenChatId != null &&
-          message.conversationId == _currentOpenChatId) {
-        // Добавляем сообщение в состояние
+      if (isFromCurrentChat) {
         emit(state.copyWith(messages: [message, ...state.messages]));
-      }
-
-      // Показываем уведомление только если сообщение не из текущего открытого чата
-      if (_currentOpenChatId == null ||
-          message.conversationId != _currentOpenChatId) {
-        _incrementUnreadCount(message.conversationId!);
+      } else {
+        _incrementUnreadCount(message.userId);
       }
     });
   }
 
   /// Устанавливает текущий открытый чат
-  void setCurrentChat(int? conversationId) {
+  void setCurrentChat(int? receiverId) {
     // Отключаем autoRead для предыдущего чата
     if (_currentOpenChatId != null) {
       disableAutoRead(_currentOpenChatId!);
     }
 
-    _currentOpenChatId = conversationId;
+    _currentOpenChatId = receiverId;
 
     // Включаем autoRead для нового чата
-    if (conversationId != null) {
-      enableAutoRead(conversationId);
+    if (receiverId != null) {
+      enableAutoRead(receiverId);
     }
   }
 
   /// Получает ID текущего открытого чата
   int? get currentOpenChatId => _currentOpenChatId;
 
-  void joinConversation(int conversationId) {
-    _socketRepository.join(conversationId);
+  void joinConversation(int receiverId) {
+    _socketRepository.join(receiverId);
   }
 
-  void leaveConversation(int conversationId) {
-    _socketRepository.leave(conversationId);
+  void leaveConversation(int receiverId) {
+    _socketRepository.leave(receiverId);
   }
 
   /// Включает автоматическое прочитывание сообщений для беседы
-  void enableAutoRead(int conversationId) {
-    _socketRepository.enableAutoRead(conversationId);
+  void enableAutoRead(int receiverId) {
+    _socketRepository.enableAutoRead(receiverId);
   }
 
   /// Выключает автоматическое прочитывание сообщений для беседы
-  void disableAutoRead(int conversationId) {
-    _socketRepository.disableAutoRead(conversationId);
+  void disableAutoRead(int receiverId) {
+    _socketRepository.disableAutoRead(receiverId);
   }
 
   /// Отмечает сообщения как прочитанные
-  Future<void> markPrivateMessagesAsRead(int conversationId) async {
+  Future<void> markPrivateMessagesAsRead(int receiverId) async {
     emit(state.copyWith(markMessagesAsReadState: const ApiState.loading()));
 
-    final result =
-        await _chatRepository.markPrivateMessagesAsRead(conversationId);
+    final result = await _chatRepository.markPrivateMessagesAsRead(receiverId);
 
     result.fold(
       (failure) => emit(state.copyWith(
@@ -217,7 +206,7 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
       )),
       (_) {
         // Сбрасываем счетчик непрочитанных для этой беседы
-        _unreadMessageCounts[conversationId] = 0;
+        _unreadMessageCounts[receiverId] = 0;
         emit(state.copyWith(
           unreadMessageCounts: Map.from(_unreadMessageCounts),
           markMessagesAsReadState: const ApiState.success(null),
@@ -227,23 +216,20 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
   }
 
   /// Увеличивает счетчик непрочитанных сообщений
-  void _incrementUnreadCount(int conversationId) {
-    _unreadMessageCounts[conversationId] =
-        (_unreadMessageCounts[conversationId] ?? 0) + 1;
+  void _incrementUnreadCount(int receiverId) {
+    _unreadMessageCounts[receiverId] =
+        (_unreadMessageCounts[receiverId] ?? 0) + 1;
     emit(state.copyWith(
       unreadMessageCounts: Map.from(_unreadMessageCounts),
-      unreadPrivateTotal:
-          _unreadMessageCounts.values.fold(0, (sum, count) => sum + count),
     ));
   }
 
   /// Получает количество непрочитанных сообщений для беседы
-  int getUnreadCountForConversation(int conversationId) {
-    return _unreadMessageCounts[conversationId] ?? 0;
+  int getUnreadCountForConversation(int receiverId) {
+    return _unreadMessageCounts[receiverId] ?? 0;
   }
 
-  /// Получает общее количество непрочитанных private сообщений
-  int get unreadPrivateTotal => state.unreadPrivateTotal;
+  bool get hasUnreadMessages => state.unreadMessageCounts.keys.isNotEmpty;
 
   // Для AutoReadSupport
   final Map<int, int> _unreadMessageCounts = {};

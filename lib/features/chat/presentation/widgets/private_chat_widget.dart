@@ -31,10 +31,10 @@ class _PrivateChatWidgetState extends State<PrivateChatWidget> {
     _privateChatCubit = context.read<PrivateChatCubit>();
     _privateChatCubit.fetchPrivateMessages(widget.interlocutorId);
     _scrollController.addListener(_onScroll);
-    _privateChatCubit.joinConversation(widget.interlocutorId);
 
     _privateChatCubit.setCurrentChat(widget.interlocutorId);
-
+    print(
+        _privateChatCubit.getUnreadCountForConversation(widget.interlocutorId));
     if (_privateChatCubit
             .getUnreadCountForConversation(widget.interlocutorId) !=
         0) {
@@ -42,9 +42,6 @@ class _PrivateChatWidgetState extends State<PrivateChatWidget> {
         widget.interlocutorId,
       );
     }
-
-    // Настраиваем прослушивание сообщений
-    _privateChatCubit.listenPrivateMessages();
   }
 
   void _onScroll() {

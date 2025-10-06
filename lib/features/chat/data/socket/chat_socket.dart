@@ -111,7 +111,7 @@ class ChatSocket {
   Future<void> forceReconnect() async {
     AppLogger.info('Force reconnecting socket...');
     _teardownSocket();
-    
+
     final token = await _authService.getAccessToken();
     if (token != null && token.isNotEmpty) {
       await _reconnectWithToken(token);

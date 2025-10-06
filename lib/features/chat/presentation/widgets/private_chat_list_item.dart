@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
+import 'package:neighbours/core/components/default_circle_avatar.dart';
 import 'package:neighbours/core/components/shaped_cached_image.dart';
 import 'package:neighbours/core/constants/ui_constants.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
@@ -10,6 +11,7 @@ import 'package:neighbours/core/router/app_routes.dart';
 import 'package:neighbours/features/chat/presentation/cubits/private_chat/private_chat_cubit.dart';
 import 'package:neighbours/features/chat/presentation/widgets/unread_count.dart';
 import 'package:neighbours/features/chat/domain/entities/private_chat_list/private_chat_list_entity.dart';
+import 'package:objectbox/objectbox.dart';
 
 class PrivateChatListItem extends StatelessWidget {
   final PrivateChatListEntity conversation;
@@ -25,8 +27,6 @@ class PrivateChatListItem extends StatelessWidget {
       onTap: () => context.push(
         AppRouteBuilder.privateChatPage(conversation.user.id),
         extra: {
-          'conversationId': conversation.id,
-          'receiverId': conversation.user.id, // Для новых бесед
           'interlocutorName': conversation.user.firstName,
           'interlocutorAvatarUrl': conversation.user.avatar,
         },
@@ -36,9 +36,16 @@ class PrivateChatListItem extends StatelessWidget {
           horizontal: UIConstants.defaultHorizontalPadding,
           vertical: 12,
         ),
+        decoration: BoxDecoration(color: Colors.transparent),
         child: Row(
           children: [
-            _userAvatar(context),
+            DefaultCircleAvatar(
+              name: conversation.user.firstName,
+              radius: 24,
+              textStyle: context.text.bodyMedium,
+              id: conversation.user.id,
+              url: conversation.user.avatar,
+            ),
             const HorizontalGap(16),
             Expanded(
               child: Column(
@@ -52,10 +59,10 @@ class PrivateChatListItem extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 4),
+                  const VerticalGap(4),
                   Text(
                     conversation.lastMessage.text,
-                    style: context.text.bodySmall?.copyWith(
+                    style: context.text.bodySmall.copyWith(
                       color: context.color.secondaryText,
                     ),
                     maxLines: 1,
@@ -68,48 +75,6 @@ class PrivateChatListItem extends StatelessWidget {
             UnreadCount(count: conversation.unreadCount),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _userAvatar(BuildContext context) {
-    return Container(
-      width: 48,
-      height: 48,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: context.color.primary.withOpacity(0.2),
-          width: 1,
-        ),
-      ),
-      child: ClipOval(
-        child: conversation.user.avatar != null && conversation.user.avatar!.isNotEmpty
-            ? ShapedCachedImage(
-                url: conversation.user.avatar!,
-                radius: 24,
-              )
-            : Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      context.color.primary,
-                      context.color.primary.withOpacity(0.7),
-                    ],
-                  ),
-                ),
-                child: Center(
-                  child: Text(
-                    conversation.user.fullName,
-                    style: context.text.titleSmall.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
       ),
     );
   }

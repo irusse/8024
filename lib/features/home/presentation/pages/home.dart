@@ -15,6 +15,7 @@ import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/core/utils/map_camera_utils.dart';
 import 'package:neighbours/features/chat/presentation/cubits/community_chat/community_chat_cubit.dart';
 import 'package:neighbours/features/chat/presentation/cubits/event_chat/event_chat_cubit.dart';
+import 'package:neighbours/features/chat/presentation/cubits/private_chat/private_chat_cubit.dart';
 import 'package:neighbours/features/community/presentation/cubits/community/community_cubit.dart';
 import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart';
 import 'package:neighbours/features/home/data/services/event_layer_service.dart';

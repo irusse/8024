@@ -12,6 +12,7 @@ import 'package:neighbours/core/di/injection.dart';
 import 'package:neighbours/features/chat/data/socket/chat_socket.dart';
 import 'package:neighbours/features/chat/presentation/cubits/community_chat/community_chat_cubit.dart';
 import 'package:neighbours/features/chat/presentation/cubits/event_chat/event_chat_cubit.dart';
+import 'package:neighbours/features/chat/presentation/cubits/private_chat/private_chat_cubit.dart';
 import 'package:neighbours/features/community/presentation/cubits/community/community_cubit.dart';
 import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart';
 import 'package:neighbours/features/home/data/services/event_layer_service.dart';
@@ -25,7 +26,6 @@ import '../cubits/home/home_cubit.dart';
 mixin HomeInitializationMixin<T extends StatefulWidget> on State<Home> {
   Timer? _debounceTimer;
   bool _isDataFetching = false;
-  DateTime? _lastDataFetchTime;
 
   MapService get mapService;
 
@@ -56,7 +56,7 @@ mixin HomeInitializationMixin<T extends StatefulWidget> on State<Home> {
     if (!mounted || _isDataFetching) return;
 
     _isDataFetching = true;
-    _lastDataFetchTime = DateTime.now();
+
 
     final homeCubit = context.read<HomeCubit>();
     final userCubit = context.read<UserCubit>();
@@ -67,6 +67,7 @@ mixin HomeInitializationMixin<T extends StatefulWidget> on State<Home> {
     final communityChatCubit = context.read<CommunityChatCubit>();
     final communitiesCubit = context.read<CommunityCubit>();
     final notificationCubit = context.read<NotificationCubit>();
+    final privateChatCubit = context.read<PrivateChatCubit>();
 
     try {
       await Future.wait([
@@ -74,10 +75,12 @@ mixin HomeInitializationMixin<T extends StatefulWidget> on State<Home> {
         userCubit.fetchUser(),
       ]);
       communitiesCubit.setCommunitiesLocally(userCubit.state.user.communities);
+      privateChatCubit.fetchPrivateConversations();
       if (firstInit) {
         await getIt<ChatSocket>().initializeSocket().then((_) {
           eventChatCubit.listenEventMessages();
           communityChatCubit.listenCommunityMessages();
+          privateChatCubit.listenPrivateMessages(userCubit.state.user.id);
         });
         eventChatCubit.fetchUnreadMessageCounts(userCubit.state.user.id);
         communityChatCubit.fetchUnreadMessageCounts(userCubit.state.user.id);

@@ -27,7 +27,6 @@ class _ChatListState extends State<ChatList> {
   void initState() {
     super.initState();
     // Загружаем список приватных бесед при инициализации
-    context.read<PrivateChatCubit>().fetchPrivateConversations();
   }
 
   @override
@@ -39,7 +38,12 @@ class _ChatListState extends State<ChatList> {
         (cubit) => cubit.allUserNotifications(userId));
     final communities = context.select<UserCubit, List<CommunityEntity>>(
         (cubit) => cubit.state.user.communities);
-    final _tabs = ["Сообщества", "Мероприятия", "Оповещения", "Личные"];
+    final _tabs = [
+      "Личные",
+      "Сообщества",
+      "Мероприятия",
+      "Оповещения",
+    ];
     return Scaffold(
       appBar: const DefaultAppBar(
         showBackButton: true,
@@ -55,6 +59,7 @@ class _ChatListState extends State<ChatList> {
             Expanded(
               child: TabBarView(
                 children: [
+                  _buildPrivateChatsList(context),
                   ListView.builder(
                     itemBuilder: (context, index) =>
                         CommunityChatListItem(entity: communities[index]),
@@ -70,7 +75,6 @@ class _ChatListState extends State<ChatList> {
                         EventChatListItem(entity: allUserNotifications[index]),
                     itemCount: allUserNotifications.length,
                   ),
-                  _buildPrivateChatsList(context),
                 ],
               ),
             ),
@@ -83,20 +87,16 @@ class _ChatListState extends State<ChatList> {
   Widget _buildPrivateChatsList(BuildContext context) {
     return BlocBuilder<PrivateChatCubit, PrivateChatState>(
       builder: (context, state) {
-        // Показываем индикатор загрузки
         if (state.fetchConversationsState.isLoading) {
           return DefaultLoadingOverlay();
         }
 
-        // Показываем ошибку
         if (state.fetchConversationsState.isFailure) {
           return ErrorWithTryBtn(
               error: state.fetchConversationsState.error!,
               onErrorClick: () =>
                   context.read<PrivateChatCubit>().fetchPrivateConversations());
         }
-
-        // Получаем список бесед из состояния
         final conversations = state.conversations;
 
         return ListView.builder(

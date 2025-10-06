@@ -52,6 +52,7 @@ class PrivateChatDataSourceImpl implements PrivateChatDataSource {
       final response = await _dio.get('/private-chat/conversations');
 
       final data = response.data as List;
+
       return data.map((json) => PrivateChatListModel.fromJson(json)).toList();
     });
   }

@@ -20,8 +20,8 @@ class NetworkHandler {
       return Left(ServerFailure(e.message, e.statusCode));
     } on NetworkException catch (e) {
       return Left(NetworkFailure(e.message));
-    } catch (e) {
-      return Left(ServerFailure('Неизвестная ошибка: $e'));
+    } catch (e,st) {
+     throw st;
     }
   }
 

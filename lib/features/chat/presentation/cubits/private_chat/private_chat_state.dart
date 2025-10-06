@@ -15,9 +15,7 @@ abstract class PrivateChatState with _$PrivateChatState {
     @Default(40) int limit,
     @Default(false) bool hasMoreMessages,
     @Default({}) Map<int, int> unreadMessageCounts,
-    @Default(0) int unreadPrivateTotal,
     @Default(false) bool isLoadingMore,
-    @Default(null) int? currentConversationId,
-    @Default(null) int? currentReceiverId,
+    int? conversationId,
   }) = _PrivateChatState;
 }
