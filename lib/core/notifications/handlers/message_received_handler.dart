@@ -36,8 +36,7 @@ class MessageReceivedHandler implements NotificationHandler {
           AppRouteBuilder.communityChatPage(communityId, communityTitle));
       return;
     }
-
-    // TODO: Добавить обработку conversationId для личных чатов в будущем
+    // Обрабатываем сообщения приватных чатов
     if (senderId != null) {
       AppLogger.info(payload.toString());
       getIt<AppRouter>().router.navigateUnique(AppRouteBuilder.privateChatPage(

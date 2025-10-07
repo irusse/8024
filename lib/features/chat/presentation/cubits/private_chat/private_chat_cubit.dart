@@ -155,6 +155,9 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
       } else {
         _incrementUnreadCount(message.userId);
       }
+
+      // Обновляем lastMessage в списке conversations
+      _updateLastMessageInConversations(message);
     });
   }
 
@@ -240,4 +243,56 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
 
   // Для AutoReadSupport
   final Map<int, int> _unreadMessageCounts = {};
+
+  /// Получает имя собеседника по его ID из списка conversations
+  String? getInterlocutorName(int interlocutorId) {
+    try {
+      final conversation = state.conversations.firstWhere(
+        (conv) => conv.user.id == interlocutorId,
+      );
+      return conversation.user.fullName;
+    } catch (e) {
+      // Если собеседник не найден в списке conversations, возвращаем null
+      return null;
+    }
+  }
+
+  /// Получает аватар собеседника по его ID из списка conversations
+  String? getInterlocutorAvatar(int interlocutorId) {
+    try {
+      final conversation = state.conversations.firstWhere(
+        (conv) => conv.user.id == interlocutorId,
+      );
+      return conversation.user.avatar;
+    } catch (e) {
+      // Если собеседник не найден в списке conversations, возвращаем null
+      return null;
+    }
+  }
+
+  /// Обновляет lastMessage в списке conversations при получении нового сообщения
+  void _updateLastMessageInConversations(MessageEntity message) {
+    final updatedConversations = state.conversations.map((conversation) {
+      // Определяем, к какой беседе относится сообщение
+      final isMessageForThisConversation =
+          message.userId == conversation.user.id || // Сообщение от собеседника
+              (message.conversationId != null &&
+                  message.conversationId ==
+                      conversation.id); // Или по conversationId
+
+      if (isMessageForThisConversation) {
+        // Обновляем lastMessage и updatedAt для этой беседы
+        return conversation.copyWith(
+          lastMessage: message,
+          updatedAt: message.createdAt,
+        );
+      }
+      return conversation;
+    }).toList();
+
+    // Сортируем беседы по updatedAt (самые новые сверху)
+    updatedConversations.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+
+    emit(state.copyWith(conversations: updatedConversations));
+  }
 }
