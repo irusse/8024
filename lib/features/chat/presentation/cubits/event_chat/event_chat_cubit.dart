@@ -125,6 +125,13 @@ class EventChatCubit extends Cubit<EventChatState> implements AutoReadSupport {
     });
   }
 
+  void listenEventMessageRead() {
+    _socketRepository.listenMessageRead((data) {
+      // Пока просто логируем, что приходит от сервера
+      print('📖 Event message read data received: $data');
+    });
+  }
+
   /// Устанавливает текущий открытый чат
   void setCurrentChat(int? eventId) {
     // Отключаем autoRead для предыдущего чата

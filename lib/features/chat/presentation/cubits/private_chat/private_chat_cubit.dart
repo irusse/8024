@@ -33,7 +33,7 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
         getIt<NotificationService>().stream.listen((notification) {
       if (notification.type == NotificationConstants.messageReceived) {
         final payload = jsonDecode(notification.payload ?? "{}");
-        final conversationId = payload['conversationId'] as int?;
+        final conversationId = payload['senderId'] as int?;
 
         if (conversationId == null) return;
 
@@ -155,6 +155,13 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
       } else {
         _incrementUnreadCount(message.userId);
       }
+    });
+  }
+
+  void listenPrivateMessageRead() {
+    _socketRepository.listenMessageRead((data) {
+      // Пока просто логируем, что приходит от сервера
+      print('📖 Private message read data received: $data');
     });
   }
 

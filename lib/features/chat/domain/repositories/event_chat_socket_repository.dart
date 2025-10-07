@@ -9,6 +9,8 @@ abstract class EventChatSocketRepository {
 
   void listenMessages(Function(MessageEntity) onNewMessage);
 
+  void listenMessageRead(Function(dynamic) onMessageRead);
+
   void enableAutoRead(int eventId);
 
   void disableAutoRead(int eventId);

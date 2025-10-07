@@ -44,6 +44,9 @@ class _CommunityChatWidgetState extends State<CommunityChatWidget> {
         widget.communityId,
       );
     }
+
+    // Подключаем прослушивание событий прочтения сообщений
+    _communityChatCubit.listenCommunityMessageRead();
   }
 
   void _onScroll() {

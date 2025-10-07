@@ -42,16 +42,10 @@ class PrivateChatPage extends StatelessWidget {
           textStyle: context.text.bodyLarge,
           url: interlocutorAvatarUrl,
         ),
-        // Аватар собеседника
-
         const HorizontalGap(12),
-        // Имя собеседника
         Flexible(
           child: Text(
-            interlocutorName +
-                interlocutorName +
-                interlocutorName +
-                interlocutorName,
+            interlocutorName,
             style: context.text.titleSmall,
             overflow: TextOverflow.ellipsis,
             maxLines: 1,

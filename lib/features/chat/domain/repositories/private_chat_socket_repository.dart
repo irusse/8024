@@ -12,6 +12,8 @@ abstract class PrivateChatSocketRepository {
 
   void listenMessages(Function(MessageEntity) onNewMessage);
 
+  void listenMessageRead(Function(dynamic) onMessageRead);
+
   void enableAutoRead(int receiverId);
 
   void disableAutoRead(int receiverId);

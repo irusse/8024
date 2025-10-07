@@ -1,5 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/extensions/router_ext.dart';
+import 'package:neighbours/core/logging/logger.dart';
 
 import '../../constants/notification_constants.dart';
 import '../../di/injection.dart';
@@ -17,13 +18,14 @@ class MessageReceivedHandler implements NotificationHandler {
   void handle(Map<String, dynamic> payload) {
     final eventId = payload['eventId'] as int?;
     final communityId = payload['communityId'] as int?;
-    final conversationId = payload['conversationId'] as int?;
+    final senderId = payload['senderId'] as int?;
 
     // Обрабатываем сообщения событий
     if (eventId != null) {
       final eventTitle = payload['eventTitle'] ?? 'Чат события';
-      getIt<AppRouter>().router.navigateUnique(
-          AppRouteBuilder.eventChatPage(eventId, eventTitle));
+      getIt<AppRouter>()
+          .router
+          .navigateUnique(AppRouteBuilder.eventChatPage(eventId, eventTitle));
       return;
     }
 
@@ -36,9 +38,11 @@ class MessageReceivedHandler implements NotificationHandler {
     }
 
     // TODO: Добавить обработку conversationId для личных чатов в будущем
-    if (conversationId != null) {
-      // Пока что логируем, что такой тип сообщений не поддерживается
-      // В будущем здесь будет роутинг к личным чатам
+    if (senderId != null) {
+      AppLogger.info(payload.toString());
+      getIt<AppRouter>().router.navigateUnique(AppRouteBuilder.privateChatPage(
+            senderId,
+          ));
       return;
     }
   }

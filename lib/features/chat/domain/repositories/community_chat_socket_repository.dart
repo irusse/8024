@@ -9,6 +9,8 @@ abstract class CommunityChatSocketRepository {
 
   void listenMessages(Function(MessageEntity) onNewMessage);
 
+  void listenMessageRead(Function(dynamic) onMessageRead);
+
   void enableAutoRead(int communityId);
 
   void disableAutoRead(int communityId);

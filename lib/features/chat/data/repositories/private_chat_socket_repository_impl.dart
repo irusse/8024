@@ -45,6 +45,15 @@ class PrivateChatSocketRepositoryImpl implements PrivateChatSocketRepository {
   }
 
   @override
+  void listenMessageRead(Function(dynamic) onMessageRead) {
+    _chatSocket.on('private:read', (data) {
+      AppLogger.info("📖 Private message read by user:");
+      AppLogger.info(data.toString());
+      onMessageRead(data);
+    });
+  }
+
+  @override
   void enableAutoRead(int receiverId) {
     _chatSocket.emit('private:autoReadOn', {'receiverId': receiverId});
   }

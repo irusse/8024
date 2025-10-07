@@ -31,6 +31,7 @@ class _EventChatWidgetState extends State<EventChatWidget> {
 
     // Присоединяемся к чату события
     _eventChatCubit.joinEvent(widget.eventId);
+    _eventChatCubit.listenEventMessageRead();
 
     // Устанавливаем текущий открытый чат
     // Это предотвратит показ уведомлений для сообщений из этого чата

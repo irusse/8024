@@ -39,6 +39,15 @@ class CommunityChatSocketRepositoryImpl
   }
 
   @override
+  void listenMessageRead(Function(dynamic) onMessageRead) {
+    _chatSocket.on('community:read', (data) {
+      AppLogger.info("📖 Community message read by user:");
+      AppLogger.info(data.toString());
+      onMessageRead(data);
+    });
+  }
+
+  @override
   void enableAutoRead(int communityId) {
     _chatSocket.emit('community:autoReadOn', {'communityId': communityId});
   }

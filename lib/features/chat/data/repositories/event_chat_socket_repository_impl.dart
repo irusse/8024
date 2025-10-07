@@ -1,4 +1,5 @@
 import 'package:injectable/injectable.dart';
+import 'package:neighbours/core/logging/logger.dart';
 import 'package:neighbours/features/chat/data/models/message/message_model.dart';
 import 'package:neighbours/features/chat/data/socket/chat_socket.dart';
 import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
@@ -28,6 +29,15 @@ class EventChatRepositoryImpl implements EventChatSocketRepository {
   void listenMessages(Function(MessageEntity) onNewMessage) {
     _chatSocket.on('newMessage', (data) {
       onNewMessage(MessageModel.fromJson(data).toEntity());
+    });
+  }
+
+  @override
+  void listenMessageRead(Function(dynamic) onMessageRead) {
+    _chatSocket.on('event:read', (data) {
+      AppLogger.info("📖 Event message read by user:");
+      AppLogger.info(data.toString());
+      onMessageRead(data);
     });
   }
 

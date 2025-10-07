@@ -130,6 +130,13 @@ class CommunityChatCubit extends Cubit<CommunityChatState>
     });
   }
 
+  void listenCommunityMessageRead() {
+    _socketRepository.listenMessageRead((data) {
+      // Пока просто логируем, что приходит от сервера
+      print('📖 Community message read data received: $data');
+    });
+  }
+
   /// Устанавливает текущий открытый чат
   void setCurrentChat(int? communityId) {
     // Отключаем autoRead для предыдущего чата
