@@ -21,6 +21,9 @@ class ChatSocket {
     'private:join': <int>{},
   };
 
+  // Реестр слушателей для автоматического восстановления при переподключении
+  final Map<String, List<Function(dynamic)>> _listeners = {};
+
   io.Socket? get socket => _socket;
 
   bool get isConnected => _isConnected;
@@ -61,6 +64,10 @@ class ChatSocket {
   void _setupSocketListeners() {
     _socket?.onConnect((_) {
       _isConnected = true;
+      AppLogger.info('Socket connected successfully');
+
+      // Восстанавливаем все зарегистрированные слушатели
+      _restoreListeners();
 
       // при реконнекте автоматически восстанавливаем комнаты
       for (final entry in _roomsToJoin.entries) {
@@ -74,16 +81,17 @@ class ChatSocket {
 
     _socket?.onDisconnect((error) {
       _isConnected = false;
-      AppLogger.error(error.toString());
+      AppLogger.error('Socket disconnected: ${error.toString()}');
     });
+    
     _socket?.onConnectError((error) {
       _isConnected = false;
-      AppLogger.error(error.toString());
+      AppLogger.error('Socket connection error: ${error.toString()}');
     });
   }
 
   void emit(String event, dynamic data) {
-    if (!_isConnected || _socket == null) {
+    if (!isSocketReallyConnected) {
       AppLogger.error('Emit failed: socket not connected [$event]');
       return;
     }
@@ -95,7 +103,7 @@ class ChatSocket {
   }
 
   void emitWithAck(String event, dynamic data, Function(dynamic) ack) {
-    if (!_isConnected || _socket == null) {
+    if (!isSocketReallyConnected) {
       AppLogger.error('EmitWithAck failed: socket not connected [$event]');
       return;
     }
@@ -104,7 +112,7 @@ class ChatSocket {
 
   /// Проверяет, действительно ли сокет подключен
   bool get isSocketReallyConnected {
-    return _socket?.connected ?? false;
+    return _isConnected && (_socket?.connected ?? false);
   }
 
   /// Принудительно переподключает сокет
@@ -119,26 +127,66 @@ class ChatSocket {
   }
 
   void on(String event, Function(dynamic) handler) {
-    _socket?.on(event, handler);
+    // Регистрируем слушатель в реестре
+    _listeners.putIfAbsent(event, () => []).add(handler);
+    
+    // Если сокет подключен, сразу устанавливаем слушатель
+    if (_socket != null) {
+      _socket!.on(event, handler);
+    }
+  }
+
+  void off(String event, [Function(dynamic)? handler]) {
+    if (handler != null) {
+      // Удаляем конкретный слушатель
+      _listeners[event]?.remove(handler);
+      if (_listeners[event]?.isEmpty == true) {
+        _listeners.remove(event);
+      }
+    } else {
+      // Удаляем все слушатели для события
+      _listeners.remove(event);
+    }
+    
+    // Удаляем слушатель из сокета
+    _socket?.off(event, handler);
+  }
+
+  /// Восстанавливает все зарегистрированные слушатели
+  void _restoreListeners() {
+    for (final entry in _listeners.entries) {
+      final event = entry.key;
+      final handlers = entry.value;
+      
+      // Очищаем старые слушатели для события
+      _socket?.off(event);
+      
+      // Устанавливаем новые слушатели
+      for (final handler in handlers) {
+        _socket?.on(event, handler);
+      }
+    }
+    AppLogger.info('Restored ${_listeners.length} listener types');
   }
 
   void joinRoom(String type, int id) {
     _roomsToJoin.putIfAbsent(type, () => <int>{}).add(id);
     AppLogger.info(_roomsToJoin.toString());
-    if (_isConnected) {
+    if (isSocketReallyConnected) {
       emit(type, id);
     }
   }
 
   void leaveRoom(String type, int id) {
     _roomsToJoin[type]?.remove(id);
-    if (_isConnected) {
+    if (isSocketReallyConnected) {
       emit(type, id);
     }
   }
 
   void disconnect() {
     _roomsToJoin.clear();
+    _listeners.clear();
     _teardownSocket();
     _tokenSub?.cancel();
     _tokenSub = null;

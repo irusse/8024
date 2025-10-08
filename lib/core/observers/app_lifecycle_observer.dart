@@ -47,12 +47,15 @@ class AppLifecycleObserver extends WidgetsBindingObserver {
         // Проверяем и переподключаем сокеты при возврате в приложение
         _checkAndReconnectSockets();
 
-        // Включаем autoRead для всех активных чатов
-        for (final cubit in _cubits) {
-          if (cubit.currentOpenChatId != null) {
-            cubit.enableAutoRead(cubit.currentOpenChatId!);
+        // Включаем autoRead для всех активных чатов с задержкой
+        // чтобы дать время сокету переподключиться
+        Future.delayed(const Duration(milliseconds: 500), () {
+          for (final cubit in _cubits) {
+            if (cubit.currentOpenChatId != null) {
+              cubit.enableAutoRead(cubit.currentOpenChatId!);
+            }
           }
-        }
+        });
         break;
       case AppLifecycleState.inactive:
         // Не обрабатываем состояние inactive
