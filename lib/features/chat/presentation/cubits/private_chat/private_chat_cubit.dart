@@ -59,6 +59,7 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
       fetchMessagesState: const ApiState.loading(),
       messages: [],
       currentPage: 1, // Сбрасываем на первую страницу
+      currentConversationId: null, // Сбрасываем conversationId
     ));
 
     final result = await _chatRepository.fetchPrivateMessages(
@@ -73,10 +74,15 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
       )),
       (messages) {
         final hasMore = messages.length >= state.limit;
+        // Извлекаем conversationId из первого сообщения, если есть
+        final conversationId =
+            messages.isNotEmpty ? messages.first.conversationId : null;
+
         emit(state.copyWith(
           messages: messages,
           hasMoreMessages: hasMore,
           fetchMessagesState: ApiState.success(messages),
+          currentConversationId: conversationId,
         ));
       },
     );
@@ -205,20 +211,29 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
   }
 
   /// Отмечает сообщения как прочитанные
-  Future<void> markPrivateMessagesAsRead(int receiverId) async {
+  Future<void> markPrivateMessagesAsRead() async {
+    final conversationId = state.currentConversationId;
+    if (conversationId == null) return;
     emit(state.copyWith(markMessagesAsReadState: const ApiState.loading()));
 
-    final result = await _chatRepository.markPrivateMessagesAsRead(receiverId);
+    final result =
+        await _chatRepository.markPrivateMessagesAsRead(conversationId);
 
     result.fold(
       (failure) => emit(state.copyWith(
         markMessagesAsReadState: ApiState.failure(failure.message),
       )),
       (_) {
-        // Сбрасываем счетчик непрочитанных для этой беседы
-        _unreadMessageCounts[receiverId] = 0;
+        // Обновляем unreadCount в conversations для этой беседы
+        final updatedConversations = state.conversations.map((conversation) {
+          if (conversation.id == conversationId) {
+            return conversation.copyWith(unreadCount: 0);
+          }
+          return conversation;
+        }).toList();
+
         emit(state.copyWith(
-          unreadMessageCounts: Map.from(_unreadMessageCounts),
+          conversations: updatedConversations,
           markMessagesAsReadState: const ApiState.success(null),
         ));
       },
@@ -227,22 +242,32 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
 
   /// Увеличивает счетчик непрочитанных сообщений
   void _incrementUnreadCount(int receiverId) {
-    _unreadMessageCounts[receiverId] =
-        (_unreadMessageCounts[receiverId] ?? 0) + 1;
-    emit(state.copyWith(
-      unreadMessageCounts: Map.from(_unreadMessageCounts),
-    ));
+    final updatedConversations = state.conversations.map((conversation) {
+      if (conversation.user.id == receiverId) {
+        return conversation.copyWith(unreadCount: conversation.unreadCount + 1);
+      }
+      return conversation;
+    }).toList();
+
+    emit(state.copyWith(conversations: updatedConversations));
   }
 
   /// Получает количество непрочитанных сообщений для беседы
-  int getUnreadCountForConversation(int receiverId) {
-    return _unreadMessageCounts[receiverId] ?? 0;
+  int getUnreadCountForConversation() {
+    try {
+      if (state.currentConversationId == null) return 0;
+      final conversation = state.conversations.firstWhere(
+        (conv) => conv.id == state.currentConversationId,
+      );
+      return conversation.unreadCount;
+    } catch (e) {
+      // Если беседа не найдена, возвращаем 0
+      return 0;
+    }
   }
 
-  bool get hasUnreadMessages => state.unreadMessageCounts.keys.isNotEmpty;
-
-  // Для AutoReadSupport
-  final Map<int, int> _unreadMessageCounts = {};
+  bool get hasUnreadMessages =>
+      state.conversations.any((conv) => conv.unreadCount > 0);
 
   /// Получает имя собеседника по его ID из списка conversations
   String? getInterlocutorName(int interlocutorId) {

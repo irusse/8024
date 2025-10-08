@@ -33,15 +33,6 @@ class _PrivateChatWidgetState extends State<PrivateChatWidget> {
     _scrollController.addListener(_onScroll);
 
     _privateChatCubit.setCurrentChat(widget.interlocutorId);
-    print(
-        _privateChatCubit.getUnreadCountForConversation(widget.interlocutorId));
-    if (_privateChatCubit
-            .getUnreadCountForConversation(widget.interlocutorId) !=
-        0) {
-      _privateChatCubit.markPrivateMessagesAsRead(
-        widget.interlocutorId,
-      );
-    }
 
     // Подключаем прослушивание событий прочтения сообщений
     _privateChatCubit.listenPrivateMessageRead();
@@ -112,6 +103,12 @@ class _PrivateChatWidgetState extends State<PrivateChatWidget> {
         }
         if (state.markMessagesAsReadState.isFailure) {
           context.snackbar.error(context, state.markMessagesAsReadState.error!);
+        }
+
+        // Проверяем успешную загрузку сообщений и есть ли непрочитанные
+        if (state.fetchMessagesState.isSuccess &&
+            _privateChatCubit.getUnreadCountForConversation() > 0) {
+          _privateChatCubit.markPrivateMessagesAsRead();
         }
 
         // если это была догрузка (не первый фетч) — восстановим позицию
