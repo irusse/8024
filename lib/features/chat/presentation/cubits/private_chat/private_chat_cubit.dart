@@ -33,11 +33,14 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
         getIt<NotificationService>().stream.listen((notification) {
       if (notification.type == NotificationConstants.messageReceived) {
         final payload = jsonDecode(notification.payload ?? "{}");
-        final conversationId = payload['senderId'] as int?;
+
+        AppLogger.info(payload.toString());
+        final conversationId = payload['conversationId'] as int?;
+        final senderId = payload['senderId'] as int?;
 
         if (conversationId == null) return;
 
-        if (_currentOpenChatId != conversationId) {
+        if (_currentOpenChatId != senderId) {
           getIt<NotificationService>().showBasicNotification(notification);
         }
       }
@@ -129,9 +132,10 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
       )),
       (conversations) {
         // Сортируем беседы по updatedAt (самые новые сверху)
-        final sortedConversations = List<PrivateChatListEntity>.from(conversations);
+        final sortedConversations =
+            List<PrivateChatListEntity>.from(conversations);
         sortedConversations.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
-        
+
         emit(state.copyWith(
           conversations: sortedConversations,
           fetchConversationsState: ApiState.success(sortedConversations),

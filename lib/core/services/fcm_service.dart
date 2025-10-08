@@ -68,7 +68,6 @@ class FCMService {
 
   /// Handles notification taps when the app is opened from the background or terminated state
   void _onMessageOpenedApp(RemoteMessage message) {
-    AppLogger.info("Notification tapped", tag: _tag);
     final notificationModel = AppNotificationModel.fromRemoteMessage(message);
     if (notificationModel.payload == null) return;
     final payload = getIt<NotificationService>()

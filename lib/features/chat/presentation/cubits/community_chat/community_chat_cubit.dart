@@ -35,7 +35,6 @@ class CommunityChatCubit extends Cubit<CommunityChatState>
         final communityId = payload['communityId'] as int?;
 
         if (communityId == null) return;
-
         if (_currentOpenChatId != communityId) {
           getIt<NotificationService>().showBasicNotification(notification);
         }
