@@ -127,10 +127,16 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
       (failure) => emit(state.copyWith(
         fetchConversationsState: ApiState.failure(failure.message),
       )),
-      (conversations) => emit(state.copyWith(
-        conversations: conversations,
-        fetchConversationsState: ApiState.success(conversations),
-      )),
+      (conversations) {
+        // Сортируем беседы по updatedAt (самые новые сверху)
+        final sortedConversations = List<PrivateChatListEntity>.from(conversations);
+        sortedConversations.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+        
+        emit(state.copyWith(
+          conversations: sortedConversations,
+          fetchConversationsState: ApiState.success(sortedConversations),
+        ));
+      },
     );
   }
 
