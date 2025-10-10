@@ -29,6 +29,10 @@ class EventChatCubit extends Cubit<EventChatState> implements AutoReadSupport {
 
   // Кэш для быстрого поиска сообщений по ID
   final Map<int, int> _messageIndexCache = {};
+  
+  // Флаги для предотвращения дублирования слушателей
+  bool _messagesListenerInitialized = false;
+  bool _messageReadListenerInitialized = false;
 
   EventChatCubit(this._chatRepository, this._socketRepository)
       : super(EventChatState()) {
@@ -127,6 +131,8 @@ class EventChatCubit extends Cubit<EventChatState> implements AutoReadSupport {
   }
 
   void listenEventMessages() {
+    if (_messagesListenerInitialized) return;
+    
     _socketRepository.listenMessages((message) {
       // Если открыт конкретный чат и сообщение из него
       if (_currentOpenChatId != null && message.eventId == _currentOpenChatId) {
@@ -144,9 +150,13 @@ class EventChatCubit extends Cubit<EventChatState> implements AutoReadSupport {
         _incrementUnreadCount(message.eventId!);
       }
     });
+    
+    _messagesListenerInitialized = true;
   }
 
   void listenEventMessageRead() {
+    if (_messageReadListenerInitialized) return;
+    
     _socketRepository.listenMessageRead((data) {
       AppLogger.info('📖 Event message read data received: $data');
 
@@ -162,6 +172,8 @@ class EventChatCubit extends Cubit<EventChatState> implements AutoReadSupport {
         AppLogger.error('Error parsing message read data: $e');
       }
     });
+    
+    _messageReadListenerInitialized = true;
   }
 
   /// Устанавливает текущий открытый чат

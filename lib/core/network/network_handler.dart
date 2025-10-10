@@ -4,6 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:neighbours/core/error/failures.dart';
 import 'package:neighbours/core/exceptions/exceptions.dart';
+import 'package:neighbours/core/logging/logger.dart';
 
 class NetworkHandler {
   static Future<Either<Failure, T>> handleRequest<T>(
@@ -21,7 +22,8 @@ class NetworkHandler {
     } on NetworkException catch (e) {
       return Left(NetworkFailure(e.message));
     } catch (e,st) {
-     throw st;
+      AppLogger.info(st.toString());
+     return Left(BadRequestFailure(e.toString()));
     }
   }
 

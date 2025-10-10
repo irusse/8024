@@ -33,8 +33,6 @@ class _PrivateChatWidgetState extends State<PrivateChatWidget> {
     _scrollController.addListener(_onScroll);
 
     _privateChatCubit.setCurrentChat(widget.interlocutorId);
-
-    // Подключаем прослушивание событий прочтения сообщений
     _privateChatCubit.listenPrivateMessageRead();
   }
 

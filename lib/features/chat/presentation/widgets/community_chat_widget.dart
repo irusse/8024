@@ -31,6 +31,7 @@ class _CommunityChatWidgetState extends State<CommunityChatWidget> {
 
     // Присоединяемся к чату сообщества
     _communityChatCubit.join(widget.communityId);
+    _communityChatCubit.markCommunityMessagesAsRead(widget.communityId);
 
     // Устанавливаем текущий открытый чат
     // Это предотвратит показ уведомлений для сообщений из этого чата

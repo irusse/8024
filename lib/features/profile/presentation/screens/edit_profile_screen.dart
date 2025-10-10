@@ -106,9 +106,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             context.snackbar.error(context, state.updateState.error!);
           }
           if (state.updateState.isSuccess) {
+            final updatedUser = context.read<UserCubit>().state.user;
             context
                 .read<UserCubit>()
-                .setUser(context.read<UserCubit>().state.user);
+                .setUser(updatedUser);
+            // Reset original user in EditProfileCubit to disable save button
+            context.read<EditProfileCubit>().resetOriginalUser(updatedUser);
             context.snackbar.success(context, 'Профиль успешно обновлён');
           }
         },

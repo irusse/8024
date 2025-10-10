@@ -14,6 +14,9 @@ import 'package:neighbours/features/chat/domain/entities/private_chat_list/priva
 import 'package:neighbours/features/chat/domain/repositories/private_chat_repository.dart';
 import 'package:neighbours/features/chat/domain/repositories/private_chat_socket_repository.dart';
 import 'package:neighbours/core/observers/app_lifecycle_observer.dart';
+import 'package:neighbours/features/chat/data/models/message_read/message_read_model.dart';
+import 'package:neighbours/features/chat/domain/entities/message_read/message_read_entity.dart';
+import 'package:neighbours/features/chat/domain/entities/seen_user/seen_user_entity.dart';
 
 part 'private_chat_state.dart';
 
@@ -26,6 +29,13 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
   final PrivateChatSocketRepository _socketRepository;
   int? _currentOpenChatId;
   StreamSubscription? _notificationSub;
+
+  // Кэш для быстрого поиска сообщений по ID
+  final Map<int, int> _messageIndexCache = {};
+
+  // Флаги для предотвращения дублирования слушателей
+  bool _messagesListenerInitialized = false;
+  bool _messageReadListenerInitialized = false;
 
   PrivateChatCubit(this._chatRepository, this._socketRepository)
       : super(const PrivateChatState()) {
@@ -156,7 +166,7 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
   }
 
   void listenPrivateMessages(int currentUserId) {
-    AppLogger.info("Listed");
+    if (_messagesListenerInitialized) return;
     _socketRepository.listenMessages((message) {
       final isFromCurrentChat = _currentOpenChatId != null &&
           (
@@ -167,7 +177,12 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
                       _currentOpenChatId != null));
       // Если открыт конкретный чат и сообщение из него
       if (isFromCurrentChat) {
-        emit(state.copyWith(messages: [message, ...state.messages]));
+        final newMessages = [message, ...state.messages];
+
+        // Обновляем кэш индексов сообщений
+        _updateMessageIndexCache(newMessages);
+
+        emit(state.copyWith(messages: newMessages));
       } else {
         _incrementUnreadCount(message.userId);
       }
@@ -175,13 +190,30 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
       // Обновляем lastMessage в списке conversations
       _updateLastMessageInConversations(message);
     });
+
+    _messagesListenerInitialized = true;
   }
 
   void listenPrivateMessageRead() {
+    if (_messageReadListenerInitialized) return;
+
     _socketRepository.listenMessageRead((data) {
-      // Пока просто логируем, что приходит от сервера
-      print('📖 Private message read data received: $data');
+      AppLogger.info('📖 Private message read data received: $data');
+
+      try {
+        // Парсим данные прочтения сообщения
+        final messageRead = MessageReadModel.fromJson(data).toEntity();
+
+        // Обновляем seenUsers в соответствующем сообщении
+        _updateMessageSeenStatus(messageRead);
+      } catch (e, st) {
+        print(e);
+        print(st);
+        AppLogger.error('Error parsing private message read data: $e');
+      }
     });
+
+    _messageReadListenerInitialized = true;
   }
 
   /// Устанавливает текущий открытый чат
@@ -329,5 +361,54 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
     updatedConversations.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
 
     emit(state.copyWith(conversations: updatedConversations));
+  }
+
+  /// Обновляет кэш индексов сообщений
+  void _updateMessageIndexCache(List<MessageEntity> messages) {
+    _messageIndexCache.clear();
+    for (int i = 0; i < messages.length; i++) {
+      _messageIndexCache[messages[i].id] = i;
+    }
+  }
+
+  /// Обновляет статус прочтения сообщения при получении события прочтения
+  void _updateMessageSeenStatus(MessageReadEntity messageRead) {
+    // Оптимизация: используем кэш для O(1) поиска
+    final messageIndex = _messageIndexCache[messageRead.message.id];
+
+    // Если сообщение не найдено в кэше, выходим
+    if (messageIndex == null || messageIndex >= state.messages.length) return;
+
+    final targetMessage = state.messages[messageIndex];
+
+    // Создаем новый SeenUser
+    final newSeenUser = SeenUserEntity(
+      seenAt: messageRead.seenAt,
+      user: messageRead.user,
+    );
+
+    // Оптимизация: используем Map для быстрого поиска пользователей
+    final currentSeenUsers = targetMessage.seenUsers ?? [];
+    final seenUsersMap = <int, SeenUserEntity>{
+      for (final seenUser in currentSeenUsers) seenUser.user.id: seenUser
+    };
+
+    // Обновляем или добавляем пользователя
+    seenUsersMap[messageRead.user.id] = newSeenUser;
+
+    // Создаем обновленный список seenUsers
+    final updatedSeenUsers = seenUsersMap.values.toList();
+
+    // Создаем обновленное сообщение
+    final updatedMessage = targetMessage.copyWith(
+      seenUsers: updatedSeenUsers,
+      isRead: updatedSeenUsers.isNotEmpty,
+    );
+
+    // Оптимизация: обновляем только нужное сообщение
+    final updatedMessages = List<MessageEntity>.from(state.messages);
+    updatedMessages[messageIndex] = updatedMessage;
+
+    emit(state.copyWith(messages: updatedMessages));
   }
 }

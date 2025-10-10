@@ -66,6 +66,8 @@ class MessageModel {
         userId: entity.userId,
         user: ParticipantModel.fromEntity(entity.user),
         isRead: entity.isRead,
-        seenUsers: entity.seenUsers?.map((seenUser) => SeenUserModel.fromEntity(seenUser)).toList(),
+        seenUsers: entity.seenUsers
+            ?.map((seenUser) => SeenUserModel.fromEntity(seenUser))
+            .toList(),
       );
 }
