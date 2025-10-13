@@ -411,4 +411,15 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
 
     emit(state.copyWith(messages: updatedMessages));
   }
+
+  /// Сбрасывает состояние кубита при логауте
+  void onLogout() {
+    _messagesListenerInitialized = false;
+    _messageReadListenerInitialized = false;
+    _currentOpenChatId = null;
+    _messageIndexCache.clear();
+    
+    // Сбрасываем состояние
+    emit(const PrivateChatState());
+  }
 }

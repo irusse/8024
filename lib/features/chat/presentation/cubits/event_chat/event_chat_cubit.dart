@@ -315,4 +315,15 @@ class EventChatCubit extends Cubit<EventChatState> implements AutoReadSupport {
 
     emit(state.copyWith(messages: updatedMessages));
   }
+
+  /// Сбрасывает состояние кубита при логауте
+  void onLogout() {
+    _messagesListenerInitialized = false;
+    _messageReadListenerInitialized = false;
+    _currentOpenChatId = null;
+    _messageIndexCache.clear();
+    
+    // Сбрасываем состояние
+    emit(EventChatState());
+  }
 }

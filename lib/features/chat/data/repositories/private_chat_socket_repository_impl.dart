@@ -38,9 +38,14 @@ class PrivateChatSocketRepositoryImpl implements PrivateChatSocketRepository {
   @override
   void listenMessages(Function(MessageEntity) onNewMessage) {
     _chatSocket.on('private:message', (data) {
-      AppLogger.info("New private message received");
-      AppLogger.info(data.toString());
-      onNewMessage(MessageModel.fromJson(data).toEntity());
+      try{
+        AppLogger.info("New private message received");
+        AppLogger.info(data.toString());
+        onNewMessage(MessageModel.fromJson(data).toEntity());
+      }
+      catch (e){
+        print(e);
+      }
     });
   }
 

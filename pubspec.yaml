@@ -26,7 +26,7 @@ dependencies:
   intl: ^0.20.2
   mask_text_input_formatter: ^2.7.0
   image_picker: ^1.1.2
-  mapbox_maps_flutter: ^2.10.0
+  mapbox_maps_flutter: ^2.11.0
   freezed_annotation: ^3.1.0
   json_annotation: ^4.9.0
   flutter_dotenv: ^5.2.1

@@ -24,9 +24,6 @@ import '../../data/services/notification_layer_service.dart';
 import '../cubits/home/home_cubit.dart';
 
 mixin HomeInitializationMixin<T extends StatefulWidget> on State<Home> {
-  Timer? _debounceTimer;
-  bool _isDataFetching = false;
-
   MapService get mapService;
 
   set mapService(MapService service);
@@ -53,10 +50,7 @@ mixin HomeInitializationMixin<T extends StatefulWidget> on State<Home> {
   }
 
   Future<void> performDataFetch({bool firstInit = true}) async {
-    if (!mounted || _isDataFetching) return;
-
-    _isDataFetching = true;
-
+    if (!mounted) return;
 
     final homeCubit = context.read<HomeCubit>();
     final userCubit = context.read<UserCubit>();
@@ -109,14 +103,11 @@ mixin HomeInitializationMixin<T extends StatefulWidget> on State<Home> {
     } catch (e) {
       if (!mounted) return;
       context.push(AppRoutePath.unexpectedError, extra: performDataFetch);
-    } finally {
-      _isDataFetching = false;
     }
   }
 
   @override
   void dispose() {
-    _debounceTimer?.cancel();
     super.dispose();
   }
 }
