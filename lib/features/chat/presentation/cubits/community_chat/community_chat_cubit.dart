@@ -316,8 +316,6 @@ class CommunityChatCubit extends Cubit<CommunityChatState>
     _messageReadListenerInitialized = false;
     _currentOpenChatId = null;
     _messageIndexCache.clear();
-    
-    // Сбрасываем состояние
     emit(CommunityChatState());
   }
 }

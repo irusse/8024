@@ -168,6 +168,10 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
   void listenPrivateMessages(int currentUserId) {
     if (_messagesListenerInitialized) return;
     _socketRepository.listenMessages((message) {
+      AppLogger.info("IN cubit ${currentUserId}");
+      AppLogger.info("IN cubit ${_currentOpenChatId}");
+      AppLogger.info("IN cubit ${message.userId}");
+
       final isFromCurrentChat = _currentOpenChatId != null &&
           (
               // 1️⃣ Собеседник прислал сообщение (он sender)
@@ -418,8 +422,6 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
     _messageReadListenerInitialized = false;
     _currentOpenChatId = null;
     _messageIndexCache.clear();
-    
-    // Сбрасываем состояние
     emit(const PrivateChatState());
   }
 }

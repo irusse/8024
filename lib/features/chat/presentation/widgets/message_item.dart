@@ -69,13 +69,17 @@ class MessageItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (!isMyMessage) ...[
-                      Text(
-                        message.user.fullName,
-                        style: context.text.bodySmall.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: ColorExtension.byIndex(message.userId),
+                      GestureDetector(
+                        onTap: () =>
+                            context.push(AppRouteBuilder.otherProfile(message.userId)),
+                        child: Text(
+                          message.user.fullName,
+                          style: context.text.bodySmall.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: ColorExtension.byIndex(message.userId),
+                          ),
                         ),
-                      ),
+                      )
                     ],
                     Text(
                       message.text,

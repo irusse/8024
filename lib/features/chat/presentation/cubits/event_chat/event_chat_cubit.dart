@@ -322,8 +322,6 @@ class EventChatCubit extends Cubit<EventChatState> implements AutoReadSupport {
     _messageReadListenerInitialized = false;
     _currentOpenChatId = null;
     _messageIndexCache.clear();
-    
-    // Сбрасываем состояние
     emit(EventChatState());
   }
 }

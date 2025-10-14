@@ -13,6 +13,7 @@ import 'package:neighbours/core/di/injection.dart';
 import 'package:neighbours/core/domain/entities/user/user_entity.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/extensions/full_name_ext.dart';
+import 'package:neighbours/features/chat/data/socket/chat_socket.dart';
 import 'package:neighbours/features/chat/presentation/cubits/private_chat/private_chat_cubit.dart';
 import 'package:neighbours/features/chat/presentation/cubits/community_chat/community_chat_cubit.dart';
 import 'package:neighbours/features/chat/presentation/cubits/event_chat/event_chat_cubit.dart';
@@ -79,12 +80,12 @@ class ProfileScreen extends StatelessWidget {
               context.read<UserCubit>().onLogout();
               context.read<NotificationCubit>().onLogout();
               getIt<FcmCubit>().onLogout();
-              
-              // Сбрасываем состояние чат-кубитов
+              getIt<ChatSocket>().disconnect();
+             
               getIt<PrivateChatCubit>().onLogout();
               getIt<CommunityChatCubit>().onLogout();
               getIt<EventChatCubit>().onLogout();
-              
+             
               context.go(AppRoutePath.authWelcome);
             },
             orElse: () {},
