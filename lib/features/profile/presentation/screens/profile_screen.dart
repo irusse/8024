@@ -80,11 +80,15 @@ class ProfileScreen extends StatelessWidget {
               context.read<UserCubit>().onLogout();
               context.read<NotificationCubit>().onLogout();
               getIt<FcmCubit>().onLogout();
-              getIt<ChatSocket>().disconnect();
+              
+              // Очищаем все слушатели сокета перед отключением
+
              
               getIt<PrivateChatCubit>().onLogout();
               getIt<CommunityChatCubit>().onLogout();
               getIt<EventChatCubit>().onLogout();
+              getIt<ChatSocket>().disconnect();
+
              
               context.go(AppRoutePath.authWelcome);
             },

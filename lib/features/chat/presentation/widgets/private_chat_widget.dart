@@ -73,6 +73,7 @@ class _PrivateChatWidgetState extends State<PrivateChatWidget> {
     _privateChatCubit.sendMessage(
       receiverId: widget.interlocutorId,
       text: text,
+
     );
 
     _messageController.clear();

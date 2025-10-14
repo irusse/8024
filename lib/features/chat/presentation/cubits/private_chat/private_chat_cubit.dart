@@ -166,11 +166,21 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
   }
 
   void listenPrivateMessages(int currentUserId) {
-    if (_messagesListenerInitialized) return;
+    if (_messagesListenerInitialized) {
+      AppLogger.warning(
+          "Private messages listener already initialized, skipping");
+      return;
+    }
+
+    AppLogger.warning("Initializing private messages listener");
     _socketRepository.listenMessages((message) {
-      AppLogger.info("IN cubit ${currentUserId}");
-      AppLogger.info("IN cubit ${_currentOpenChatId}");
-      AppLogger.info("IN cubit ${message.userId}");
+      // Проверяем, что сообщение не дублируется
+      if (state.messages
+          .any((existingMessage) => existingMessage.id == message.id)) {
+        AppLogger.warning(
+            "Duplicate message detected, skipping: ${message.id}");
+        return;
+      }
 
       final isFromCurrentChat = _currentOpenChatId != null &&
           (
@@ -416,12 +426,22 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
     emit(state.copyWith(messages: updatedMessages));
   }
 
+  /// Сбрасывает слушатели (для предотвращения дублирования)
+  void resetListeners() {
+    AppLogger.warning("Resetting private chat listeners");
+    _messagesListenerInitialized = false;
+    _messageReadListenerInitialized = false;
+  }
+
   /// Сбрасывает состояние кубита при логауте
   void onLogout() {
+    AppLogger.warning("Private chat cubit logout - resetting all state");
     _messagesListenerInitialized = false;
     _messageReadListenerInitialized = false;
     _currentOpenChatId = null;
     _messageIndexCache.clear();
+
+    // Сбрасываем состояние
     emit(const PrivateChatState());
   }
 }

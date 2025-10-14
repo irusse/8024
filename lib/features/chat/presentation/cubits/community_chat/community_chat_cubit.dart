@@ -124,9 +124,19 @@ class CommunityChatCubit extends Cubit<CommunityChatState>
   }
 
   void listenCommunityMessages() {
-    if (_messagesListenerInitialized) return;
+    if (_messagesListenerInitialized) {
+      AppLogger.warning("Community messages listener already initialized, skipping");
+      return;
+    }
     
+    AppLogger.warning("Initializing community messages listener");
     _socketRepository.listenMessages((message) {
+      // Проверяем, что сообщение не дублируется
+      if (state.messages.any((existingMessage) => existingMessage.id == message.id)) {
+        AppLogger.warning("Duplicate community message detected, skipping: ${message.id}");
+        return;
+      }
+
       // Если открыт конкретный чат и сообщение из него
       if (_currentOpenChatId != null &&
           message.communityId == _currentOpenChatId) {
@@ -310,8 +320,16 @@ class CommunityChatCubit extends Cubit<CommunityChatState>
     emit(state.copyWith(messages: updatedMessages));
   }
 
+  /// Сбрасывает слушатели (для предотвращения дублирования)
+  void resetListeners() {
+    AppLogger.warning("Resetting community chat listeners");
+    _messagesListenerInitialized = false;
+    _messageReadListenerInitialized = false;
+  }
+
   /// Сбрасывает состояние кубита при логауте
   void onLogout() {
+    AppLogger.warning("Community chat cubit logout - resetting all state");
     _messagesListenerInitialized = false;
     _messageReadListenerInitialized = false;
     _currentOpenChatId = null;

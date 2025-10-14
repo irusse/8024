@@ -131,9 +131,19 @@ class EventChatCubit extends Cubit<EventChatState> implements AutoReadSupport {
   }
 
   void listenEventMessages() {
-    if (_messagesListenerInitialized) return;
+    if (_messagesListenerInitialized) {
+      AppLogger.warning("Event messages listener already initialized, skipping");
+      return;
+    }
     
+    AppLogger.warning("Initializing event messages listener");
     _socketRepository.listenMessages((message) {
+      // Проверяем, что сообщение не дублируется
+      if (state.messages.any((existingMessage) => existingMessage.id == message.id)) {
+        AppLogger.warning("Duplicate event message detected, skipping: ${message.id}");
+        return;
+      }
+
       // Если открыт конкретный чат и сообщение из него
       if (_currentOpenChatId != null && message.eventId == _currentOpenChatId) {
         // Добавляем сообщение в состояние
@@ -316,8 +326,16 @@ class EventChatCubit extends Cubit<EventChatState> implements AutoReadSupport {
     emit(state.copyWith(messages: updatedMessages));
   }
 
+  /// Сбрасывает слушатели (для предотвращения дублирования)
+  void resetListeners() {
+    AppLogger.warning("Resetting event chat listeners");
+    _messagesListenerInitialized = false;
+    _messageReadListenerInitialized = false;
+  }
+
   /// Сбрасывает состояние кубита при логауте
   void onLogout() {
+    AppLogger.warning("Event chat cubit logout - resetting all state");
     _messagesListenerInitialized = false;
     _messageReadListenerInitialized = false;
     _currentOpenChatId = null;
