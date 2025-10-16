@@ -21,15 +21,24 @@ class ChatSocket {
     'private:join': <int>{},
   };
 
-  // Реестр слушателей для автоматического восстановления при переподключении
   final Map<String, List<Function(dynamic)>> _listeners = {};
 
+  bool get isConnected => _isConnected;
   io.Socket? get socket => _socket;
 
-  bool get isConnected => _isConnected;
+  static bool _isInitialized = false; // защита от повторного init
 
   Future<void> initializeSocket() async {
-    _tokenSub ??= _authService.accessTokenStream.listen((token) async {
+    if (_isInitialized) {
+      AppLogger.debug('[ChatSocket] already initialized — skipping');
+      return;
+    }
+    _isInitialized = true;
+
+    AppLogger.info('[ChatSocket] initialize (hash: ${identityHashCode(this)})');
+
+    // слушаем токен — только один раз
+    _tokenSub = _authService.accessTokenStream.listen((token) async {
       if (token == null || token.isEmpty) {
         _teardownSocket();
         return;
@@ -44,6 +53,10 @@ class ChatSocket {
   }
 
   Future<void> _reconnectWithToken(String token) async {
+    AppLogger.debug('[ChatSocket] reconnect with token');
+
+    _teardownSocket();
+
     final opts = io.OptionBuilder()
         .setTransports(['websocket'])
         .disableAutoConnect()
@@ -56,145 +69,116 @@ class ChatSocket {
         .enableForceNew()
         .build();
 
-    _socket = io.io("${AppConfig.socketUrl}", opts);
+    _socket = io.io(AppConfig.socketUrl, opts);
     _setupSocketListeners();
     _socket!.connect();
   }
 
   void _setupSocketListeners() {
-    _socket?.onConnect((_) {
-      _isConnected = true;
-      AppLogger.info('Socket connected successfully');
+    if (_socket == null) return;
 
-      // Восстанавливаем все зарегистрированные слушатели
+    AppLogger.info('[ChatSocket] setting up listeners (hash: ${identityHashCode(this)})');
+
+    _socket!.onConnect((_) {
+      _isConnected = true;
+      AppLogger.info('[ChatSocket] connected ✅');
+
       _restoreListeners();
 
-      // при реконнекте автоматически восстанавливаем комнаты
       for (final entry in _roomsToJoin.entries) {
-        final type = entry.key;
         for (final id in entry.value) {
-          AppLogger.debug("Trying to $type $id");
-          emit(type, id);
+          emit(entry.key, id);
         }
       }
     });
 
-    _socket?.onDisconnect((error) {
+    _socket!.onDisconnect((_) {
       _isConnected = false;
-      AppLogger.error('Socket disconnected: ${error.toString()}');
+      AppLogger.error('[ChatSocket] disconnected');
     });
-    
-    _socket?.onConnectError((error) {
+
+    _socket!.onConnectError((err) {
       _isConnected = false;
-      AppLogger.error('Socket connection error: ${error.toString()}');
+      AppLogger.error('[ChatSocket] connect error: $err');
     });
   }
+
+  bool get isSocketReallyConnected =>
+      _isConnected && (_socket?.connected ?? false);
 
   void emit(String event, dynamic data) {
     if (!isSocketReallyConnected) {
-      AppLogger.error('Emit failed: socket not connected [$event]');
+      AppLogger.error('[ChatSocket] emit failed (no connection): $event');
       return;
     }
     _socket!.emitWithAck(event, data, ack: (res) {
-      AppLogger.info(event);
-      AppLogger.info(res.toString());
-      AppLogger.info(data.toString());
+      AppLogger.debug('[ChatSocket] $event -> $res');
     });
   }
 
-  void emitWithAck(String event, dynamic data, Function(dynamic) ack) {
-    if (!isSocketReallyConnected) {
-      AppLogger.error('EmitWithAck failed: socket not connected [$event]');
-      return;
+  void on(String event, Function(dynamic) handler) {
+    _listeners.putIfAbsent(event, () => []).add(handler);
+    _socket?.on(event, handler);
+  }
+
+  void off(String event, [Function(dynamic)? handler]) {
+    if (handler != null) {
+      _listeners[event]?.remove(handler);
+      if (_listeners[event]?.isEmpty ?? false) {
+        _listeners.remove(event);
+      }
+    } else {
+      _listeners.remove(event);
     }
-    _socket!.emitWithAck(event, data, ack: ack);
+    _socket?.off(event, handler);
   }
 
-  /// Проверяет, действительно ли сокет подключен
-  bool get isSocketReallyConnected {
-    return _isConnected && (_socket?.connected ?? false);
+  void _restoreListeners() {
+    for (final entry in _listeners.entries) {
+      final event = entry.key;
+      _socket?.off(event);
+      for (final handler in entry.value) {
+        _socket?.on(event, handler);
+      }
+    }
+    AppLogger.debug('[ChatSocket] restored ${_listeners.length} events');
   }
 
-  /// Принудительно переподключает сокет
+  void joinRoom(String type, int id) {
+    _roomsToJoin.putIfAbsent(type, () => <int>{}).add(id);
+    if (isSocketReallyConnected) emit(type, id);
+  }
+
+  void leaveRoom(String type, int id) {
+    _roomsToJoin[type]?.remove(id);
+    if (isSocketReallyConnected) emit(type, id);
+  }
+
   Future<void> forceReconnect() async {
-    AppLogger.info('Force reconnecting socket...');
-    _teardownSocket();
-
+    AppLogger.info('[ChatSocket] force reconnect...');
     final token = await _authService.getAccessToken();
     if (token != null && token.isNotEmpty) {
       await _reconnectWithToken(token);
     }
   }
 
-  void on(String event, Function(dynamic) handler) {
-    // Регистрируем слушатель в реестре
-    _listeners.putIfAbsent(event, () => []).add(handler);
-    
-    // Если сокет подключен, сразу устанавливаем слушатель
-    if (_socket != null) {
-      _socket!.on(event, handler);
-    }
-  }
-
-  void off(String event, [Function(dynamic)? handler]) {
-    if (handler != null) {
-      // Удаляем конкретный слушатель
-      _listeners[event]?.remove(handler);
-      if (_listeners[event]?.isEmpty == true) {
-        _listeners.remove(event);
-      }
-    } else {
-      // Удаляем все слушатели для события
-      _listeners.remove(event);
-    }
-    
-    // Удаляем слушатель из сокета
-    _socket?.off(event, handler);
-  }
-
-  /// Восстанавливает все зарегистрированные слушатели
-  void _restoreListeners() {
-    for (final entry in _listeners.entries) {
-      final event = entry.key;
-      final handlers = entry.value;
-      
-      // Очищаем старые слушатели для события
-      _socket?.off(event);
-      
-      // Устанавливаем новые слушатели
-      for (final handler in handlers) {
-        _socket?.on(event, handler);
-      }
-    }
-    AppLogger.info('Restored ${_listeners.length} listener types');
-  }
-
-  void joinRoom(String type, int id) {
-    _roomsToJoin.putIfAbsent(type, () => <int>{}).add(id);
-    AppLogger.info(_roomsToJoin.toString());
-    if (isSocketReallyConnected) {
-      emit(type, id);
-    }
-  }
-
-  void leaveRoom(String type, int id) {
-    _roomsToJoin[type]?.remove(id);
-    if (isSocketReallyConnected) {
-      emit(type, id);
-    }
-  }
-
   void disconnect() {
+    AppLogger.info('[ChatSocket] disconnect called');
     _roomsToJoin.clear();
     _listeners.clear();
     _teardownSocket();
+
     _tokenSub?.cancel();
     _tokenSub = null;
+    _isInitialized = false; // теперь можно безопасно вызвать initialize заново
   }
 
   void _teardownSocket() {
-    _socket?.dispose();
-    _socket = null;
+    if (_socket != null) {
+      AppLogger.debug('[ChatSocket] tearing down socket');
+      _socket!.dispose();
+      _socket = null;
+    }
     _isConnected = false;
   }
 }

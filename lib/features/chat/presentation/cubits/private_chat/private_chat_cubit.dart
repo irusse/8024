@@ -174,7 +174,7 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
 
     AppLogger.warning("Initializing private messages listener");
     _socketRepository.listenMessages((message) {
-      // Проверяем, что сообщение не дублируется
+      //Проверяем, что сообщение не дублируется
       if (state.messages
           .any((existingMessage) => existingMessage.id == message.id)) {
         AppLogger.warning(
@@ -388,9 +388,9 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
     // Определяем, кто является собеседником
     // Если сообщение я отправил, то собеседник - receiver
     // Если мне написали, то собеседник - user (отправитель)
-    final interlocutor = message.userId == currentUserId 
-        ? message.receiver!  // Я отправил сообщение, собеседник - receiver
-        : message.user;      // Мне написали, собеседник - user (отправитель)
+    final interlocutor = message.userId == currentUserId
+        ? message.receiver! // Я отправил сообщение, собеседник - receiver
+        : message.user; // Мне написали, собеседник - user (отправитель)
 
     // Проверяем, что такая беседа еще не существует
     final conversationExists = state.conversations.any(
@@ -398,16 +398,18 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
     );
 
     if (conversationExists) {
-      AppLogger.warning("Conversation with user ${interlocutor.id} already exists, skipping creation");
+      AppLogger.warning(
+          "Conversation with user ${interlocutor.id} already exists, skipping creation");
       return;
     }
 
     // Создаем новую беседу
     final newConversation = PrivateChatListEntity(
-      id: message.conversationId ?? 0, // Используем conversationId из сообщения
+      id: message.conversationId ?? 0,
+      // Используем conversationId из сообщения
       user: interlocutor,
       lastMessage: message,
-      unreadCount: message.userId == currentUserId ? 0 : 1, // Если я отправил - 0, если мне написали - 1
+      unreadCount: 0,
       updatedAt: message.createdAt,
     );
 
@@ -418,8 +420,9 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
     updatedConversations.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
 
     emit(state.copyWith(conversations: updatedConversations));
-    
-    AppLogger.info("New conversation added for user ${interlocutor.id} (${interlocutor.fullName})");
+
+    AppLogger.info(
+        "New conversation added for user ${interlocutor.id} (${interlocutor.fullName})");
   }
 
   /// Обновляет кэш индексов сообщений
