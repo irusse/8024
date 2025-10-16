@@ -21,6 +21,8 @@ class MessageModel {
   final ParticipantModel user;
   final bool? isRead;
   final List<SeenUserModel>? seenUsers;
+  final bool? isNewConversation;
+  final ParticipantModel? receiver;
 
   MessageModel({
     required this.id,
@@ -34,6 +36,8 @@ class MessageModel {
     required this.user,
     this.isRead,
     this.seenUsers,
+    this.isNewConversation,
+    this.receiver,
   });
 
   factory MessageModel.fromJson(Map<String, dynamic> json) =>
@@ -53,6 +57,8 @@ class MessageModel {
         user: user.toEntity(),
         isRead: isRead,
         seenUsers: seenUsers?.map((seenUser) => seenUser.toEntity()).toList(),
+        isNewConversation: isNewConversation,
+        receiver: receiver?.toEntity(),
       );
 
   factory MessageModel.fromEntity(MessageEntity entity) => MessageModel(
@@ -69,5 +75,9 @@ class MessageModel {
         seenUsers: entity.seenUsers
             ?.map((seenUser) => SeenUserModel.fromEntity(seenUser))
             .toList(),
+        isNewConversation: entity.isNewConversation,
+        receiver: entity.receiver != null 
+            ? ParticipantModel.fromEntity(entity.receiver!) 
+            : null,
       );
 }

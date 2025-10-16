@@ -59,15 +59,6 @@ class PrivateChatSocketRepositoryImpl implements PrivateChatSocketRepository {
   }
 
   @override
-  void listenNewConversation(Function(dynamic) onNewConversation) {
-    _chatSocket.on('private:newConversation', (data) {
-      AppLogger.info("💬 New private conversation created:");
-      AppLogger.info(data.toString());
-      onNewConversation(data);
-    });
-  }
-
-  @override
   void enableAutoRead(int receiverId) {
     _chatSocket.emit('private:autoReadOn', {'receiverId': receiverId});
   }

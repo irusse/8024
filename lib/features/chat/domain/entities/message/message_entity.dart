@@ -18,5 +18,7 @@ abstract class MessageEntity with _$MessageEntity {
     required ParticipantEntity user,
     bool? isRead,
     List<SeenUserEntity>? seenUsers,
+    bool? isNewConversation,
+    ParticipantEntity? receiver,
   }) = _MessageEntity;
 }

@@ -36,7 +36,6 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
   // Флаги для предотвращения дублирования слушателей
   bool _messagesListenerInitialized = false;
   bool _messageReadListenerInitialized = false;
-  bool _newConversationListenerInitialized = false;
 
   PrivateChatCubit(this._chatRepository, this._socketRepository)
       : super(const PrivateChatState()) {
@@ -183,6 +182,12 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
         return;
       }
 
+      // Проверяем, является ли это новым сообщением для новой беседы
+      if (message.isNewConversation == true && message.receiver != null) {
+        AppLogger.info("New conversation message detected: ${message.id}");
+        _addNewConversation(message, currentUserId);
+      }
+
       final isFromCurrentChat = _currentOpenChatId != null &&
           (
               // 1️⃣ Собеседник прислал сообщение (он sender)
@@ -229,17 +234,6 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
     });
 
     _messageReadListenerInitialized = true;
-  }
-
-  void listenNewConversation() {
-    if (_newConversationListenerInitialized) return;
-
-    _socketRepository.listenNewConversation((data) {
-      print('💬 New conversation data received: $data');
-      AppLogger.info('💬 New conversation data received: $data');
-    });
-
-    _newConversationListenerInitialized = true;
   }
 
   /// Устанавливает текущий открытый чат
@@ -389,6 +383,45 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
     emit(state.copyWith(conversations: updatedConversations));
   }
 
+  /// Добавляет новую беседу в список conversations при получении сообщения с isNewConversation == true
+  void _addNewConversation(MessageEntity message, int currentUserId) {
+    // Определяем, кто является собеседником
+    // Если сообщение я отправил, то собеседник - receiver
+    // Если мне написали, то собеседник - user (отправитель)
+    final interlocutor = message.userId == currentUserId 
+        ? message.receiver!  // Я отправил сообщение, собеседник - receiver
+        : message.user;      // Мне написали, собеседник - user (отправитель)
+
+    // Проверяем, что такая беседа еще не существует
+    final conversationExists = state.conversations.any(
+      (conversation) => conversation.user.id == interlocutor.id,
+    );
+
+    if (conversationExists) {
+      AppLogger.warning("Conversation with user ${interlocutor.id} already exists, skipping creation");
+      return;
+    }
+
+    // Создаем новую беседу
+    final newConversation = PrivateChatListEntity(
+      id: message.conversationId ?? 0, // Используем conversationId из сообщения
+      user: interlocutor,
+      lastMessage: message,
+      unreadCount: message.userId == currentUserId ? 0 : 1, // Если я отправил - 0, если мне написали - 1
+      updatedAt: message.createdAt,
+    );
+
+    // Добавляем новую беседу в начало списка
+    final updatedConversations = [newConversation, ...state.conversations];
+
+    // Сортируем беседы по updatedAt (самые новые сверху)
+    updatedConversations.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+
+    emit(state.copyWith(conversations: updatedConversations));
+    
+    AppLogger.info("New conversation added for user ${interlocutor.id} (${interlocutor.fullName})");
+  }
+
   /// Обновляет кэш индексов сообщений
   void _updateMessageIndexCache(List<MessageEntity> messages) {
     _messageIndexCache.clear();
@@ -443,7 +476,6 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
     AppLogger.warning("Resetting private chat listeners");
     _messagesListenerInitialized = false;
     _messageReadListenerInitialized = false;
-    _newConversationListenerInitialized = false;
   }
 
   /// Сбрасывает состояние кубита при логауте
@@ -451,7 +483,6 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
     AppLogger.warning("Private chat cubit logout - resetting all state");
     _messagesListenerInitialized = false;
     _messageReadListenerInitialized = false;
-    _newConversationListenerInitialized = false;
     _currentOpenChatId = null;
     _messageIndexCache.clear();
 
