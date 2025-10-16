@@ -30,7 +30,6 @@ class DioClient {
 
   DioClient(this._dio, this._jwtInterceptor) {
     _dio.interceptors.addAll([
-
       TalkerDioLogger(
         settings: const TalkerDioLoggerSettings(
           printRequestHeaders: true,

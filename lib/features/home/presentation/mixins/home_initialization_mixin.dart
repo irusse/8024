@@ -75,6 +75,7 @@ mixin HomeInitializationMixin<T extends StatefulWidget> on State<Home> {
           eventChatCubit.listenEventMessages();
           communityChatCubit.listenCommunityMessages();
           privateChatCubit.listenPrivateMessages(userCubit.state.user.id);
+          privateChatCubit.listenNewConversation();
         });
         eventChatCubit.fetchUnreadMessageCounts(userCubit.state.user.id);
         communityChatCubit.fetchUnreadMessageCounts(userCubit.state.user.id);

@@ -108,16 +108,6 @@ class AuthService {
     return isTokenValid(token) ? token : null;
   }
 
-  /// Проверяет, авторизован ли пользователь
-  Future<bool> isAuthenticated() async {
-    try {
-      final accessToken = await getValidAccessToken();
-      final refreshToken = await getValidRefreshToken();
-      return accessToken != null && refreshToken != null;
-    } catch (e) {
-      return false;
-    }
-  }
 
   /// Безопасно освобождает ресурсы
   void dispose() {

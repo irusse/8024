@@ -36,6 +36,7 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
   // Флаги для предотвращения дублирования слушателей
   bool _messagesListenerInitialized = false;
   bool _messageReadListenerInitialized = false;
+  bool _newConversationListenerInitialized = false;
 
   PrivateChatCubit(this._chatRepository, this._socketRepository)
       : super(const PrivateChatState()) {
@@ -228,6 +229,17 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
     });
 
     _messageReadListenerInitialized = true;
+  }
+
+  void listenNewConversation() {
+    if (_newConversationListenerInitialized) return;
+
+    _socketRepository.listenNewConversation((data) {
+      print('💬 New conversation data received: $data');
+      AppLogger.info('💬 New conversation data received: $data');
+    });
+
+    _newConversationListenerInitialized = true;
   }
 
   /// Устанавливает текущий открытый чат
@@ -431,6 +443,7 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
     AppLogger.warning("Resetting private chat listeners");
     _messagesListenerInitialized = false;
     _messageReadListenerInitialized = false;
+    _newConversationListenerInitialized = false;
   }
 
   /// Сбрасывает состояние кубита при логауте
@@ -438,6 +451,7 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
     AppLogger.warning("Private chat cubit logout - resetting all state");
     _messagesListenerInitialized = false;
     _messageReadListenerInitialized = false;
+    _newConversationListenerInitialized = false;
     _currentOpenChatId = null;
     _messageIndexCache.clear();
 
