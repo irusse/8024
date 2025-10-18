@@ -10,6 +10,7 @@ class LabelValueText extends StatelessWidget {
   final Color? valueColor;
   final TextStyle? textStyle;
   final bool copyOnClick;
+  final VoidCallback? onClick;
 
   const LabelValueText(
       {super.key,
@@ -17,6 +18,7 @@ class LabelValueText extends StatelessWidget {
       required this.value,
       this.valueColor,
       this.textStyle,
+      this.onClick,
       this.copyOnClick = false});
 
   @override
@@ -38,14 +40,16 @@ class LabelValueText extends StatelessWidget {
                 color: valueColor ?? context.color.primary,
               ),
               recognizer: TapGestureRecognizer()
-                ..onTap = () {
-                  if (copyOnClick) {
-                    ClipboardService.copyToClipboard(
-                      context: context,
-                      text: value,
-                    );
-                  }
-                },
+                ..onTap = onClick != null
+                    ? onClick
+                    : () {
+                        if (copyOnClick) {
+                          ClipboardService.copyToClipboard(
+                            context: context,
+                            text: value,
+                          );
+                        }
+                      },
             ),
           ],
         ),

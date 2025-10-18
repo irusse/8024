@@ -35,8 +35,6 @@ class ChatSocket {
     }
     _isInitialized = true;
 
-    AppLogger.info('[ChatSocket] initialize (hash: ${identityHashCode(this)})');
-
     // слушаем токен — только один раз
     _tokenSub = _authService.accessTokenStream.listen((token) async {
       if (token == null || token.isEmpty) {
@@ -79,10 +77,10 @@ class ChatSocket {
 
     AppLogger.info('[ChatSocket] setting up listeners (hash: ${identityHashCode(this)})');
 
-    _socket!.onConnect((_) {
+    _socket!.onConnect((_)  async{
       _isConnected = true;
       AppLogger.info('[ChatSocket] connected ✅');
-
+      await Future.delayed(const Duration(milliseconds: 200));
       _restoreListeners();
 
       for (final entry in _roomsToJoin.entries) {
@@ -119,18 +117,6 @@ class ChatSocket {
   void on(String event, Function(dynamic) handler) {
     _listeners.putIfAbsent(event, () => []).add(handler);
     _socket?.on(event, handler);
-  }
-
-  void off(String event, [Function(dynamic)? handler]) {
-    if (handler != null) {
-      _listeners[event]?.remove(handler);
-      if (_listeners[event]?.isEmpty ?? false) {
-        _listeners.remove(event);
-      }
-    } else {
-      _listeners.remove(event);
-    }
-    _socket?.off(event, handler);
   }
 
   void _restoreListeners() {

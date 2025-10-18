@@ -12,15 +12,6 @@ class PrivateChatSocketRepositoryImpl implements PrivateChatSocketRepository {
   PrivateChatSocketRepositoryImpl(this._chatSocket);
 
   @override
-  void join(int receiverId) {
-    _chatSocket.joinRoom('private:join', receiverId);
-  }
-
-  @override
-  void leave(int receiverId) =>
-      _chatSocket.leaveRoom('private:leave', receiverId);
-
-  @override
   void sendMessage({
     required int receiverId,
     required String text,
@@ -29,21 +20,19 @@ class PrivateChatSocketRepositoryImpl implements PrivateChatSocketRepository {
     final Map<String, dynamic> messageData = {'text': text};
 
     messageData['receiverId'] = receiverId;
-    AppLogger.info('Creating new conversation with user: $receiverId');
 
-      // Ожидаем, что сервер вернет conversationId в ответе
+    // Ожидаем, что сервер вернет conversationId в ответе
     _chatSocket.emit('private:sendMessage', messageData);
   }
 
   @override
   void listenMessages(Function(MessageEntity) onNewMessage) {
     _chatSocket.on('private:message', (data) {
-      try{
+      try {
         AppLogger.info("New private message received");
         AppLogger.info(data.toString());
         onNewMessage(MessageModel.fromJson(data).toEntity());
-      }
-      catch (e){
+      } catch (e) {
         print(e);
       }
     });

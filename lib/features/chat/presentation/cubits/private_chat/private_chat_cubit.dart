@@ -254,14 +254,6 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
   /// Получает ID текущего открытого чата
   int? get currentOpenChatId => _currentOpenChatId;
 
-  void joinConversation(int receiverId) {
-    _socketRepository.join(receiverId);
-  }
-
-  void leaveConversation(int receiverId) {
-    _socketRepository.leave(receiverId);
-  }
-
   /// Включает автоматическое прочитывание сообщений для беседы
   void enableAutoRead(int receiverId) {
     _socketRepository.enableAutoRead(receiverId);

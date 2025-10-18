@@ -50,6 +50,8 @@ class PropertyInfoDialog extends StatelessWidget {
         LabelValueText(
             label: 'Пользователь',
             value: property.createdBy,
+            onClick: () => context
+                .push(AppRouteBuilder.otherProfile(property.createdById)),
             textStyle: context.text.bodyMedium),
         const VerticalGap(8),
         LabelValueText(

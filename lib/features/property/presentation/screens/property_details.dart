@@ -132,9 +132,9 @@ class _PropertyDetailsState extends State<PropertyDetails> {
     final isVerifying = context.select<PropertiesCubit, bool>(
         (cubit) => cubit.state.verifyState.isLoading);
 
-     void _onVerifyClick() {
-       VerifyPropertyDialog.showDialog(context, widget.propertyId);
-     }
+    void _onVerifyClick() {
+      VerifyPropertyDialog.showDialog(context, widget.propertyId);
+    }
 
     return BlocConsumer<PropertiesCubit, PropertiesState>(
         listener: (context, state) {
@@ -411,6 +411,9 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                     label: 'Создал объект',
                                     value: currentProperty.createdBy,
                                     icon: Icons.person_outline_rounded,
+                                    onClick: () => context.push(
+                                        AppRouteBuilder.otherProfile(
+                                            currentProperty.createdById)),
                                   ),
                                   const VerticalGap(16),
                                   PropertyInfoRow(
