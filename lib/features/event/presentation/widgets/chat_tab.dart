@@ -22,7 +22,7 @@ class ChatTab extends StatelessWidget {
                   size: 64, color: context.color.secondaryText),
               const VerticalGap(16),
               Text(
-                'Присоединяйтесь к сообществу\nи начинайте общение в чате',
+                'Присоединяйтесь к мероприятию\nи начинайте общение в чате',
                 textAlign: TextAlign.center,
                 style: context.text.bodyLarge
                     .copyWith(color: context.color.secondaryText),
