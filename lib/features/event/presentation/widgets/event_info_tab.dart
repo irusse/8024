@@ -47,6 +47,7 @@ class _EventInfoTabState extends State<EventInfoTab>
                   const VerticalGap(16),
                   if (widget.event.votingQuestion != null)
                     PollResults(
+                      isCompleted: widget.event.isCompleted,
                       eventId: widget.event.id,
                       canVote: widget.event.isParticipant(userId) ||
                           widget.event.isCreator(userId),

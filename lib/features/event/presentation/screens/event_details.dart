@@ -86,7 +86,7 @@ class _EventDetailsState extends State<EventDetails> {
             onClick: () {},
             iconPath: Assets.icons.warning,
           ),
-          if (isCreator)
+          if (isCreator && !event.isCompleted)
             BottomSheetOption(
               text: 'Редактировать',
               onClick: () {
