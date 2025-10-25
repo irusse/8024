@@ -86,6 +86,10 @@ abstract class EventRemoteDataSource {
     String? votingQuestion,
     List<String>? votingOptions,
   });
+
+  Future<Either<Failure, EventModel>> completeEvent({
+    required String eventId,
+  });
 }
 
 @Singleton(as: EventRemoteDataSource)
@@ -308,6 +312,16 @@ class EventRemoteDataSourceImpl implements EventRemoteDataSource {
         options: Options(contentType: 'multipart/form-data'),
       );
 
+      return EventModel.fromJson(response.data);
+    });
+  }
+
+  @override
+  Future<Either<Failure, EventModel>> completeEvent({
+    required String eventId,
+  }) async {
+    return NetworkHandler.handleRequest(() async {
+      final response = await _dio.post('/events/$eventId/complete');
       return EventModel.fromJson(response.data);
     });
   }

@@ -349,6 +349,27 @@ class EventsCubit extends Cubit<EventsState> {
     );
   }
 
+  Future<void> completeEvent({required String eventId}) async {
+    _resetStates();
+    emit(state.copyWith(completeEventState: const ApiState.loading()));
+
+    final result = await _eventRepository.completeEvent(eventId: eventId);
+
+    result.fold(
+      (failure) => emit(state.copyWith(
+        completeEventState: ApiState.failure(failure.message),
+      )),
+      (entity) {
+        final updatedEvents = {...state.events};
+        updatedEvents[entity.id] = entity;
+        emit(state.copyWith(
+          events: updatedEvents,
+          completeEventState: ApiState.success(entity),
+        ));
+      },
+    );
+  }
+
   void _resetStates() {
     emit(state.copyWith(
         createNotificationState: const ApiState.initial(),
@@ -360,7 +381,8 @@ class EventsCubit extends Cubit<EventsState> {
         fetchEventByIdState: const ApiState.initial(),
         deleteState: const ApiState.initial(),
         joinEventState: const ApiState.initial(),
-        leaveEventState: const ApiState.initial()));
+        leaveEventState: const ApiState.initial(),
+        completeEventState: const ApiState.initial()));
   }
 
   void onLogout() {

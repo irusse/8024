@@ -23,6 +23,7 @@ class DefaultConstants {
   };
   static const verified = "VERIFIED";
   static const unverified = "UNVERIFIED";
+  static const completed = "COMPLETED";
 
   static const Map<String, String> verificationStatus = {
     verified: 'Подтвержден',

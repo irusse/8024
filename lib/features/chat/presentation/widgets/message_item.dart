@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/extensions/color_ext.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
+import 'package:neighbours/core/extensions/full_name_ext.dart';
 import 'package:neighbours/core/router/app_routes.dart';
 import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
 

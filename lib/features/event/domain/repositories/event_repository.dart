@@ -82,4 +82,8 @@ abstract class EventRepository {
     List<String>? votingOptions,
     required bool hasVoting,
   });
+
+  Future<Either<Failure, EventEntity>> completeEvent({
+    required String eventId,
+  });
 }

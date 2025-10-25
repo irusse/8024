@@ -5,7 +5,6 @@ import 'package:neighbours/core/domain/entities/participant/participant_entity.d
 
 import 'event_category_entity.dart';
 
-
 part 'event_entity.freezed.dart';
 
 @freezed
@@ -22,6 +21,7 @@ abstract class EventEntity with _$EventEntity {
     required String description,
     required String type,
     required bool hasVoting,
+    required String status,
     String? image,
     bool? hasMoneyCollection,
     String? votingQuestion,
@@ -40,4 +40,6 @@ extension EventEntityX on EventEntity {
   bool get isNotification => type == DefaultConstants.notification;
 
   bool get isFullEvent => type == DefaultConstants.event;
+
+  bool get isCompleted => status == DefaultConstants.completed;
 }

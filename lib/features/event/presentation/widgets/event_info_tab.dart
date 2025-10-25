@@ -4,6 +4,7 @@ import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/constants/ui_constants.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
+import 'package:neighbours/core/extensions/full_name_ext.dart';
 import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
 import 'package:neighbours/features/event/presentation/widgets/date_time_row.dart';
 import 'package:neighbours/features/event/presentation/widgets/default_divider.dart';

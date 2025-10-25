@@ -56,7 +56,7 @@ class EventLayerService extends LayerService {
         eventsUnclusteredLayerId
       ],
       cluster: true,
-      clusterRadius: 35,
+      clusterRadius: 20,
     );
 
     await _addSquareIconToStyle(style);
@@ -245,7 +245,6 @@ class EventLayerService extends LayerService {
         0.6,
         18,
         0.7,
-
       ],
       iconAllowOverlap: true,
       iconIgnorePlacement: true,

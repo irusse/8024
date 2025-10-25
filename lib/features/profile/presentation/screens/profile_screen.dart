@@ -103,7 +103,7 @@ class ProfileScreen extends StatelessWidget {
               child: Column(
                 children: [
                   DefaultCircleAvatar(
-                      name: user.firstName,
+                      name: user.fullName,
                       radius: 40,
                       url: user.avatar,
                       id: user.id,

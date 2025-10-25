@@ -10,6 +10,7 @@ class ClipboardService {
     String successMessage = 'Скопировано в буфер обмена',
     SnackBarPosition position = SnackBarPosition.bottom,
   }) async {
+    HapticFeedback.lightImpact();
     await Clipboard.setData(ClipboardData(text: text));
 
     if (context.mounted) {

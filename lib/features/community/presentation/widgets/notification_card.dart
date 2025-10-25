@@ -5,6 +5,7 @@ import 'package:neighbours/core/components/bottom_sheet_dialog.dart';
 import 'package:neighbours/core/components/bottom_sheet_option.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
+import 'package:neighbours/core/extensions/full_name_ext.dart';
 import 'package:neighbours/core/router/app_routes.dart';
 import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
 import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart';

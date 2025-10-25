@@ -27,7 +27,7 @@ import 'package:neighbours/features/event/presentation/widgets/event_participant
 import '../../../../core/components/custom_alert_dialog.dart';
 import '../../../../core/constants/assets.dart';
 import '../widgets/event_info_tab.dart';
-import '../widgets/participate_button.dart';
+import '../widgets/event_action_button.dart';
 
 class EventDetails extends StatefulWidget {
   final String eventId;
@@ -199,12 +199,14 @@ class _EventDetailsState extends State<EventDetails> {
                             radius: 56,
                           ),
                           const VerticalGap(16),
-                          ParticipateButton(
+                          EventActionButton(
                             eventId: event.id,
                             isCreator: event.isCreator(userId),
                             isParticipant: event.isParticipant(userId),
+                            isCompleted: event.isCompleted,
                             joinState: state.joinEventState,
                             leaveState: state.leaveEventState,
+                            completeState: state.completeEventState,
                           ),
                         ],
                       ),
@@ -232,7 +234,9 @@ class _EventDetailsState extends State<EventDetails> {
                   ],
                 ),
               ),
-              if (state.deleteState.isLoading) const DefaultLoadingOverlay(),
+              if (state.deleteState.isLoading ||
+                  state.completeEventState.isLoading)
+                const DefaultLoadingOverlay(),
             ],
           ),
         );

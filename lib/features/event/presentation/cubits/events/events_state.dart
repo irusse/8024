@@ -18,5 +18,6 @@ abstract class EventsState with _$EventsState {
     @Default(ApiState.initial()) ApiState<EventEntity> fetchEventByIdState,
     @Default(ApiState.initial())
     ApiState<List<EventCategoryEntity>> categoriesState,
+    @Default(ApiState.initial()) ApiState<EventEntity> completeEventState,
   }) = _EventsState;
 }

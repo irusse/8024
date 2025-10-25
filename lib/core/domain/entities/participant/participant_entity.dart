@@ -14,9 +14,4 @@ abstract class ParticipantEntity with _$ParticipantEntity implements HasName {
   }) = _ParticipantEntity;
 
   const ParticipantEntity._(); // нужно для добавления методов в freezed класс
-
-  /// Возвращает "Имя Фамилия" или только имя, если фамилии нет
-  String get fullName => lastName != null && lastName!.isNotEmpty
-      ? '$firstName $lastName'
-      : firstName;
 }

@@ -23,6 +23,7 @@ class EventModel {
   final EventCategoryModel category;
   final List<ParticipantModel> participants;
   final bool hasVoting;
+  final String status;
   final String? image;
   final String? votingQuestion;
   final bool? hasMoneyCollection;
@@ -42,6 +43,7 @@ class EventModel {
     required this.category,
     required this.participants,
     required this.hasVoting,
+    required this.status,
     this.image,
     this.votingQuestion,
     this.hasMoneyCollection,
@@ -69,6 +71,7 @@ class EventModel {
       longitude: model.longitude,
       type: model.type,
       hasVoting: model.hasVoting,
+      status: model.status,
       votingQuestion: model.votingQuestion,
       hasMoneyCollection: model.hasMoneyCollection,
       moneyAmount: model.moneyAmount,
@@ -97,6 +100,7 @@ class EventModel {
           .toList(),
       image: entity.image,
       hasVoting: entity.hasVoting,
+      status: entity.status,
       votingQuestion: entity.votingQuestion,
       hasMoneyCollection: entity.hasMoneyCollection,
       moneyAmount: entity.moneyAmount,
@@ -128,6 +132,7 @@ class EventModel {
       type: type,
       image: image,
       hasVoting: hasVoting,
+      status: status,
       hasMoneyCollection: hasMoneyCollection,
       votingQuestion: votingQuestion,
       moneyAmount: moneyAmount,

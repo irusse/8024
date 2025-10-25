@@ -196,4 +196,13 @@ class EventRepositoryImpl implements EventRepository {
     return result.fold(
         (error) => Left(error), (model) => Right(model.toEntity()));
   }
+
+  @override
+  Future<Either<Failure, EventEntity>> completeEvent({
+    required String eventId,
+  }) async {
+    final result = await _remoteDataSource.completeEvent(eventId: eventId);
+    return result.fold(
+        (error) => Left(error), (model) => Right(model.toEntity()));
+  }
 }
