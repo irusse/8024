@@ -5,6 +5,7 @@ import 'package:neighbours/core/components/default_app_bar.dart';
 import 'package:neighbours/core/components/default_loading_overlay.dart';
 import 'package:neighbours/core/components/default_tab_bar.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
+import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/features/chat/presentation/widgets/community_chat_list_item.dart';
 import 'package:neighbours/features/chat/presentation/widgets/private_chat_list_item.dart';
@@ -33,9 +34,25 @@ class _ChatListState extends State<ChatList> {
   Widget build(BuildContext context) {
     final userId = context.read<UserCubit>().state.user.id;
     final allUserEvents = context.select<EventsCubit, List<EventEntity>>(
-        (cubit) => cubit.allUserFullEvents(userId));
+        (cubit) => cubit
+            .allUserFullEvents(userId)
+            .where((event) => !event.isCompleted)
+            .toList());
     final allUserNotifications = context.select<EventsCubit, List<EventEntity>>(
-        (cubit) => cubit.allUserNotifications(userId));
+        (cubit) => cubit
+            .allUserNotifications(userId)
+            .where((event) => !event.isCompleted)
+            .toList());
+    final allUserCompletedEvents =
+        context.select<EventsCubit, List<EventEntity>>((cubit) => cubit
+            .allUserFullEvents(userId)
+            .where((event) => event.isCompleted)
+            .toList());
+    final allUserCompletedNotifications =
+        context.select<EventsCubit, List<EventEntity>>((cubit) => cubit
+            .allUserNotifications(userId)
+            .where((event) => event.isCompleted)
+            .toList());
     final communities = context.select<UserCubit, List<CommunityEntity>>(
         (cubit) => cubit.state.user.communities);
     final _tabs = [
@@ -43,6 +60,7 @@ class _ChatListState extends State<ChatList> {
       "Сообщества",
       "Мероприятия",
       "Оповещения",
+      "Завершенные",
     ];
     return Scaffold(
       appBar: const DefaultAppBar(
@@ -75,6 +93,8 @@ class _ChatListState extends State<ChatList> {
                         EventChatListItem(entity: allUserNotifications[index]),
                     itemCount: allUserNotifications.length,
                   ),
+                  _buildCompletedEventsList(context, allUserCompletedEvents,
+                      allUserCompletedNotifications),
                 ],
               ),
             ),
@@ -109,6 +129,42 @@ class _ChatListState extends State<ChatList> {
           itemCount: conversations.length,
         );
       },
+    );
+  }
+
+  Widget _buildCompletedEventsList(
+      BuildContext context,
+      List<EventEntity> completedEvents,
+      List<EventEntity> completedNotifications) {
+    final allCompletedEvents = [...completedEvents, ...completedNotifications];
+
+    if (allCompletedEvents.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Нет завершенных событий',
+              style: context.text.bodyLarge.copyWith(
+                color: context.color.secondaryText,
+              ),
+            ),
+            const VerticalGap(8),
+            Text(
+              'Завершенные мероприятия и оповещения появятся здесь',
+              style: context.text.bodyMedium.copyWith(
+                color: context.color.secondaryText,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return ListView.builder(
+      itemBuilder: (context, index) =>
+          EventChatListItem(entity: allCompletedEvents[index]),
+      itemCount: allCompletedEvents.length,
     );
   }
 }
