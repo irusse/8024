@@ -12,6 +12,7 @@ import '../../../../core/services/clipboard_service.dart';
 import '../cubits/community/community_cubit.dart';
 import '../widgets/notifications_tab.dart';
 import '../widgets/events_tab.dart';
+import '../widgets/completed_events_tab.dart';
 import '../widgets/users_tab.dart';
 
 class Community extends StatefulWidget {
@@ -116,18 +117,19 @@ class _CommunityState extends State<Community> {
                   ),
                 ),
                 onTap: () => ClipboardService.copyToClipboard(
-                    context: context, text:communityEntity.joinCode),
+                    context: context, text: communityEntity.joinCode),
               )
             ],
           ),
           body: DefaultTabController(
-            length: 3,
+            length: 4,
             child: Column(
               children: [
                 TabBar(
                   tabs: [
                     const Tab(text: 'Оповещения'),
                     const Tab(text: 'Мероприятия'),
+                    const Tab(text: 'Завершенные'),
                     Tab(text: usersTabTitle),
                   ],
                   labelStyle: context.text.bodyMedium
@@ -136,11 +138,11 @@ class _CommunityState extends State<Community> {
                     fontWeight: FontWeight.w500,
                     color: context.color.secondaryText,
                   ),
-                  indicatorPadding: EdgeInsets.zero,
                   indicatorColor: context.color.primary,
-                  padding: EdgeInsets.zero,
-                  labelPadding: EdgeInsets.zero,
+                  labelPadding: const EdgeInsets.symmetric(horizontal: 16),
                   dividerColor: context.color.secondary,
+                  isScrollable: true,
+                  tabAlignment: TabAlignment.start,
                 ),
                 Expanded(
                   child: TabBarView(
@@ -150,6 +152,9 @@ class _CommunityState extends State<Community> {
                         communityId: communityEntity.id,
                       ),
                       EventsTab(
+                        communityId: communityEntity.id,
+                      ),
+                      CompletedEventsTab(
                         communityId: communityEntity.id,
                       ),
                       UsersTab(
