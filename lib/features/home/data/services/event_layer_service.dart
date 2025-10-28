@@ -305,8 +305,9 @@ class EventLayerService extends LayerService {
   ) async {
     if (mapboxMap == null) return;
     final style = mapboxMap.style;
-    await _loadEventIcons(style, events);
-    final geoJson = _createGeoJsonFromEvents(events);
+    final filteredEvents = events.where((event) => !event.isCompleted).toList();
+    await _loadEventIcons(style, filteredEvents);
+    final geoJson = _createGeoJsonFromEvents(filteredEvents);
     final geoJsonString = jsonEncode(geoJson);
 
     try {

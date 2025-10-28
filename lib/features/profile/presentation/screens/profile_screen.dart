@@ -82,8 +82,6 @@ class ProfileScreen extends StatelessWidget {
               getIt<FcmCubit>().onLogout();
               
               // Очищаем все слушатели сокета перед отключением
-
-             
               getIt<PrivateChatCubit>().onLogout();
               getIt<CommunityChatCubit>().onLogout();
               getIt<EventChatCubit>().onLogout();

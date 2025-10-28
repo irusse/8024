@@ -96,7 +96,7 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
       if (events.isNotEmpty) {
         await eventLayerService.updateData(
           mapboxMapController,
-          events.where((e) => !e.isCompleted).toList(),
+          events,
         );
       }
       if (events.isNotEmpty) {

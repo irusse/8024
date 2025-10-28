@@ -29,7 +29,7 @@ class EventChatCubit extends Cubit<EventChatState> implements AutoReadSupport {
 
   // Кэш для быстрого поиска сообщений по ID
   final Map<int, int> _messageIndexCache = {};
-  
+
   // Флаги для предотвращения дублирования слушателей
   bool _messagesListenerInitialized = false;
   bool _messageReadListenerInitialized = false;
@@ -132,15 +132,18 @@ class EventChatCubit extends Cubit<EventChatState> implements AutoReadSupport {
 
   void listenEventMessages() {
     if (_messagesListenerInitialized) {
-      AppLogger.warning("Event messages listener already initialized, skipping");
+      AppLogger.warning(
+          "Event messages listener already initialized, skipping");
       return;
     }
-    
+
     AppLogger.warning("Initializing event messages listener");
     _socketRepository.listenMessages((message) {
       // Проверяем, что сообщение не дублируется
-      if (state.messages.any((existingMessage) => existingMessage.id == message.id)) {
-        AppLogger.warning("Duplicate event message detected, skipping: ${message.id}");
+      if (state.messages
+          .any((existingMessage) => existingMessage.id == message.id)) {
+        AppLogger.warning(
+            "Duplicate event message detected, skipping: ${message.id}");
         return;
       }
 
@@ -160,13 +163,13 @@ class EventChatCubit extends Cubit<EventChatState> implements AutoReadSupport {
         _incrementUnreadCount(message.eventId!);
       }
     });
-    
+
     _messagesListenerInitialized = true;
   }
 
   void listenEventMessageRead() {
     if (_messageReadListenerInitialized) return;
-    
+
     _socketRepository.listenMessageRead((data) {
       AppLogger.info('📖 Event message read data received: $data');
 
@@ -182,7 +185,7 @@ class EventChatCubit extends Cubit<EventChatState> implements AutoReadSupport {
         AppLogger.error('Error parsing message read data: $e');
       }
     });
-    
+
     _messageReadListenerInitialized = true;
   }
 
