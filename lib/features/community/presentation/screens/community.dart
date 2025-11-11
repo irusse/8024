@@ -7,7 +7,7 @@ import 'package:neighbours/core/components/default_loading_overlay.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/state/api_state.dart';
-import 'package:neighbours/features/community/presentation/widgets/error_with_try_btn.dart';
+import 'package:neighbours/core/components/error_with_try_btn.dart';
 import '../../../../core/services/clipboard_service.dart';
 import '../cubits/community/community_cubit.dart';
 import '../widgets/notifications_tab.dart';

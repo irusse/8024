@@ -30,12 +30,10 @@ class CreateCommunityDialog extends StatefulWidget {
 
 class _CreateCommunityDialogState extends State<CreateCommunityDialog> {
   final _nameController = TextEditingController();
-  final _statusController = TextEditingController(text: 'Не подтвержден');
 
   @override
   void dispose() {
     _nameController.dispose();
-    _statusController.dispose();
     super.dispose();
   }
 
@@ -101,21 +99,7 @@ class _CreateCommunityDialogState extends State<CreateCommunityDialog> {
                 },
               ),
             ),
-            const VerticalGap(8),
-            const CustomLabel(text: 'Состояние'),
-            const VerticalGap(8),
-            ReusableTextField(
-              hintText: 'Не подтвержден',
-              controller: _statusController,
-              readOnly: true,
-            ),
-            const VerticalGap(8),
-            Text(
-              'Соседи еще не подтвердили',
-              style: context.text.bodyMedium
-                  .copyWith(color: context.color.secondaryText),
-            ),
-            const VerticalGap(16),
+            const VerticalGap(24),
             BlocBuilder<CommunityAccessCubit, CommunityAccessState>(
                 builder: (context, formState) {
               return PrimaryButton(

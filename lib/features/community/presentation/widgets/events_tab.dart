@@ -9,7 +9,7 @@ import 'package:neighbours/features/event/domain/entities/event/event_entity.dar
 import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart';
 
 import '../../../../core/constants/ui_constants.dart';
-import 'error_with_try_btn.dart';
+import '../../../../core/components/error_with_try_btn.dart';
 import 'event_card.dart';
 
 class EventsTab extends StatelessWidget {

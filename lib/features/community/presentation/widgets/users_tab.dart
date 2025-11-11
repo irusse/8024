@@ -4,7 +4,7 @@ import 'package:neighbours/core/components/default_loading_overlay.dart';
 import 'package:neighbours/core/components/participant_item.dart';
 import 'package:neighbours/core/extensions/full_name_ext.dart';
 import 'package:neighbours/core/state/api_state.dart';
-import 'package:neighbours/features/community/presentation/widgets/error_with_try_btn.dart';
+import 'package:neighbours/core/components/error_with_try_btn.dart';
 
 import '../cubits/community/community_cubit.dart';
 

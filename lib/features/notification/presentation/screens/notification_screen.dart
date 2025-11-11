@@ -11,7 +11,7 @@ import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/features/notification/domain/entities/notification/notification_entity.dart';
 import 'package:neighbours/features/notification/presentation/cubits/notification_cubit.dart';
 import 'package:neighbours/features/notification/presentation/widgets/notification_item.dart';
-import 'package:neighbours/features/community/presentation/widgets/error_with_try_btn.dart';
+import 'package:neighbours/core/components/error_with_try_btn.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});

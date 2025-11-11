@@ -8,7 +8,7 @@ import 'package:neighbours/features/event/presentation/cubits/events/events_cubi
 
 import '../../../../core/constants/ui_constants.dart';
 import '../../../event/presentation/widgets/completed_event_card.dart';
-import 'error_with_try_btn.dart';
+import '../../../../core/components/error_with_try_btn.dart';
 
 class CompletedEventsTab extends StatelessWidget {
   final int communityId;

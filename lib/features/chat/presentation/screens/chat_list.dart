@@ -11,7 +11,7 @@ import 'package:neighbours/features/chat/presentation/widgets/community_chat_lis
 import 'package:neighbours/features/chat/presentation/widgets/private_chat_list_item.dart';
 import 'package:neighbours/features/chat/presentation/cubits/private_chat/private_chat_cubit.dart';
 import 'package:neighbours/features/community/domain/entities/community/community_entity.dart';
-import 'package:neighbours/features/community/presentation/widgets/error_with_try_btn.dart';
+import 'package:neighbours/core/components/error_with_try_btn.dart';
 import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
 import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart';
 import '../widgets/event_chat_list_item.dart';

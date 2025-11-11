@@ -24,9 +24,10 @@ class ChatSocket {
   final Map<String, List<Function(dynamic)>> _listeners = {};
 
   bool get isConnected => _isConnected;
+
   io.Socket? get socket => _socket;
 
-  static bool _isInitialized = false; // защита от повторного init
+  bool _isInitialized = false; // защита от повторного init
 
   Future<void> initializeSocket() async {
     if (_isInitialized) {
@@ -75,9 +76,10 @@ class ChatSocket {
   void _setupSocketListeners() {
     if (_socket == null) return;
 
-    AppLogger.info('[ChatSocket] setting up listeners (hash: ${identityHashCode(this)})');
+    AppLogger.info(
+        '[ChatSocket] setting up listeners (hash: ${identityHashCode(this)})');
 
-    _socket!.onConnect((_)  async{
+    _socket!.onConnect((_) async {
       _isConnected = true;
       AppLogger.info('[ChatSocket] connected ✅');
       await Future.delayed(const Duration(milliseconds: 200));
@@ -115,7 +117,11 @@ class ChatSocket {
   }
 
   void on(String event, Function(dynamic) handler) {
-    _listeners.putIfAbsent(event, () => []).add(handler);
+    _listeners.putIfAbsent(event, () => []);
+    // Проверяем, не добавлен ли уже этот handler
+    if (!_listeners[event]!.contains(handler)) {
+      _listeners[event]!.add(handler);
+    }
     _socket?.on(event, handler);
   }
 

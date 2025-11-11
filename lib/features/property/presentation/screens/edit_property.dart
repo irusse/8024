@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' hide ImageSource;
 import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/components/default_app_bar.dart';
@@ -59,6 +60,7 @@ class _EditPropertyState extends State<EditProperty> {
             if (state.updateState.isSuccess) {
               context.snackbar
                   .success(context, 'Объект недвижимости успешно обновлен');
+              context.pop();
             }
             if (state.updateState.isFailure) {
               context.snackbar.error(context, state.updateState.error!);

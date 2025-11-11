@@ -70,9 +70,12 @@ class _PropertyDetailsState extends State<PropertyDetails> {
               BottomSheetOption(
                   text: 'Редактировать',
                   iconPath: Assets.icons.edit,
-                  onClick: () => context.push(
-                      AppRouteBuilder.propertyEdit(property.id),
-                      extra: property)),
+                  onClick: () {
+                    context
+                      ..pop()
+                      ..push(AppRouteBuilder.propertyEdit(property.id),
+                          extra: property);
+                  }),
             BottomSheetOption(
                 text: 'Поделиться',
                 iconPath: Assets.icons.share,

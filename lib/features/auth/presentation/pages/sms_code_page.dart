@@ -32,8 +32,8 @@ class SmsCodePage extends StatefulWidget {
 class _SmsCodePageState extends State<SmsCodePage>
     with TickerProviderStateMixin {
   static const int _codeLength = 6;
-  static const int _otpTimer = 3;
-  static const Duration _errorDuration = Duration(seconds: 60);
+  static const int _otpTimer = 60;
+  static const Duration _errorDuration = Duration(seconds: 1);
 
   late final AnimationController _controller;
   late final String _formattedPhone;

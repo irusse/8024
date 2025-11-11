@@ -5,7 +5,7 @@ import 'package:neighbours/core/components/default_app_bar.dart';
 import 'package:neighbours/core/components/default_loading_overlay.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/state/api_state.dart';
-import 'package:neighbours/features/community/presentation/widgets/error_with_try_btn.dart';
+import 'package:neighbours/core/components/error_with_try_btn.dart';
 import 'package:neighbours/features/profile/presentation/cubits/user_verified_properties/user_verified_properties_cubit.dart';
 import 'package:neighbours/features/property/presentation/widgets/verified_property_item.dart';
 
