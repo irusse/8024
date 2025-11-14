@@ -52,6 +52,10 @@ class PropertyFormCubit extends Cubit<PropertyFormState> {
         longitude: coordinates.longitude, latitude: coordinates.latitude));
   }
 
+  void clearCoordinates() {
+    emit(state.copyWith(longitude: null, latitude: null));
+  }
+
   String? validateName(String name) {
     if (name.trim().isEmpty) {
       return 'Название обязательно для заполнения';

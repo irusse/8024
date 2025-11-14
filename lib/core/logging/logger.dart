@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:talker/talker.dart';
-import 'package:ansicolor/ansicolor.dart';
 
 class AppLogger {
   AppLogger._();

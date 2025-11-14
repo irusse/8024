@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:neighbours/core/components/full_screen_map_picker.dart';
 import 'package:neighbours/core/components/full_screen_map_view.dart';
 import 'package:neighbours/core/components/lost_connection_screen.dart';
 import 'package:neighbours/core/components/unexpected_error_screen.dart';
@@ -129,6 +130,28 @@ class AppRouter {
               key: state.pageKey,
               child: FullScreenMapView(
                   latitude: latLng.latitude, longitude: latLng.longitude),
+            );
+          }),
+      GoRoute(
+          path: AppRoutePath.fullMapPicker,
+          pageBuilder: (context, state) {
+            final params = state.extra as Map<String, dynamic>;
+            final centralWidget = params['centralWidget'] as Widget;
+            final initialCoordinates = params['initialCoordinates'] as LatLng?;
+            final title =
+                params['title'] as String? ?? 'Выберите точку на карте';
+
+            return CustomPageTransition.slideFromRight(
+              key: state.pageKey,
+              child: BlocProvider.value(
+                value: getIt<UserLocationCubit>(),
+                child: FullScreenMapPicker(
+                  centralWidget: centralWidget,
+                  initialCoordinates: initialCoordinates,
+                  title: title,
+                  onCameraChange: (point) {},
+                ),
+              ),
             );
           }),
       GoRoute(

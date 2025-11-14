@@ -19,6 +19,7 @@ abstract class AppRoutePath {
   static const notificationForm = '/notification-form';
   static const eventForm = '/event-form';
   static const fullMapPreview = '/full-map-preview';
+  static const fullMapPicker = '/full-map-picker';
   static const propertyVerifications = 'property-verifications';
   static const documentPage = 'document-page/:key';
   static const chatListPage = '/chat-list-page';

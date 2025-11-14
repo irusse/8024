@@ -13,14 +13,13 @@ class CenteredMapPicker extends StatefulWidget {
   final Widget centralWidget;
   final ValueChanged<Point> onCameraChange;
   final LatLng? initialCoordinates;
-  final ValueChanged<LatLng>? onReset;
 
-  const CenteredMapPicker(
-      {super.key,
-      required this.centralWidget,
-      required this.onCameraChange,
-      this.initialCoordinates,
-      this.onReset});
+  const CenteredMapPicker({
+    super.key,
+    required this.centralWidget,
+    required this.onCameraChange,
+    this.initialCoordinates,
+  });
 
   @override
   State<CenteredMapPicker> createState() => _CenteredMapPickerState();

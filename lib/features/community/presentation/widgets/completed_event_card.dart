@@ -13,14 +13,14 @@ class CompletedEventCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('dd.MM.yy');
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 6),
       decoration: BoxDecoration(
-        color: context.color.secondary.withOpacity(0.5),
+        color: context.color.secondary.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(6),
         border: Border.all(
-          color: context.color.secondaryText.withOpacity(0.2),
+          color: context.color.secondaryText.withValues(alpha: 0.2),
           width: 0.5,
         ),
       ),
@@ -33,17 +33,17 @@ class CompletedEventCard extends StatelessWidget {
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: context.color.secondaryText.withOpacity(0.1),
+                color: context.color.secondaryText.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(
                 Icons.check_circle_outline,
                 size: 18,
-                color: context.color.secondaryText.withOpacity(0.6),
+                color: context.color.secondaryText.withValues(alpha: .6),
               ),
             ),
             const HorizontalGap(12),
-            
+
             // Основная информация
             Expanded(
               child: Column(
@@ -53,7 +53,7 @@ class CompletedEventCard extends StatelessWidget {
                     event.title,
                     style: context.text.bodyMedium.copyWith(
                       fontWeight: FontWeight.w500,
-                      color: context.color.secondaryText.withOpacity(0.8),
+                      color: context.color.secondaryText.withValues(alpha: .8),
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -64,21 +64,24 @@ class CompletedEventCard extends StatelessWidget {
                       Text(
                         dateFormat.format(event.createdAt),
                         style: context.text.bodySmall.copyWith(
-                          color: context.color.secondaryText.withOpacity(0.5),
+                          color:
+                              context.color.secondaryText.withValues(alpha: .5),
                         ),
                       ),
                       const HorizontalGap(8),
                       Text(
                         '•',
                         style: context.text.bodySmall.copyWith(
-                          color: context.color.secondaryText.withOpacity(0.3),
+                          color:
+                              context.color.secondaryText.withValues(alpha: .3),
                         ),
                       ),
                       const HorizontalGap(8),
                       Text(
                         '${event.participants.length} участников',
                         style: context.text.bodySmall.copyWith(
-                          color: context.color.secondaryText.withOpacity(0.5),
+                          color:
+                              context.color.secondaryText.withValues(alpha: .5),
                         ),
                       ),
                     ],
@@ -86,14 +89,14 @@ class CompletedEventCard extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             // Дата завершения (если есть eventDateTime)
             if (event.eventDateTime != null) ...[
               const HorizontalGap(8),
               Text(
                 dateFormat.format(event.eventDateTime!),
                 style: context.text.bodySmall.copyWith(
-                  color: context.color.secondaryText.withOpacity(0.4),
+                  color: context.color.secondaryText.withValues(alpha: 0.4),
                 ),
               ),
             ],

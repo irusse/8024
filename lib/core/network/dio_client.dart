@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/network/jwt_interceptor.dart';
 import 'package:talker_dio_logger/talker_dio_logger_interceptor.dart';
