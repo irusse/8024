@@ -17,9 +17,11 @@ import 'package:neighbours/features/community/presentation/cubits/community/comm
 import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart';
 import 'package:neighbours/features/home/data/services/event_layer_service.dart';
 import 'package:neighbours/features/home/data/services/property_layer_service.dart';
+import 'package:neighbours/features/home/data/services/plan_b_layer_service.dart';
 import 'package:neighbours/features/home/presentation/pages/home.dart';
 import 'package:neighbours/features/notification/presentation/cubits/notification_cubit.dart';
 import 'package:neighbours/features/property/presentation/cubits/properties/properties_cubit.dart';
+import 'package:neighbours/features/plan_b/presentation/cubits/plan_b/plan_b_cubit.dart';
 import '../../data/services/notification_layer_service.dart';
 import '../cubits/home/home_cubit.dart';
 
@@ -34,10 +36,14 @@ mixin HomeInitializationMixin<T extends StatefulWidget> on State<Home> {
 
   PropertyLayerService get propertyLayerService;
 
+  PlanBLayerService get planBLayerService;
+
   set notificationLayerService(
       NotificationLayerService notificationLayerService);
 
   set propertyLayerService(PropertyLayerService propertyLayerService);
+
+  set planBLayerService(PlanBLayerService planBLayerService);
 
   set eventLayerService(EventLayerService eventLayerService);
 
@@ -45,6 +51,7 @@ mixin HomeInitializationMixin<T extends StatefulWidget> on State<Home> {
     mapService = getIt<MapService>();
     notificationLayerService = getIt<NotificationLayerService>();
     propertyLayerService = getIt<PropertyLayerService>();
+    planBLayerService = getIt<PlanBLayerService>();
     eventLayerService = getIt<EventLayerService>();
     mapService.initialize();
   }
@@ -62,6 +69,7 @@ mixin HomeInitializationMixin<T extends StatefulWidget> on State<Home> {
     final communitiesCubit = context.read<CommunityCubit>();
     final notificationCubit = context.read<NotificationCubit>();
     final privateChatCubit = context.read<PrivateChatCubit>();
+    final planBCubit = context.read<PlanBCubit>();
 
     try {
       await Future.wait([
@@ -71,6 +79,7 @@ mixin HomeInitializationMixin<T extends StatefulWidget> on State<Home> {
       communitiesCubit.setCommunitiesLocally(userCubit.state.user.communities);
       privateChatCubit.fetchPrivateConversations();
       if (firstInit) {
+         await planBCubit.getMapItems();
         await getIt<ChatSocket>().initializeSocket().then((_) {
           eventChatCubit.listenEventMessages();
           communityChatCubit.listenCommunityMessages();

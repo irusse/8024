@@ -19,6 +19,8 @@ import 'package:neighbours/features/community/presentation/cubits/community/comm
 import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart';
 import 'package:neighbours/features/home/data/services/event_layer_service.dart';
 import 'package:neighbours/features/home/data/services/property_layer_service.dart';
+import 'package:neighbours/features/home/data/services/plan_b_layer_service.dart';
+import 'package:neighbours/features/plan_b/presentation/cubits/plan_b/plan_b_cubit.dart';
 import 'package:neighbours/features/home/presentation/managers/step_sheet_manager.dart';
 import 'package:neighbours/features/home/presentation/widgets/add_event_button.dart';
 import 'package:neighbours/features/home/presentation/widgets/generic_list_view.dart';
@@ -59,6 +61,7 @@ class _HomeState extends State<Home>
   late NotificationLayerService _notificationLayerService;
   late PropertyLayerService _propertyLayerService;
   late EventLayerService _eventLayerService;
+  late PlanBLayerService _planBLayerService;
 
   // HomeMapMixin implementation
   @override
@@ -81,6 +84,10 @@ class _HomeState extends State<Home>
   set propertyLayerService(PropertyLayerService propertyLayerService) =>
       _propertyLayerService = propertyLayerService;
 
+  @override
+  set planBLayerService(PlanBLayerService planBLayerService) =>
+      _planBLayerService = planBLayerService;
+
   // HomeInitializationMixin implementation
   @override
   MapService get mapService => _mapService;
@@ -97,6 +104,9 @@ class _HomeState extends State<Home>
 
   @override
   PropertyLayerService get propertyLayerService => _propertyLayerService;
+
+  @override
+  PlanBLayerService get planBLayerService => _planBLayerService;
 
   @override
   void initState() {
@@ -224,6 +234,16 @@ class _HomeState extends State<Home>
                   listener: (context, propertiesState) {
                     propertyLayerService.updateData(context,
                         mapboxMapController, propertiesState.properties);
+                  },
+                ),
+                BlocListener<PlanBCubit, PlanBState>(
+                  listenWhen: (prev, curr) => prev.items != curr.items,
+                  listener: (context, planBState) {
+                    planBLayerService.updateData(
+                      context,
+                      mapboxMapController,
+                      planBState.items,
+                    );
                   },
                 ),
                 BlocListener<EventsCubit, EventsState>(

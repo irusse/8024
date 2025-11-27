@@ -48,6 +48,7 @@ import 'package:neighbours/features/profile/presentation/cubits/user_verified_pr
 import 'package:neighbours/features/document/presentation/screens/document_page.dart';
 import 'package:neighbours/features/property/domain/entities/property/property_entity.dart';
 import 'package:neighbours/features/property/presentation/cubits/properties/properties_cubit.dart';
+import 'package:neighbours/features/plan_b/presentation/cubits/plan_b/plan_b_cubit.dart';
 import 'package:neighbours/features/property/presentation/cubits/property_form/property_form_cubit.dart';
 import 'package:neighbours/features/property/presentation/screens/property_verifications.dart';
 import 'package:neighbours/features/profile/presentation/screens/settings.dart';
@@ -445,6 +446,9 @@ class AppRouter {
                   ),
                   BlocProvider.value(
                     value: getIt<PropertiesCubit>(),
+                  ),
+                  BlocProvider.value(
+                    value: getIt<PlanBCubit>(),
                   ),
                 ],
                 child: const Home(),

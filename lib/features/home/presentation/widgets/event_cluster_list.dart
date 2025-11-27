@@ -10,6 +10,11 @@ class EventClusterList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
     return SizedBox(
       height: 320,
       child: ListView.builder(
@@ -20,7 +25,7 @@ class EventClusterList extends StatelessWidget {
           final event = events[index];
           return Container(
             margin: const EdgeInsets.only(right: 12),
-            width: MediaQuery.of(context).size.width - 32,
+            width: screenWidth - 32,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               color: context.color.background,

@@ -14,11 +14,16 @@ import 'package:neighbours/features/event/presentation/cubits/events/events_cubi
 import 'package:neighbours/features/home/data/services/event_layer_service.dart';
 import 'package:neighbours/features/home/data/services/notification_layer_service.dart';
 import 'package:neighbours/features/home/data/services/property_layer_service.dart';
+import 'package:neighbours/features/home/data/services/plan_b_layer_service.dart';
 import 'package:neighbours/features/home/presentation/pages/home.dart';
 import 'package:neighbours/features/home/presentation/widgets/event_cluster_list.dart';
 import 'package:neighbours/features/home/presentation/widgets/event_info_dialog.dart';
 import 'package:neighbours/features/home/presentation/widgets/property_info_dialog.dart';
 import 'package:neighbours/features/home/presentation/widgets/notification_info_dialog.dart';
+import 'package:neighbours/features/home/presentation/widgets/plan_b_info_dialog.dart';
+import 'package:neighbours/features/home/presentation/widgets/plan_b_cluster_list.dart';
+import 'package:neighbours/features/plan_b/domain/enitities/plan_b_map/plan_b_map_entity.dart';
+import 'package:neighbours/features/plan_b/presentation/cubits/plan_b/plan_b_cubit.dart';
 import 'package:neighbours/features/property/presentation/cubits/properties/properties_cubit.dart';
 
 import '../widgets/notification_cluster_list.dart';
@@ -29,6 +34,8 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
   set mapboxMapController(MapboxMap? controller);
 
   PropertyLayerService get propertyLayerService;
+
+  PlanBLayerService get planBLayerService;
 
   EventLayerService get eventLayerService;
 
@@ -105,6 +112,15 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
           notifications,
         );
       }
+
+      final planBState = context.read<PlanBCubit>().state;
+      if (planBState.items.isNotEmpty) {
+        await planBLayerService.updateData(
+          context,
+          mapboxMapController,
+          planBState.items,
+        );
+      }
     } catch (e) {
       debugPrint('Error reinitializing layers after theme change: $e');
     }
@@ -125,6 +141,11 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
       mapboxMapController!,
       context,
     );
+    if (!mounted) return;
+    await planBLayerService.initializeLayers(
+      mapboxMapController!,
+      context,
+    );
   }
 
   Future<void> _onClusterClick(ScreenCoordinate screenPoint) async {
@@ -135,6 +156,7 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
         PropertyLayerService.propertiesClustersLayerId,
         NotificationLayerService.notificationsClustersLayerId,
         EventLayerService.eventsClustersLayerId,
+        PlanBLayerService.planBClustersLayerId,
       ]),
     );
 
@@ -219,6 +241,34 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
           builder: (_) {
             return EventClusterList(
               events: events,
+            );
+          },
+        );
+      } else if (layer == PlanBLayerService.planBClustersLayerId) {
+        final leaves = await planBLayerService.getClusterLeaves(
+          mapboxMap: mapboxMapController!,
+          sourceId: PlanBLayerService.planBSourceId,
+          clusterFeature: feature.cast<String, Object?>(),
+        );
+        final List<PlanBMapEntity> planBItems = [];
+        for (final l in leaves) {
+          final planB = planBLayerService.parsePlanBFromFeature(
+              jsonDecode(jsonEncode(l)) as Map<String, dynamic>);
+          if (planB != null) {
+            planBItems.add(planB);
+          }
+        }
+        if (!mounted) return;
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: false,
+          backgroundColor: Colors.transparent,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+          ),
+          builder: (_) {
+            return PlanBClusterList(
+              items: planBItems,
             );
           },
         );
@@ -310,6 +360,34 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
           context: context,
           child: EventInfoDialog(
             event: event.toEntity(),
+          ),
+        );
+      }
+
+      return;
+    }
+
+    // Проверяем отдельные точки Plan B
+    final planBFeatures = await mapboxMapController?.queryRenderedFeatures(
+      RenderedQueryGeometry.fromScreenCoordinate(screenPoint),
+      RenderedQueryOptions(
+          layerIds: [PlanBLayerService.planBCircleLayerId]),
+    );
+
+    if (planBFeatures != null && planBFeatures.isNotEmpty) {
+      final feature = planBFeatures.first?.queriedFeature.feature;
+      if (feature == null) return;
+      final planB = planBLayerService.parsePlanBFromFeature(
+        jsonDecode(jsonEncode(feature)) as Map<String, dynamic>,
+      );
+
+      if (planB == null) return;
+      if (mounted) {
+        showBaseBottomSheet(
+          context: context,
+          child: PlanBInfoDialog(
+            inClusterList: false,
+            planB: planB,
           ),
         );
       }

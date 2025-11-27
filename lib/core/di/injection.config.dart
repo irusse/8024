@@ -96,6 +96,7 @@ import '../../features/home/data/services/event_layer_service.dart' as _i346;
 import '../../features/home/data/services/map_icon_service.dart' as _i485;
 import '../../features/home/data/services/notification_layer_service.dart'
     as _i835;
+import '../../features/home/data/services/plan_b_layer_service.dart' as _i323;
 import '../../features/home/data/services/property_layer_service.dart' as _i166;
 import '../../features/home/domain/repositories/home_repository.dart' as _i0;
 import '../../features/home/presentation/cubits/auth_location/auth_location_cubit.dart'
@@ -121,6 +122,14 @@ import '../../features/other_profile/presentation/cubits/other_profile/other_pro
     as _i375;
 import '../../features/other_profile/presentation/cubits/other_properties/other_properties_cubit.dart'
     as _i720;
+import '../../features/plan_b/data/datasources/plan_b_remote_datasource.dart'
+    as _i955;
+import '../../features/plan_b/data/repositories/plan_b_repository_impl.dart'
+    as _i1060;
+import '../../features/plan_b/domain/repositories/plan_b_repository.dart'
+    as _i826;
+import '../../features/plan_b/presentation/cubits/plan_b/plan_b_cubit.dart'
+    as _i115;
 import '../../features/profile/presentation/cubits/profile/profile_cubit.dart'
     as _i470;
 import '../../features/profile/presentation/cubits/profile_create/profile_create_cubit.dart'
@@ -197,6 +206,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i485.MapIconService>(() => _i485.MapIconService());
     gh.factory<_i294.CommunityAccessCubit>(() => _i294.CommunityAccessCubit());
     gh.factory<_i245.ProfileCreateCubit>(() => _i245.ProfileCreateCubit());
+    gh.factory<_i323.PlanBLayerService>(() => _i323.PlanBLayerService());
     gh.singleton<_i558.FlutterSecureStorage>(
         () => registerModule.secureStorage);
     gh.singleton<_i716.AppLifecycleObserver>(
@@ -214,6 +224,8 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i1044.EventCreatedHandler(),
       instanceName: 'EVENT_CREATED',
     );
+    gh.singleton<_i955.PlanBRemoteDataSource>(
+        () => _i955.PlanBRemoteDataSourceImpl(gh<_i361.Dio>()));
     gh.singleton<_i61.PrivateChatDataSource>(
         () => _i61.PrivateChatDataSourceImpl(gh<_i361.Dio>()));
     gh.factory<_i166.PropertyLayerService>(
@@ -268,6 +280,8 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i107.AuthRemoteDataSourceImpl(gh<_i361.Dio>()));
     gh.singleton<_i250.CommunityChatRepository>(() =>
         _i574.CommunityChatRepositoryImpl(gh<_i573.CommunityChatDataSource>()));
+    gh.singleton<_i826.PlanBRepository>(
+        () => _i1060.PlanBRepositoryImpl(gh<_i955.PlanBRemoteDataSource>()));
     gh.singleton<_i637.PushRepository>(
         () => _i1041.PushRepositoryImpl(gh<_i189.PushRemoteDataSource>()));
     gh.singleton<_i698.EventRemoteDataSource>(
@@ -340,6 +354,8 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i720.OtherPropertiesCubit(gh<_i61.PropertyRepository>()));
     gh.singleton<_i660.EventRepository>(
         () => _i429.EventRepositoryImpl(gh<_i698.EventRemoteDataSource>()));
+    gh.factory<_i115.PlanBCubit>(
+        () => _i115.PlanBCubit(gh<_i826.PlanBRepository>()));
     gh.singleton<_i787.AuthRepository>(() => _i153.AuthRepositoryImpl(
           gh<_i107.AuthRemoteDataSource>(),
           gh<_i745.AuthService>(),
