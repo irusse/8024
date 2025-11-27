@@ -2,6 +2,7 @@ abstract class AppRoutePath {
   static const home = '/';
   static const eventDetails = 'event-details/:eventId';
   static const propertyDetails = 'property-details/:propertyId';
+  static const planBDetails = 'plan-b-details/:planBId';
   static const authWelcome = '/auth-welcome';
   static const splash = '/splash';
   static const login = '/login';
@@ -72,6 +73,8 @@ abstract class AppRouteBuilder {
       '/property-details/$propertyId/${AppRoutePath.propertyEdit}';
 
   static String eventDetails(int eventId) => "/event-details/$eventId";
+
+  static String planBDetails(int planBId) => "/plan-b-details/$planBId";
 
   static String resourceForm(int propertyId) =>
       '/property-details/$propertyId/${AppRoutePath.resourceForm}';

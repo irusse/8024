@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/components/primary_button.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
+import 'package:neighbours/core/router/app_routes.dart';
 import 'package:neighbours/core/themes/theme.dart';
 import 'package:neighbours/features/plan_b/domain/enitities/plan_b_map/plan_b_map_entity.dart';
 
@@ -29,9 +30,7 @@ class PlanBInfoDialog extends StatelessWidget {
               child: PrimaryButton(
                 text: 'Подробнее',
                 onPressed: () {
-                  context.pop();
-                  // TODO: Добавить навигацию на страницу деталей Plan B
-                  // context.push(AppRouteBuilder.planBDetails(planB.id));
+                  context.push(AppRouteBuilder.planBDetails(planB.id));
                 },
                 verticalPadding: 10,
               ),

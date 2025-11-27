@@ -58,6 +58,7 @@ import 'package:neighbours/features/property/presentation/cubits/resources/resou
 import 'package:neighbours/features/property/presentation/screens/edit_property.dart';
 import 'package:neighbours/features/property/presentation/screens/property_details.dart';
 import 'package:neighbours/features/property/presentation/screens/resource_form.dart';
+import 'package:neighbours/features/plan_b/presentation/screens/plan_b_details_screen.dart';
 import '../../features/auth/presentation/pages/phone_auth_page.dart';
 import '../../features/home/presentation/cubits/home/home_cubit.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
@@ -569,6 +570,19 @@ class AppRouter {
                   },
                 ),
               ],
+            ),
+            GoRoute(
+              path: AppRoutePath.planBDetails,
+              pageBuilder: (context, state) {
+                final planBId = int.parse(state.pathParameters['planBId']!);
+                return CustomPageTransition.slideFromRight(
+                  key: state.pageKey,
+                  child: BlocProvider.value(
+                    value: getIt<PlanBCubit>(),
+                    child: PlanBDetailsScreen(planBId: planBId),
+                  ),
+                );
+              },
             ),
           ]),
       GoRoute(
