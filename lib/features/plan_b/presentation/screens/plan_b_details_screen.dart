@@ -58,6 +58,16 @@ class _PlanBDetailsScreenState extends State<PlanBDetailsScreen> {
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
 
+  String _formatParameterValue(String? value) {
+    if (value == null || value.isEmpty) return 'Не указано';
+    
+    // Преобразуем булевые значения
+    if (value.toLowerCase() == 'true') return 'Да';
+    if (value.toLowerCase() == 'false') return 'Нет';
+    
+    return value;
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PlanBCubit, PlanBState>(
@@ -199,7 +209,7 @@ class _PlanBDetailsScreenState extends State<PlanBDetailsScreen> {
                                 PlanBInfoRow(
                                   icon: Icons.check_circle_outline,
                                   label: entry.value.name,
-                                  value: entry.value.value ?? 'Не указано',
+                                  value: _formatParameterValue(entry.value.value),
                                 ),
                               ],
                             ))
