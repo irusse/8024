@@ -13,9 +13,11 @@ class PlanBLayerService extends LayerService {
   static const String planBSourceId = "plan-b-source";
   static const String planBClustersLayerId = "plan-b-clusters-layer";
   static const String planBClusterCountLayerId = "plan-b-cluster-count-layer";
-  static const String planBUnclusteredLayerId = "plan-b-unclustered-points-layer";
+  static const String planBUnclusteredLayerId =
+      "plan-b-unclustered-points-layer";
   static const String planBCircleLayerId = "plan-b-circle-layer";
   static const String planBTextLayerId = "plan-b-text-layer";
+  static const String planBHaloLayerId = "plan-b-halo-layer";
 
   /// Инициализирует слои для отображения объектов Plan B
   @override
@@ -24,8 +26,11 @@ class PlanBLayerService extends LayerService {
     BuildContext context,
   ) async {
     final style = mapboxMap.style;
-    // Оранжевый цвет для кругов Plan B
-    final planBColor = const Color(0xFFFF9800).toARGB32();
+    // Фиолетовый цвет для кругов Plan B
+    final planBColor = const Color(0xFF9C27B0).toARGB32();
+    // Фиолетовый цвет с прозрачностью для ореола
+    final planBHaloColor =
+        const Color(0xFF9C27B0).withValues(alpha: 0.4).toARGB32();
     // Белый цвет для буквы "Б"
     final textColor = Colors.white.toARGB32();
     // Белый цвет для обводки
@@ -43,6 +48,7 @@ class PlanBLayerService extends LayerService {
         planBUnclusteredLayerId,
         planBCircleLayerId,
         planBTextLayerId,
+        planBHaloLayerId,
       ],
     );
 
@@ -57,7 +63,8 @@ class PlanBLayerService extends LayerService {
     );
 
     // Создаем слой отдельных точек (круг с буквой Б)
-    await _addUnClusteredLayer(style, planBColor, textColor, strokeColor);
+    await _addUnClusteredLayer(
+        style, planBColor, textColor, strokeColor, planBHaloColor);
   }
 
   /// Обновляет данные объектов на карте
@@ -90,7 +97,7 @@ class PlanBLayerService extends LayerService {
       final properties = (feature['properties'] as Map).map(
         (k, v) => MapEntry(k.toString(), v),
       );
-      
+
       return PlanBMapEntity(
         id: properties['id'] as int,
         name: properties['name'] as String,
@@ -130,7 +137,37 @@ class PlanBLayerService extends LayerService {
     int circleColor,
     int textColor,
     int strokeColor,
+    int haloColor,
   ) async {
+    // Слой ореола (добавляем первым, чтобы он был под кругом)
+    await style.addLayer(
+      CircleLayer(
+        id: planBHaloLayerId,
+        sourceId: planBSourceId,
+        filter: [
+          "all",
+          [
+            "!",
+            ["has", "point_count"]
+          ],
+        ],
+        circleRadiusExpression: [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          14,
+          45,
+          16,
+          50,
+          22,
+          55
+        ],
+        circleColor: haloColor,
+        circlePitchAlignment: CirclePitchAlignment.VIEWPORT,
+        circlePitchScale: CirclePitchScale.VIEWPORT,
+      ),
+    );
+
     // Слой круга
     await style.addLayer(
       CircleLayer(
@@ -205,4 +242,3 @@ class PlanBLayerService extends LayerService {
     };
   }
 }
-
