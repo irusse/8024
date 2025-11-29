@@ -15,6 +15,7 @@ import 'package:neighbours/features/home/data/services/event_layer_service.dart'
 import 'package:neighbours/features/home/data/services/notification_layer_service.dart';
 import 'package:neighbours/features/home/data/services/property_layer_service.dart';
 import 'package:neighbours/features/home/data/services/plan_b_layer_service.dart';
+import 'package:neighbours/features/home/domain/enums/map_display_mode.dart';
 import 'package:neighbours/features/home/presentation/pages/home.dart';
 import 'package:neighbours/features/home/presentation/widgets/event_cluster_list.dart';
 import 'package:neighbours/features/home/presentation/widgets/event_info_dialog.dart';
@@ -407,5 +408,38 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
 
     await _onClusterClick(screenPoint);
     await _onPointClick(screenPoint);
+  }
+
+  /// Применяет выбранный режим отображения к слоям карты
+  Future<void> applyDisplayMode(MapDisplayMode mode) async {
+    if (mapboxMapController == null) return;
+    
+    final style = mapboxMapController!.style;
+
+    switch (mode) {
+      case MapDisplayMode.all:
+        // Показываем все слои
+        await propertyLayerService.showAllLayers(style);
+        await planBLayerService.showAllLayers(style);
+        await notificationLayerService.showAllLayers(style);
+        await eventLayerService.showAllLayers(style);
+        break;
+
+      case MapDisplayMode.planBOnly:
+        // Показываем только Plan B, скрываем остальные
+        await propertyLayerService.hideAllLayers(style);
+        await planBLayerService.showAllLayers(style);
+        await notificationLayerService.hideAllLayers(style);
+        await eventLayerService.hideAllLayers(style);
+        break;
+
+      case MapDisplayMode.propertyOnly:
+        // Показываем недвижимость и события, скрываем Plan B и уведомления
+        await propertyLayerService.showAllLayers(style);
+        await planBLayerService.hideAllLayers(style);
+        await notificationLayerService.hideAllLayers(style);
+        await eventLayerService.showAllLayers(style);
+        break;
+    }
   }
 }

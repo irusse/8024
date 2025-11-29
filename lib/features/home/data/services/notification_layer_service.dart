@@ -259,4 +259,32 @@ class NotificationLayerService extends LayerService {
       ),
     );
   }
+
+  /// Показывает все слои уведомлений
+  Future<void> showAllLayers(StyleManager style) async {
+    await setLayersVisibility(
+      style,
+      [
+        notificationsClustersLayerId,
+        notificationsClusterCountLayerId,
+        notificationsUnclusteredLayerId,
+        notificationsIconsLayerId,
+      ],
+      true,
+    );
+  }
+
+  /// Скрывает все слои уведомлений
+  Future<void> hideAllLayers(StyleManager style) async {
+    await setLayersVisibility(
+      style,
+      [
+        notificationsClustersLayerId,
+        notificationsClusterCountLayerId,
+        notificationsUnclusteredLayerId,
+        notificationsIconsLayerId,
+      ],
+      false,
+    );
+  }
 }

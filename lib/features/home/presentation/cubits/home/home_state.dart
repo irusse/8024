@@ -55,3 +55,9 @@ class ShowSetCoordinates extends HomeState {
 class ShowAddEvent extends HomeState {
   const ShowAddEvent();
 }
+
+class MapDisplayModeChanged extends HomeState {
+  const MapDisplayModeChanged(this.mode);
+
+  final MapDisplayMode mode;
+}

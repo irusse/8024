@@ -193,6 +193,13 @@ class _HomeState extends State<Home>
 
             return MultiBlocListener(
               listeners: [
+                BlocListener<HomeCubit, HomeState>(
+                  listener: (context, state) {
+                    if (state is MapDisplayModeChanged) {
+                      applyDisplayMode(state.mode);
+                    }
+                  },
+                ),
                 BlocListener<ThemeCubit, ThemeState>(
                   listenWhen: (prev, curr) => prev.isDark != curr.isDark,
                   listener: (context, state) async {

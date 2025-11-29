@@ -241,4 +241,34 @@ class PlanBLayerService extends LayerService {
       "properties": props,
     };
   }
+
+  /// Показывает все слои Plan B
+  Future<void> showAllLayers(StyleManager style) async {
+    await setLayersVisibility(
+      style,
+      [
+        planBClustersLayerId,
+        planBClusterCountLayerId,
+        planBCircleLayerId,
+        planBTextLayerId,
+        planBHaloLayerId,
+      ],
+      true,
+    );
+  }
+
+  /// Скрывает все слои Plan B
+  Future<void> hideAllLayers(StyleManager style) async {
+    await setLayersVisibility(
+      style,
+      [
+        planBClustersLayerId,
+        planBClusterCountLayerId,
+        planBCircleLayerId,
+        planBTextLayerId,
+        planBHaloLayerId,
+      ],
+      false,
+    );
+  }
 }

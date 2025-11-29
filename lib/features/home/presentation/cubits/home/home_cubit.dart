@@ -3,6 +3,7 @@ import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/constants/default_constants.dart';
 import 'package:neighbours/core/error/failures.dart';
 import 'package:neighbours/core/services/map_service.dart';
+import 'package:neighbours/features/home/domain/enums/map_display_mode.dart';
 import '../../../domain/repositories/home_repository.dart';
 
 part 'home_state.dart';
@@ -11,8 +12,11 @@ part 'home_state.dart';
 class HomeCubit extends Cubit<HomeState> {
   final HomeRepository _homeRepository;
   int step = DefaultConstants.addressNeedStep;
+  MapDisplayMode _displayMode = MapDisplayMode.all;
 
   HomeCubit(this._homeRepository) : super(const Loading());
+
+  MapDisplayMode get displayMode => _displayMode;
 
   Future<void> start() async {
     emit(const Loading());
@@ -98,5 +102,26 @@ class HomeCubit extends Cubit<HomeState> {
         goToAddPropertyStep();
       }
     }
+  }
+
+  /// Устанавливает режим отображения карты
+  void setDisplayMode(MapDisplayMode mode) {
+    _displayMode = mode;
+    emit(MapDisplayModeChanged(mode));
+  }
+
+  /// Переключает на режим "Все слои"
+  void showAllLayers() {
+    setDisplayMode(MapDisplayMode.all);
+  }
+
+  /// Переключает на режим "Только Plan B"
+  void showOnlyPlanB() {
+    setDisplayMode(MapDisplayMode.planBOnly);
+  }
+
+  /// Переключает на режим "Только недвижимость"
+  void showOnlyProperty() {
+    setDisplayMode(MapDisplayMode.propertyOnly);
   }
 }

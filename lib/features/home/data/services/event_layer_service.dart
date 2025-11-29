@@ -400,4 +400,34 @@ class EventLayerService extends LayerService {
       }
     }
   }
+
+  /// Показывает все слои событий
+  Future<void> showAllLayers(StyleManager style) async {
+    await setLayersVisibility(
+      style,
+      [
+        eventsClustersLayerId,
+        eventsClusterCountLayerId,
+        eventsUnclusteredLayerId,
+        eventsIconsLayerId,
+        eventsTitlesLayerId,
+      ],
+      true,
+    );
+  }
+
+  /// Скрывает все слои событий
+  Future<void> hideAllLayers(StyleManager style) async {
+    await setLayersVisibility(
+      style,
+      [
+        eventsClustersLayerId,
+        eventsClusterCountLayerId,
+        eventsUnclusteredLayerId,
+        eventsIconsLayerId,
+        eventsTitlesLayerId,
+      ],
+      false,
+    );
+  }
 }

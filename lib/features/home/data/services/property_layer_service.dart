@@ -240,4 +240,32 @@ class PropertyLayerService extends LayerService {
 
     await Future.wait(futures);
   }
+
+  /// Показывает все слои недвижимости
+  Future<void> showAllLayers(StyleManager style) async {
+    await setLayersVisibility(
+      style,
+      [
+        propertiesClustersLayerId,
+        propertiesClusterCountLayerId,
+        propertiesUnclusteredLayerId,
+        propertyUnclusteredHaloLayer,
+      ],
+      true,
+    );
+  }
+
+  /// Скрывает все слои недвижимости
+  Future<void> hideAllLayers(StyleManager style) async {
+    await setLayersVisibility(
+      style,
+      [
+        propertiesClustersLayerId,
+        propertiesClusterCountLayerId,
+        propertiesUnclusteredLayerId,
+        propertyUnclusteredHaloLayer,
+      ],
+      false,
+    );
+  }
 }
