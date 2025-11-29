@@ -44,10 +44,9 @@ class BottomPanel extends StatelessWidget {
                   icon: Icons.home_filled,
                   onTap: () => _onHomeClick(context, false),
                   onDoubleTap: () => _onHomeClick(context, true)),
-              _buildNavButton(context, label: 'Помощь', onTap: () {}),
-              _buildNavButton(context, label: 'Ресурсы', onTap: () {}),
-              _buildNavButton(context, label: 'Объекты', onTap: () {}),
-              _buildNavButton(context, label: 'Соседи', onTap: () {})
+              _buildNavButton(context, label: 'Все', onTap: () {}),
+              _buildNavButton(context, label: 'План Б', onTap: () {}),
+
             ],
           ),
         ));
