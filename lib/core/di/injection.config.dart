@@ -354,7 +354,7 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i720.OtherPropertiesCubit(gh<_i61.PropertyRepository>()));
     gh.singleton<_i660.EventRepository>(
         () => _i429.EventRepositoryImpl(gh<_i698.EventRemoteDataSource>()));
-    gh.factory<_i115.PlanBCubit>(
+    gh.singleton<_i115.PlanBCubit>(
         () => _i115.PlanBCubit(gh<_i826.PlanBRepository>()));
     gh.singleton<_i787.AuthRepository>(() => _i153.AuthRepositoryImpl(
           gh<_i107.AuthRemoteDataSource>(),

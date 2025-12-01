@@ -27,6 +27,7 @@ import 'package:neighbours/features/plan_b/domain/enitities/plan_b_map/plan_b_ma
 import 'package:neighbours/features/plan_b/presentation/cubits/plan_b/plan_b_cubit.dart';
 import 'package:neighbours/features/property/presentation/cubits/properties/properties_cubit.dart';
 
+import '../cubits/home/home_cubit.dart';
 import '../widgets/notification_cluster_list.dart';
 
 mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
@@ -87,9 +88,13 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
     if (mapboxMapController == null) return;
 
     try {
+      debugPrint('🔄 Starting layer reinitialization after theme change');
+      
       // Пересоздаем все слои
       await _initializeLayers();
       if (!mounted) return;
+
+      debugPrint('✅ Layers initialized, updating data...');
 
       // Обновляем данные на карте
       final propertiesState = context.read<PropertiesCubit>().state;
@@ -99,6 +104,7 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
       if (propertiesState.properties.isNotEmpty) {
         propertyLayerService.updateData(
             context, mapboxMapController, propertiesState.properties);
+        debugPrint('✅ Property data updated: ${propertiesState.properties.length} items');
       }
 
       if (events.isNotEmpty) {
@@ -106,12 +112,15 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
           mapboxMapController,
           events,
         );
+        debugPrint('✅ Events data updated: ${events.length} items');
       }
-      if (events.isNotEmpty) {
+      
+      if (notifications.isNotEmpty) {
         await notificationLayerService.updateData(
           mapboxMapController,
           notifications,
         );
+        debugPrint('✅ Notifications data updated: ${notifications.length} items');
       }
 
       final planBState = context.read<PlanBCubit>().state;
@@ -121,9 +130,17 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
           mapboxMapController,
           planBState.items,
         );
+        debugPrint('✅ Plan B data updated: ${planBState.items.length} items');
       }
-    } catch (e) {
-      debugPrint('Error reinitializing layers after theme change: $e');
+
+      // ВАЖНО: Применяем текущий режим отображения после пересоздания слоёв
+      final currentMode = context.read<HomeCubit>().displayMode;
+      debugPrint('🎨 Applying display mode: $currentMode');
+      await applyDisplayMode(currentMode);
+      debugPrint('✅ Display mode applied successfully');
+    } catch (e, stackTrace) {
+      debugPrint('❌ Error reinitializing layers after theme change: $e');
+      debugPrint('Stack trace: $stackTrace');
     }
   }
 
@@ -412,34 +429,44 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
 
   /// Применяет выбранный режим отображения к слоям карты
   Future<void> applyDisplayMode(MapDisplayMode mode) async {
-    if (mapboxMapController == null) return;
+    if (mapboxMapController == null) {
+      debugPrint('⚠️ Cannot apply display mode: mapboxMapController is null');
+      return;
+    }
     
+    debugPrint('🎨 Applying display mode: $mode');
     final style = mapboxMapController!.style;
 
-    switch (mode) {
-      case MapDisplayMode.all:
-        // Показываем все слои
-        await propertyLayerService.showAllLayers(style);
-        await planBLayerService.showAllLayers(style);
-        await notificationLayerService.showAllLayers(style);
-        await eventLayerService.showAllLayers(style);
-        break;
+    try {
+      switch (mode) {
+        case MapDisplayMode.all:
+          debugPrint('  📍 Showing all layers');
+          await propertyLayerService.showAllLayers(style);
+          await planBLayerService.showAllLayers(style);
+          await notificationLayerService.showAllLayers(style);
+          await eventLayerService.showAllLayers(style);
+          break;
 
-      case MapDisplayMode.planBOnly:
-        // Показываем только Plan B, скрываем остальные
-        await propertyLayerService.hideAllLayers(style);
-        await planBLayerService.showAllLayers(style);
-        await notificationLayerService.hideAllLayers(style);
-        await eventLayerService.hideAllLayers(style);
-        break;
+        case MapDisplayMode.planBOnly:
+          debugPrint('  📍 Showing only Plan B layers');
+          await propertyLayerService.hideAllLayers(style);
+          await planBLayerService.showAllLayers(style);
+          await notificationLayerService.hideAllLayers(style);
+          await eventLayerService.hideAllLayers(style);
+          break;
 
-      case MapDisplayMode.propertyOnly:
-        // Показываем недвижимость и события, скрываем Plan B и уведомления
-        await propertyLayerService.showAllLayers(style);
-        await planBLayerService.hideAllLayers(style);
-        await notificationLayerService.hideAllLayers(style);
-        await eventLayerService.showAllLayers(style);
-        break;
+        case MapDisplayMode.propertyOnly:
+          debugPrint('  📍 Showing property and event layers');
+          await propertyLayerService.showAllLayers(style);
+          await planBLayerService.hideAllLayers(style);
+          await notificationLayerService.hideAllLayers(style);
+          await eventLayerService.showAllLayers(style);
+          break;
+      }
+      debugPrint('✅ Display mode applied successfully');
+    } catch (e, stackTrace) {
+      debugPrint('❌ Error applying display mode: $e');
+      debugPrint('Stack trace: $stackTrace');
     }
   }
 }

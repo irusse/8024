@@ -10,7 +10,7 @@ part 'plan_b_cubit.freezed.dart';
 
 part 'plan_b_state.dart';
 
-@injectable
+@singleton
 class PlanBCubit extends Cubit<PlanBState> {
   final PlanBRepository _planBRepository;
 
