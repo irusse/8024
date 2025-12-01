@@ -204,9 +204,9 @@ extension GetItInjectableX on _i174.GetIt {
       preResolve: true,
     );
     gh.factory<_i485.MapIconService>(() => _i485.MapIconService());
+    gh.factory<_i323.PlanBLayerService>(() => _i323.PlanBLayerService());
     gh.factory<_i294.CommunityAccessCubit>(() => _i294.CommunityAccessCubit());
     gh.factory<_i245.ProfileCreateCubit>(() => _i245.ProfileCreateCubit());
-    gh.factory<_i323.PlanBLayerService>(() => _i323.PlanBLayerService());
     gh.singleton<_i558.FlutterSecureStorage>(
         () => registerModule.secureStorage);
     gh.singleton<_i716.AppLifecycleObserver>(

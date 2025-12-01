@@ -5,6 +5,7 @@ import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/router/app_routes.dart';
+import 'package:neighbours/core/themes/theme.dart';
 import 'package:neighbours/features/home/domain/enums/map_display_mode.dart';
 import 'package:neighbours/features/property/presentation/cubits/properties/properties_cubit.dart';
 
@@ -19,7 +20,7 @@ class BottomPanel extends StatelessWidget {
     final homeCubit = context.read<HomeCubit>();
     final userId = context.read<UserCubit>().state.user.id;
     final property = context.read<PropertiesCubit>().getMyProperty(userId);
-    
+
     if (property == null) {
       homeCubit
         ..setIdle()
@@ -43,7 +44,7 @@ class BottomPanel extends StatelessWidget {
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
         final displayMode = context.read<HomeCubit>().displayMode;
-        
+
         return SizedBox(
           height: 36,
           child: SingleChildScrollView(
@@ -53,6 +54,7 @@ class BottomPanel extends StatelessWidget {
                 const HorizontalGap(8),
                 _buildNavButton(
                   context,
+                  activeColor: context.color.primary,
                   icon: Icons.home_filled,
                   isActive: displayMode == MapDisplayMode.propertyOnly,
                   onTap: () => _onHomeClick(context),
@@ -60,12 +62,14 @@ class BottomPanel extends StatelessWidget {
                 _buildNavButton(
                   context,
                   label: 'Все',
+                  activeColor: context.color.primary,
                   isActive: displayMode == MapDisplayMode.all,
                   onTap: () => _onAllClick(context),
                 ),
                 _buildNavButton(
                   context,
                   label: 'План Б',
+                  activeColor: CommonModeColors.purple,
                   isActive: displayMode == MapDisplayMode.planBOnly,
                   onTap: () => _onPlanBClick(context),
                 ),
@@ -78,20 +82,19 @@ class BottomPanel extends StatelessWidget {
   }
 }
 
-Widget _buildNavButton(
-  BuildContext context, {
-  required VoidCallback onTap,
-  IconData? icon,
-  String? label,
-  bool isActive = false,
-}) {
+Widget _buildNavButton(BuildContext context,
+    {required VoidCallback onTap,
+    required Color activeColor,
+    IconData? icon,
+    String? label,
+    bool isActive = false}) {
   return GestureDetector(
     onTap: onTap,
     child: Container(
       margin: const EdgeInsets.only(right: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
-        color: isActive ? context.color.primary : context.color.secondary,
+        color: isActive ? activeColor : context.color.secondary,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Center(
@@ -108,9 +111,7 @@ Widget _buildNavButton(
                 textAlign: TextAlign.center,
                 style: context.text.labelLarge.copyWith(
                   fontWeight: FontWeight.w500,
-                  color: isActive
-                      ? context.color.background
-                      : context.color.primaryText,
+                  color: isActive ? Colors.white : context.color.primaryText,
                 ),
               ),
       ),

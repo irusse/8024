@@ -48,15 +48,13 @@ class PlanBModel {
   });
 
   factory PlanBModel.fromJson(
-      Map<String, dynamic> json, {
-        bool withFullPhotoPath = true,
-      }) {
+    Map<String, dynamic> json, {
+    bool withFullPhotoPath = true,
+  }) {
     final model = _$PlanBModelFromJson(json);
 
     final normalizedPhotos = withFullPhotoPath
-        ? model.photos
-        .map((p) => '${AppConfig.baseUrl}/files/$p')
-        .toList()
+        ? model.photos.map((p) => '${AppConfig.baseUrl}/files/$p').toList()
         : model.photos;
 
     return PlanBModel(
@@ -81,38 +79,38 @@ class PlanBModel {
   Map<String, dynamic> toJson() => _$PlanBModelToJson(this);
 
   PlanBEntity toEntity() => PlanBEntity(
-    id: id,
-    name: name,
-    description: description,
-    address: address,
-    autonomyNotes: autonomyNotes,
-    financeInfo: financeInfo,
-    categoryId: categoryId,
-    latitude: latitude,
-    longitude: longitude,
-    price: price,
-    status: status,
-    createdBy: createdBy,
-    createdAt: createdAt,
-    updatedAt: updatedAt,
-    photos: photos,
-  );
+        id: id,
+        name: name,
+        description: description,
+        address: address,
+        autonomyNotes: autonomyNotes,
+        financeInfo: financeInfo,
+        categoryId: categoryId,
+        latitude: latitude,
+        longitude: longitude,
+        price: price,
+        status: status,
+        createdBy: createdBy,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+        photos: photos,
+      );
 
   factory PlanBModel.fromEntity(PlanBEntity e) => PlanBModel(
-    id: e.id,
-    name: e.name,
-    description: e.description,
-    address: e.address,
-    autonomyNotes: e.autonomyNotes,
-    financeInfo: e.financeInfo,
-    categoryId: e.categoryId,
-    latitude: e.latitude,
-    longitude: e.longitude,
-    price: e.price,
-    status: e.status,
-    createdBy: e.createdBy,
-    createdAt: e.createdAt,
-    updatedAt: e.updatedAt,
-    photos: e.photos,
-  );
+        id: e.id,
+        name: e.name,
+        description: e.description,
+        address: e.address,
+        autonomyNotes: e.autonomyNotes,
+        financeInfo: e.financeInfo,
+        categoryId: e.categoryId,
+        latitude: e.latitude,
+        longitude: e.longitude,
+        price: e.price,
+        status: e.status,
+        createdBy: e.createdBy,
+        createdAt: e.createdAt,
+        updatedAt: e.updatedAt,
+        photos: e.photos,
+      );
 }

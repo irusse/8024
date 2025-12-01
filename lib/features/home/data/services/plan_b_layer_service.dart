@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:neighbours/core/themes/theme.dart';
 import 'package:neighbours/features/home/data/services/layer_service.dart';
 import 'package:neighbours/features/plan_b/domain/enitities/plan_b_map/plan_b_map_entity.dart';
 
@@ -27,10 +28,10 @@ class PlanBLayerService extends LayerService {
   ) async {
     final style = mapboxMap.style;
     // Фиолетовый цвет для кругов Plan B
-    final planBColor = const Color(0xFF9C27B0).toARGB32();
+    final planBColor = CommonModeColors.purple.toARGB32();
     // Фиолетовый цвет с прозрачностью для ореола
     final planBHaloColor =
-        const Color(0xFF9C27B0).withValues(alpha: 0.4).toARGB32();
+        CommonModeColors.purple.withValues(alpha: 0.4).toARGB32();
     // Белый цвет для буквы "Б"
     final textColor = Colors.white.toARGB32();
     // Белый цвет для обводки
