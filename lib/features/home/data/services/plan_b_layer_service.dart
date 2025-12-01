@@ -108,6 +108,7 @@ class PlanBLayerService extends LayerService {
         icon: properties['icon'] as String?,
         shortDescription: properties['shortDescription'] as String?,
         status: properties['status'] as String,
+        price: ((properties['price'] as num?) ?? 0).toDouble(),
       );
     } catch (e) {
       debugPrint('Error parsing plan b from feature: $e');

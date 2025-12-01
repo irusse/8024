@@ -48,6 +48,53 @@ class PlanBCubit extends Cubit<PlanBState> {
     );
   }
 
+  Future<void> getPlanBList({
+    bool loadMore = false,
+    int? categoryId,
+    double? priceFrom,
+    double? priceTo,
+  }) async {
+    if (!loadMore) {
+      emit(state.copyWith(
+        listState: const ApiState.loading(),
+        items: [],
+        skip: 0,
+        total: 0,
+        hasMore: false,
+      ));
+    }
+
+    final skip = loadMore ? state.skip : 0;
+
+    final result = await _planBRepository.getPlanBList(
+      take: 20,
+      skip: skip,
+      categoryId: categoryId,
+      priceFrom: priceFrom,
+      priceTo: priceTo,
+    );
+
+    result.fold(
+      (failure) => emit(state.copyWith(
+        listState: ApiState.failure(failure.message),
+      )),
+      (data) {
+        final (items, total) = data;
+        final allItems = loadMore ? [...state.items, ...items] : items;
+        final newSkip = skip + items.length;
+        final hasMore = newSkip < total;
+
+        emit(state.copyWith(
+          items: allItems,
+          total: total,
+          skip: newSkip,
+          hasMore: hasMore,
+          listState: const ApiState.success(null),
+        ));
+      },
+    );
+  }
+
   void _resetStates() {
     emit(state.copyWith(fetchState: const ApiState.initial()));
   }

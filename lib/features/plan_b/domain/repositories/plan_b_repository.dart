@@ -8,5 +8,12 @@ abstract class PlanBRepository {
   Future<Either<Failure, List<PlanBCategoryEntity>>> getCategories();
   Future<Either<Failure, List<PlanBMapEntity>>> getMapItems();
   Future<Either<Failure, PlanBDetailsEntity>> getPlanBDetails(int id);
+  Future<Either<Failure, (List<PlanBMapEntity>, int)>> getPlanBList({
+    int take = 20,
+    int skip = 0,
+    int? categoryId,
+    double? priceFrom,
+    double? priceTo,
+  });
 }
 

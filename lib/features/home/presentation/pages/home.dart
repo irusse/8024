@@ -20,6 +20,7 @@ import 'package:neighbours/features/event/presentation/cubits/events/events_cubi
 import 'package:neighbours/features/home/data/services/event_layer_service.dart';
 import 'package:neighbours/features/home/data/services/property_layer_service.dart';
 import 'package:neighbours/features/home/data/services/plan_b_layer_service.dart';
+import 'package:neighbours/features/home/domain/enums/map_display_mode.dart';
 import 'package:neighbours/features/plan_b/presentation/cubits/plan_b/plan_b_cubit.dart';
 import 'package:neighbours/features/home/presentation/managers/step_sheet_manager.dart';
 import 'package:neighbours/features/home/presentation/widgets/add_event_button.dart';
@@ -134,14 +135,30 @@ class _HomeState extends State<Home>
   }
 
   void _showBottomSheet() {
-    showBaseBottomSheet(
-      context: context,
-      child: GenericListView(
-          items:
-              context.read<PropertiesCubit>().state.properties.values.toList()),
-    ).then((_) {
-      _viewSwitcherNotifier.value = 0;
-    });
+    final homeCubit = context.read<HomeCubit>();
+    final displayMode = homeCubit.displayMode;
+    
+    if (displayMode == MapDisplayMode.planBOnly) {
+      // Показываем список Plan B
+      showBaseBottomSheet(
+        context: context,
+        child: GenericListView(
+          items: context.read<PlanBCubit>().state.items,
+        ),
+      ).then((_) {
+        _viewSwitcherNotifier.value = 0;
+      });
+    } else {
+      // Показываем список объектов недвижимости
+      showBaseBottomSheet(
+        context: context,
+        child: GenericListView(
+          items: context.read<PropertiesCubit>().state.properties.values.toList(),
+        ),
+      ).then((_) {
+        _viewSwitcherNotifier.value = 0;
+      });
+    }
   }
 
   void _showLocationDisabledDialog(BuildContext context) async {

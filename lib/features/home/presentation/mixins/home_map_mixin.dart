@@ -279,7 +279,7 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
         if (!mounted) return;
         showModalBottomSheet(
           context: context,
-          isScrollControlled: false,
+          isScrollControlled: true,
           backgroundColor: Colors.transparent,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(16)),

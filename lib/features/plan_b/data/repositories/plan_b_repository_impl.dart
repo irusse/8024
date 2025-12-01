@@ -46,5 +46,30 @@ class PlanBRepositoryImpl implements PlanBRepository {
       (model) => Right(model.toEntity()),
     );
   }
+
+  @override
+  Future<Either<Failure, (List<PlanBMapEntity>, int)>> getPlanBList({
+    int take = 20,
+    int skip = 0,
+    int? categoryId,
+    double? priceFrom,
+    double? priceTo,
+  }) async {
+    final result = await _remoteDataSource.getPlanBList(
+      take: take,
+      skip: skip,
+      categoryId: categoryId,
+      priceFrom: priceFrom,
+      priceTo: priceTo,
+    );
+
+    return result.fold(
+      (failure) => Left(failure),
+      (response) {
+        final entities = response.items.map((model) => model.toEntity()).toList();
+        return Right((entities, response.total));
+      },
+    );
+  }
 }
 

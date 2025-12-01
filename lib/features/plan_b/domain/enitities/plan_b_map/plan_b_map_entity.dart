@@ -13,6 +13,7 @@ abstract class PlanBMapEntity with _$PlanBMapEntity {
     String? icon,
     String? shortDescription,
     required String status,
+    required double price,
   }) = _PlanBMapEntity;
 }
 

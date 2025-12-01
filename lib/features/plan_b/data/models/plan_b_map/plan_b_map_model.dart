@@ -14,6 +14,7 @@ class PlanBMapModel {
   final String? icon;
   final String? shortDescription;
   final String status;
+  final double price;
 
   PlanBMapModel({
     required this.id,
@@ -24,6 +25,7 @@ class PlanBMapModel {
     required this.icon,
     required this.shortDescription,
     required this.status,
+    required this.price,
   });
 
   factory PlanBMapModel.fromJson(
@@ -47,6 +49,7 @@ class PlanBMapModel {
       icon: normalizedIcon,
       shortDescription: model.shortDescription,
       status: model.status,
+      price: model.price,
     );
   }
 
@@ -61,6 +64,7 @@ class PlanBMapModel {
         icon: icon,
         shortDescription: shortDescription,
         status: status,
+        price: price,
       );
 
   factory PlanBMapModel.fromEntity(PlanBMapEntity e) => PlanBMapModel(
@@ -72,6 +76,7 @@ class PlanBMapModel {
         icon: e.icon,
         shortDescription: e.shortDescription,
         status: e.status,
+        price: e.price,
       );
 }
 
