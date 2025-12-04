@@ -10,8 +10,11 @@ import 'package:neighbours/features/plan_b/data/models/plan_b_list_response/plan
 
 abstract class PlanBRemoteDataSource {
   Future<Either<Failure, List<PlanBCategoryModel>>> getCategories();
+
   Future<Either<Failure, List<PlanBMapModel>>> getMapItems();
+
   Future<Either<Failure, PlanBDetailsModel>> getPlanBDetails(int id);
+
   Future<Either<Failure, PlanBListResponseModel>> getPlanBList({
     int take = 20,
     int skip = 0,
@@ -31,7 +34,7 @@ class PlanBRemoteDataSourceImpl implements PlanBRemoteDataSource {
   Future<Either<Failure, List<PlanBCategoryModel>>> getCategories() async {
     return NetworkHandler.handleRequest(() async {
       final response = await _dio.get('/plan-b/categories');
-      
+
       final data = response.data as List;
       return data
           .map((json) => PlanBCategoryModel.fromJson(
@@ -45,7 +48,7 @@ class PlanBRemoteDataSourceImpl implements PlanBRemoteDataSource {
   Future<Either<Failure, List<PlanBMapModel>>> getMapItems() async {
     return NetworkHandler.handleRequest(() async {
       final response = await _dio.get('/map/plan-b');
-      
+
       final data = response.data as List;
       return data
           .map((json) => PlanBMapModel.fromJson(
@@ -59,7 +62,7 @@ class PlanBRemoteDataSourceImpl implements PlanBRemoteDataSource {
   Future<Either<Failure, PlanBDetailsModel>> getPlanBDetails(int id) async {
     return NetworkHandler.handleRequest(() async {
       final response = await _dio.get('/plan-b/$id');
-      
+
       return PlanBDetailsModel.fromJson(
         response.data as Map<String, dynamic>,
       );
@@ -112,4 +115,3 @@ class PlanBRemoteDataSourceImpl implements PlanBRemoteDataSource {
     });
   }
 }
-

@@ -94,6 +94,7 @@ class _PlanBDetailsScreenState extends State<PlanBDetailsScreen> {
   }
 
   Widget _buildContent(BuildContext context, PlanBDetailsEntity details) {
+    print(details.photos.first);
     return Scaffold(
       appBar: DefaultAppBar(
         showBackButton: true,

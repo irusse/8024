@@ -21,7 +21,7 @@ class PlanBPhotoModel {
     final model = _$PlanBPhotoModelFromJson(json);
     
     final normalizedUrl = withFullPhotoPath && !model.url.startsWith('http')
-        ? '${AppConfig.baseUrl}/files/${model.url}'
+        ? '${AppConfig.baseUrl.replaceFirst(RegExp(r'/api$'), '')}${model.url}'
         : model.url;
 
     return PlanBPhotoModel(

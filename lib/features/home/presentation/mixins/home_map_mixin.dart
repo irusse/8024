@@ -445,6 +445,8 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
           await planBLayerService.showAllLayers(style);
           await notificationLayerService.showAllLayers(style);
           await eventLayerService.showAllLayers(style);
+          // Зум на уровень 6 для режима "Все"
+          await _animateCameraZoom(6.0);
           break;
 
         case MapDisplayMode.planBOnly:
@@ -453,6 +455,8 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
           await planBLayerService.showAllLayers(style);
           await notificationLayerService.hideAllLayers(style);
           await eventLayerService.hideAllLayers(style);
+          // Зум на уровень 8 для режима "План Б"
+          await _animateCameraZoom(8.0);
           break;
 
         case MapDisplayMode.propertyOnly:
@@ -467,6 +471,26 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
     } catch (e, stackTrace) {
       debugPrint('❌ Error applying display mode: $e');
       debugPrint('Stack trace: $stackTrace');
+    }
+  }
+
+  /// Анимированный переход к заданному зуму
+  Future<void> _animateCameraZoom(double zoom) async {
+    if (mapboxMapController == null) return;
+
+    try {
+      final currentCamera = await mapboxMapController!.getCameraState();
+      final newCamera = CameraOptions(
+        center: currentCamera.center,
+        zoom: zoom,
+      );
+
+      await mapboxMapController!.easeTo(
+        newCamera,
+        MapAnimationOptions(duration: 1000, startDelay: 0),
+      );
+    } catch (e) {
+      debugPrint('❌ Error animating camera zoom: $e');
     }
   }
 }
