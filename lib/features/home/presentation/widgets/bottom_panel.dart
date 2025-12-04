@@ -11,10 +11,17 @@ import 'package:neighbours/features/property/presentation/cubits/properties/prop
 
 import '../cubits/home/home_cubit.dart';
 
-class BottomPanel extends StatelessWidget {
+class BottomPanel extends StatefulWidget {
   final Function(double, double) navigateToProperty;
 
   const BottomPanel({super.key, required this.navigateToProperty});
+
+  @override
+  State<BottomPanel> createState() => _BottomPanelState();
+}
+
+class _BottomPanelState extends State<BottomPanel> {
+  DateTime? _lastHomeClickTime;
 
   void _onHomeClick(BuildContext context) {
     final homeCubit = context.read<HomeCubit>();
@@ -25,17 +32,34 @@ class BottomPanel extends StatelessWidget {
       homeCubit
         ..setIdle()
         ..goToAddPropertyStep();
+      return;
+    }
+
+    final now = DateTime.now();
+    final isSecondClick = _lastHomeClickTime != null &&
+        now.difference(_lastHomeClickTime!).inSeconds < 3;
+
+    if (isSecondClick) {
+      // Второй клик - открываем карточку
+
+      _lastHomeClickTime = null; // Сбрасываем для следующего цикла
+      context.push(AppRouteBuilder.propertyDetails(property.id));
     } else {
-      // Есть недвижимость - показываем только слой недвижимости
+      // Первый клик - летим к объекту
+      _lastHomeClickTime = now;
       homeCubit.showOnlyProperty();
+
+      widget.navigateToProperty(property.latitude, property.longitude);
     }
   }
 
   void _onAllClick(BuildContext context) {
+    _lastHomeClickTime = null; // Сбрасываем при переключении режима
     context.read<HomeCubit>().showAllLayers();
   }
 
   void _onPlanBClick(BuildContext context) {
+    _lastHomeClickTime = null; // Сбрасываем при переключении режима
     context.read<HomeCubit>().showOnlyPlanB();
   }
 
