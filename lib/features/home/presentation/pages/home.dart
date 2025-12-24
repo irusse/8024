@@ -137,7 +137,7 @@ class _HomeState extends State<Home>
   void _showBottomSheet() {
     final homeCubit = context.read<HomeCubit>();
     final displayMode = homeCubit.displayMode;
-    
+
     if (displayMode == MapDisplayMode.planBOnly) {
       // Показываем список Plan B
       showBaseBottomSheet(
@@ -153,7 +153,8 @@ class _HomeState extends State<Home>
       showBaseBottomSheet(
         context: context,
         child: GenericListView(
-          items: context.read<PropertiesCubit>().state.properties.values.toList(),
+          items:
+              context.read<PropertiesCubit>().state.properties.values.toList(),
         ),
       ).then((_) {
         _viewSwitcherNotifier.value = 0;

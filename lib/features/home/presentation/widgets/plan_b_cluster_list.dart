@@ -23,11 +23,9 @@ class PlanBClusterList extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Индикатор
           const VerticalGap(24),
           DragHandle(),
           const VerticalGap(24),
-          // Список
           Expanded(
             child: ListView.separated(
               padding: EdgeInsets.symmetric(

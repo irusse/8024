@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:neighbours/core/logging/logger.dart';
 import 'package:neighbours/core/themes/theme.dart';
 import 'package:neighbours/features/home/data/services/layer_service.dart';
 import 'package:neighbours/features/plan_b/domain/enitities/plan_b_map/plan_b_map_entity.dart';
@@ -87,7 +88,7 @@ class PlanBLayerService extends LayerService {
         geoJsonString,
       );
     } catch (e) {
-      debugPrint('Error updating plan b data: $e');
+      AppLogger.error('Error updating plan b data: $e');
       throw Exception('Failed to update plan b data: $e');
     }
   }
@@ -111,7 +112,7 @@ class PlanBLayerService extends LayerService {
         price: ((properties['price'] as num?) ?? 0).toDouble(),
       );
     } catch (e) {
-      debugPrint('Error parsing plan b from feature: $e');
+      AppLogger.error('Error parsing plan b from feature: $e');
       return null;
     }
   }

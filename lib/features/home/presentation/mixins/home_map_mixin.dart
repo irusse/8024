@@ -7,6 +7,7 @@ import 'package:neighbours/core/components/bottom_sheet_dialog.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
 import 'package:neighbours/core/cubits/user_location/user_location_cubit.dart';
 import 'package:neighbours/core/di/injection.dart';
+import 'package:neighbours/core/logging/logger.dart';
 import 'package:neighbours/core/utils/map_camera_utils.dart';
 import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
 import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart'
@@ -88,13 +89,13 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
     if (mapboxMapController == null) return;
 
     try {
-      debugPrint('🔄 Starting layer reinitialization after theme change');
-      
+      AppLogger.debug('Starting layer reinitialization after theme change');
+
       // Пересоздаем все слои
       await _initializeLayers();
       if (!mounted) return;
 
-      debugPrint('✅ Layers initialized, updating data...');
+      AppLogger.debug('Layers initialized, updating data...');
 
       // Обновляем данные на карте
       final propertiesState = context.read<PropertiesCubit>().state;
@@ -104,7 +105,8 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
       if (propertiesState.properties.isNotEmpty) {
         propertyLayerService.updateData(
             context, mapboxMapController, propertiesState.properties);
-        debugPrint('✅ Property data updated: ${propertiesState.properties.length} items');
+        AppLogger.debug(
+            'Property data updated: ${propertiesState.properties.length} items');
       }
 
       if (events.isNotEmpty) {
@@ -112,15 +114,16 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
           mapboxMapController,
           events,
         );
-        debugPrint('✅ Events data updated: ${events.length} items');
+        AppLogger.debug('Events data updated: ${events.length} items');
       }
-      
+
       if (notifications.isNotEmpty) {
         await notificationLayerService.updateData(
           mapboxMapController,
           notifications,
         );
-        debugPrint('✅ Notifications data updated: ${notifications.length} items');
+        AppLogger.debug(
+            'Notifications data updated: ${notifications.length} items');
       }
 
       final planBState = context.read<PlanBCubit>().state;
@@ -135,11 +138,11 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
 
       // ВАЖНО: Применяем текущий режим отображения после пересоздания слоёв
       final currentMode = context.read<HomeCubit>().displayMode;
-      debugPrint('🎨 Applying display mode: $currentMode');
+      AppLogger.debug('Applying display mode: $currentMode');
       await applyDisplayMode(currentMode);
-      debugPrint('✅ Display mode applied successfully');
+      AppLogger.debug('Display mode applied successfully');
     } catch (e, stackTrace) {
-      debugPrint('❌ Error reinitializing layers after theme change: $e');
+      AppLogger.error('Error reinitializing layers after theme change: $e');
       debugPrint('Stack trace: $stackTrace');
     }
   }
@@ -388,8 +391,7 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
     // Проверяем отдельные точки Plan B
     final planBFeatures = await mapboxMapController?.queryRenderedFeatures(
       RenderedQueryGeometry.fromScreenCoordinate(screenPoint),
-      RenderedQueryOptions(
-          layerIds: [PlanBLayerService.planBCircleLayerId]),
+      RenderedQueryOptions(layerIds: [PlanBLayerService.planBCircleLayerId]),
     );
 
     if (planBFeatures != null && planBFeatures.isNotEmpty) {
@@ -419,7 +421,7 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
         await mapboxMapController?.pixelForCoordinate(gestureContext.point);
 
     if (screenPoint == null) {
-      debugPrint("Не удалось получить screen coordinate");
+      AppLogger.warning("Cannot get screen coordinates");
       return;
     }
 
@@ -430,47 +432,47 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
   /// Применяет выбранный режим отображения к слоям карты
   Future<void> applyDisplayMode(MapDisplayMode mode) async {
     if (mapboxMapController == null) {
-      debugPrint('⚠️ Cannot apply display mode: mapboxMapController is null');
+      AppLogger.warning(
+          'Cannot apply display mode: mapboxMapController is null');
       return;
     }
-    
-    debugPrint('🎨 Applying display mode: $mode');
+
+    AppLogger.info('Applying display mode: $mode');
     final style = mapboxMapController!.style;
 
     try {
       switch (mode) {
         case MapDisplayMode.all:
-          debugPrint('  📍 Showing all layers');
+          AppLogger.debug('Showing all layers');
           await propertyLayerService.showAllLayers(style);
           await planBLayerService.showAllLayers(style);
           await notificationLayerService.showAllLayers(style);
           await eventLayerService.showAllLayers(style);
-          // Зум на уровень 6 для режима "Все"
+          // Zoom level 6 for "All" mode
           await _animateCameraZoom(6.0);
           break;
 
         case MapDisplayMode.planBOnly:
-          debugPrint('  📍 Showing only Plan B layers');
+          AppLogger.debug('Showing only Plan B layers');
           await propertyLayerService.hideAllLayers(style);
           await planBLayerService.showAllLayers(style);
           await notificationLayerService.hideAllLayers(style);
           await eventLayerService.hideAllLayers(style);
-          // Зум на уровень 8 для режима "План Б"
+          // Zoom level 8 for "PlanB mode"
           await _animateCameraZoom(8.0);
           break;
 
         case MapDisplayMode.propertyOnly:
-          debugPrint('  📍 Showing property and event layers');
+          AppLogger.debug('Showing property and event layers');
           await propertyLayerService.showAllLayers(style);
           await planBLayerService.hideAllLayers(style);
           await notificationLayerService.hideAllLayers(style);
           await eventLayerService.showAllLayers(style);
           break;
       }
-      debugPrint('✅ Display mode applied successfully');
     } catch (e, stackTrace) {
-      debugPrint('❌ Error applying display mode: $e');
-      debugPrint('Stack trace: $stackTrace');
+      AppLogger.error('Error applying display mode: $e');
+      AppLogger.error('Stack trace: $stackTrace');
     }
   }
 
@@ -490,7 +492,7 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
         MapAnimationOptions(duration: 1000, startDelay: 0),
       );
     } catch (e) {
-      debugPrint('❌ Error animating camera zoom: $e');
+      AppLogger.error('Error animating camera zoom: $e');
     }
   }
 }

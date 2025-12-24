@@ -21,6 +21,7 @@ class _Icons {
   final sirenRounded = '$_basePath/siren_rounded.svg';
   final shieldUp = '$_basePath/shield_up.svg';
   final reset = '$_basePath/reset.svg';
+  final chatCircle = '$_basePath/chat_circle.svg';
   final notificationUnread = '$_basePath/notification_unread.svg';
   final pinList = '$_basePath/pin_list.svg';
   final warning = '$_basePath/warning.svg';

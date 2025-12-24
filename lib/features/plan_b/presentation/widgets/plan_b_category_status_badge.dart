@@ -65,7 +65,7 @@ class PlanBCategoryStatusBadge extends StatelessWidget {
                     ),
                     child: Text(
                       category,
-                      style: context.text.bodyMedium?.copyWith(
+                      style: context.text.bodyMedium.copyWith(
                         color: const Color(0xFFFF9800),
                         fontWeight: FontWeight.w600,
                       ),
@@ -105,7 +105,7 @@ class PlanBCategoryStatusBadge extends StatelessWidget {
                     ),
                     child: Text(
                       status == 'ACTIVE' ? 'Активен' : status,
-                      style: context.text.bodyMedium?.copyWith(
+                      style: context.text.bodyMedium.copyWith(
                         color: status == 'ACTIVE'
                             ? Colors.green
                             : context.color.secondaryText,

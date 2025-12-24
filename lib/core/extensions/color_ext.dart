@@ -7,6 +7,7 @@ extension ColorExtension on Color {
 
   static Color byIndex(int id) {
     const colors = Colors.primaries;
-    return colors[id % colors.length];
+    int hash = id ^ (id >> 16);
+    return colors[hash.abs() % colors.length];
   }
 }

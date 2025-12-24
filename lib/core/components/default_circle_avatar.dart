@@ -9,34 +9,58 @@ class DefaultCircleAvatar extends StatelessWidget {
   final double radius;
   final TextStyle textStyle;
   final int? id;
+  final bool withShadow;
 
-  const DefaultCircleAvatar(
-      {super.key,
-      required this.name,
-      required this.radius,
-      required this.textStyle,
-      this.url,
-      this.id});
+  const DefaultCircleAvatar({
+    super.key,
+    required this.name,
+    required this.radius,
+    required this.textStyle,
+    this.url,
+    this.id,
+    this.withShadow = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    if (url == null || url!.isEmpty) {
-      return CircleAvatar(
-        radius: radius,
-        backgroundColor:
-            id != null ? ColorExtension.byIndex(id!) : context.color.tertiary,
-        child: Text(
-          name.isNotEmpty ? name[0].toUpperCase() : '?',
-          style: textStyle.copyWith(
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
+    final avatar = url == null || url!.isEmpty
+        ? _buildInitials(context)
+        : ShapedCachedImage(
+            url: url,
+            radius: radius,
+            errorWidget: _buildInitials(context),
+          );
+
+    if (!withShadow) return avatar;
+
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .15),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
-        ),
-      );
-    }
-    return ShapedCachedImage(
-      url: url,
+        ],
+      ),
+      child: avatar,
+    );
+  }
+
+  Widget _buildInitials(BuildContext context) {
+    return CircleAvatar(
       radius: radius,
+      backgroundColor: id != null
+          ? ColorExtension.byIndex(id!).withValues(alpha: 0.65)
+          : context.color.primary.withValues(alpha: 0.65),
+      child: Text(
+        name.isNotEmpty ? name[0].toUpperCase() : '?',
+        style: textStyle.copyWith(
+          fontWeight: FontWeight.w700,
+          color: Colors.white,
+        ),
+      ),
     );
   }
 }

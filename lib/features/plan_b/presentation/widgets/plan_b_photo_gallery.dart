@@ -86,7 +86,7 @@ class _PlanBPhotoGalleryState extends State<PlanBPhotoGallery> {
                               const VerticalGap(8),
                               Text(
                                 'Не удалось загрузить фото',
-                                style: context.text.bodySmall?.copyWith(
+                                style: context.text.bodySmall.copyWith(
                                   color: context.color.secondaryText,
                                 ),
                               ),
