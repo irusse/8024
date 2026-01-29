@@ -45,7 +45,6 @@ class PrivateChatCubit extends Cubit<PrivateChatState>
       if (notification.type == NotificationConstants.messageReceived) {
         final payload = jsonDecode(notification.payload ?? "{}");
 
-        AppLogger.info(payload.toString());
         final conversationId = payload['conversationId'] as int?;
         final senderId = payload['senderId'] as int?;
 

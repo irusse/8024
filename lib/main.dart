@@ -37,16 +37,14 @@ void main() async {
 
   await getIt<FcmCubit>().init();
   await getIt<NotificationService>().init();
-  
-  // Инициализируем AppLifecycleObserver
+
   final lifecycleObserver = getIt<AppLifecycleObserver>();
   WidgetsBinding.instance.addObserver(lifecycleObserver);
-  
+
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   runApp(BlocProvider.value(
-    value: getIt<ThemeCubit>()
-      ..loadTheme(),
+    value: getIt<ThemeCubit>()..loadTheme(),
     child: const MyApp(),
   ));
 }
