@@ -4,14 +4,14 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:neighbours/core/components/icon_text_span.dart';
 import 'package:neighbours/core/components/shaped_cached_image.dart';
-import 'package:neighbours/core/domain/entities/event/event_entity.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/router/app_routes.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
 
 import '../../../../core/components/custom_gap.dart';
 
 class EventCard extends StatelessWidget {
-  final FullEvent event;
+  final EventEntity event;
 
   const EventCard({super.key, required this.event});
 
@@ -26,7 +26,7 @@ class EventCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('yy.MM.dd HH:mm');
     return GestureDetector(
-      onTap: () => context.push(AppRoutePath.eventDetails, extra: event),
+      onTap: () => context.push(AppRouteBuilder.eventDetails(event.id)),
       child: Container(
           margin: const EdgeInsets.only(bottom: 8),
           decoration: BoxDecoration(

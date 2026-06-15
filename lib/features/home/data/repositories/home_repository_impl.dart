@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
-import 'package:neighbours/core/domain/entities/user/user_entity.dart';
 import 'package:neighbours/core/error/failures.dart';
 import 'package:neighbours/features/home/data/datasources/home_remote_datasource.dart';
 import '../../domain/repositories/home_repository.dart';
@@ -37,26 +36,6 @@ class HomeRepositoryImpl implements HomeRepository {
     return result.fold(
       (failure) => Left(failure),
       (success) => Right(success),
-    );
-  }
-
-  @override
-  Future<Either<Failure, UserEntity>> submitProfile({
-    required String name,
-    required String surname,
-    required String email,
-    XFile? image,
-  }) async {
-    final result = await _remoteDataSource.submitProfile(
-      name: name,
-      surname: surname,
-      email: email,
-      image: image,
-    );
-
-    return result.fold(
-      (failure) => Left(failure),
-      (userModel) => Right(userModel.toEntity()),
     );
   }
 

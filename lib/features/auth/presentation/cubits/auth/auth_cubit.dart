@@ -70,7 +70,6 @@ class AuthCubit extends Cubit<AuthState> {
       )),
       (_) => emit(state.copyWith(
         verifyState: const ApiState.success(null),
-        isAuthenticated: true,
       )),
     );
   }

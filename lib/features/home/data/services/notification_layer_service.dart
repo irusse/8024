@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
+import 'package:neighbours/features/event/data/models/event/event_model.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
 import 'package:neighbours/features/home/data/services/layer_service.dart';
-import '../../../../core/data/models/event/event_model.dart';
-import '../../../../core/domain/entities/event/event_entity.dart';
 import 'map_icon_service.dart';
 
 @injectable
@@ -27,7 +27,7 @@ class NotificationLayerService extends LayerService {
   // Минимальный зум при котором видны точки/кластеры
   static const double minZoom = 14;
 
-  static const double targetDp = 48; // целевой размер иконки на экране
+  static const double targetDp = 20; // целевой размер иконки на экране
 
   double get _dpr =>
       WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
@@ -74,7 +74,7 @@ class NotificationLayerService extends LayerService {
   /// Обновляет данные уведомлений на карте
   Future<void> updateData(
     MapboxMap? mapboxMap,
-    Map<int, EventEntity> notifications,
+    List<EventEntity> notifications,
   ) async {
     if (mapboxMap == null) return;
     final style = mapboxMap.style;
@@ -122,7 +122,7 @@ class NotificationLayerService extends LayerService {
           ],
           iconImageExpression: ["get", "category_icon_id"],
           iconColor: iconColor,
-          iconSize: 0.45,
+          iconSize: 1,
           iconAllowOverlap: true,
           iconIgnorePlacement: true,
           iconAnchor: IconAnchor.CENTER),
@@ -160,55 +160,42 @@ class NotificationLayerService extends LayerService {
 
   Future<void> _loadNotificationIcons(
     StyleManager style,
-    Map<int, EventEntity> notifications,
+    List<EventEntity> notifications,
   ) async {
-    final unique = <int, String>{};
-    for (final n in notifications.values) {
-      if (n.category.icon.isNotEmpty) unique[n.category.id] = n.category.icon;
-    }
+    final unique = {
+      for (final n in notifications)
+        if (n.category.icon.isNotEmpty) n.category.id: n.category.icon,
+    };
 
-    for (final entry in unique.entries) {
+    await Future.wait(unique.entries.map((entry) async {
       final id = 'icon_${entry.key}';
-
       try {
+        final imageExists = await style.hasStyleImage(id);
+        if (imageExists) return;
+
         final bytes = await _mapIconService.loadSvgIcon(
           entry.value,
-          size: _iconPx.toDouble(), // растр под DPR
+          size: _iconPx.toDouble(),
         );
-        if (bytes == null) continue; // важно: continue, а не return
+        if (bytes == null) return;
 
         final img = MbxImage(width: _iconPx, height: _iconPx, data: bytes);
-
-        await style.addStyleImage(
-          id,
-          _dpr,
-          img,
-          true,
-          [],
-          [],
-          null,
-        );
+        style.addStyleImage(id, _dpr, img, true, [], [], null);
       } catch (e) {
         debugPrint('Icon load failed for ${entry.key}: $e');
       }
-    }
+    }));
   }
 
   /// Создает GeoJSON из уведомлений
   Map<String, dynamic> _createGeoJsonFromNotifications(
-    Map<int, EventEntity> notifications,
+    List<EventEntity> notifications,
   ) {
-    final features = <Map<String, dynamic>>[];
-
-    for (final notification in notifications.values) {
-      final notificationModel = EventModel.fromEntity(notification);
-      final feature = _createFeatureFromNotification(notificationModel);
-      features.add(feature);
-    }
-
     return {
       "type": "FeatureCollection",
-      "features": features,
+      "features": notifications
+          .map((e) => _createFeatureFromNotification(EventModel.fromEntity(e)))
+          .toList(),
     };
   }
 
@@ -270,6 +257,34 @@ class NotificationLayerService extends LayerService {
         ],
         circleStrokeWidth: 3,
       ),
+    );
+  }
+
+  /// Показывает все слои уведомлений
+  Future<void> showAllLayers(StyleManager style) async {
+    await setLayersVisibility(
+      style,
+      [
+        notificationsClustersLayerId,
+        notificationsClusterCountLayerId,
+        notificationsUnclusteredLayerId,
+        notificationsIconsLayerId,
+      ],
+      true,
+    );
+  }
+
+  /// Скрывает все слои уведомлений
+  Future<void> hideAllLayers(StyleManager style) async {
+    await setLayersVisibility(
+      style,
+      [
+        notificationsClustersLayerId,
+        notificationsClusterCountLayerId,
+        notificationsUnclusteredLayerId,
+        notificationsIconsLayerId,
+      ],
+      false,
     );
   }
 }

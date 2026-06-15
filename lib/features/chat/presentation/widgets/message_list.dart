@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:neighbours/core/components/default_loading_overlay.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
 
@@ -67,19 +68,7 @@ class MessageList extends StatelessWidget {
       itemCount: messages.length + extra,
       itemBuilder: (context, index) {
         if (isLoadingMore && index == messages.length) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Center(
-              child: SizedBox(
-                height: 24,
-                width: 24,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: context.color.primary,
-                ),
-              ),
-            ),
-          );
+          return const DefaultLoadingOverlay();
         }
 
         final message = messages[index];
@@ -96,6 +85,7 @@ class MessageList extends StatelessWidget {
               message: message,
               userId: context.read<UserCubit>().state.user.id,
             ),
+
           ],
         );
       },

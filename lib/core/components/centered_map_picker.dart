@@ -13,14 +13,13 @@ class CenteredMapPicker extends StatefulWidget {
   final Widget centralWidget;
   final ValueChanged<Point> onCameraChange;
   final LatLng? initialCoordinates;
-  final ValueChanged<LatLng>? onReset;
 
-  const CenteredMapPicker(
-      {super.key,
-      required this.centralWidget,
-      required this.onCameraChange,
-      this.initialCoordinates,
-      this.onReset});
+  const CenteredMapPicker({
+    super.key,
+    required this.centralWidget,
+    required this.onCameraChange,
+    this.initialCoordinates,
+  });
 
   @override
   State<CenteredMapPicker> createState() => _CenteredMapPickerState();
@@ -40,11 +39,16 @@ class _CenteredMapPickerState extends State<CenteredMapPicker> {
 
   Future<void> _prepareInitialCamera() async {
     LatLng? target = widget.initialCoordinates;
-
+    _initialCamera = MapCameraUtils.defaultCameraOptions();
+    final userLocationCubit = context.read<UserLocationCubit>();
     if (target == null) {
-      final position = await context.read<UserLocationCubit>().getPosition();
+      // Получаем координаты пользователя
+      final position = await userLocationCubit.getPosition();
       if (position != null) {
         target = LatLng(position.latitude, position.longitude);
+      } else {
+        // Если не удадлось получить то берем из кэша
+        target = await userLocationCubit.fetchLocalLocation();
       }
     }
     if (target != null) {

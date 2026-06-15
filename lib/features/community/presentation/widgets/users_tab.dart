@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:neighbours/core/components/default_loading_overlay.dart';
 import 'package:neighbours/core/components/participant_item.dart';
-import 'package:neighbours/features/community/presentation/widgets/error_with_try_btn.dart';
+import 'package:neighbours/core/extensions/full_name_ext.dart';
+import 'package:neighbours/core/state/api_state.dart';
+import 'package:neighbours/core/components/error_with_try_btn.dart';
 
 import '../cubits/community/community_cubit.dart';
 
@@ -18,15 +20,15 @@ class UsersTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<CommunityCubit, CommunityState>(
       builder: (context, state) {
-        if (state.isParticipantsLoading && state.participants.isEmpty) {
+        if (state.participantsState.isLoading) {
           return const DefaultLoadingOverlay(
             transparent: true,
           );
         }
 
-        if (state.participantsError != null && state.participants.isEmpty) {
+        if (state.participantsState.isFailure) {
           return ErrorWithTryBtn(
-              error: state.participantsError!,
+              error: state.participantsState.error!,
               onErrorClick: () => context
                   .read<CommunityCubit>()
                   .fetchCommunityParticipants(communityId));

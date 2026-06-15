@@ -1,6 +1,7 @@
 abstract class Assets {
   static final icons = _Icons();
   static final images = _Images();
+  static final lotties = _Lotties();
 }
 
 class _Icons {
@@ -20,6 +21,7 @@ class _Icons {
   final sirenRounded = '$_basePath/siren_rounded.svg';
   final shieldUp = '$_basePath/shield_up.svg';
   final reset = '$_basePath/reset.svg';
+  final chatCircle = '$_basePath/chat_circle.svg';
   final notificationUnread = '$_basePath/notification_unread.svg';
   final pinList = '$_basePath/pin_list.svg';
   final warning = '$_basePath/warning.svg';
@@ -29,4 +31,10 @@ class _Icons {
 class _Images {
   static const _basePath = 'assets/images';
   final square = '$_basePath/square.png';
+}
+
+class _Lotties {
+  static const _basePath = 'assets/lotties';
+  final warning = '$_basePath/warning_animation.json';
+  final notFound = '$_basePath/not_found.json';
 }

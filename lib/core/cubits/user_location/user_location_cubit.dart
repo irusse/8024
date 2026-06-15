@@ -28,9 +28,9 @@ class UserLocationCubit extends Cubit<UserLocationState> {
       emit(const UserLocationState.loading());
 
       const LocationSettings locationSettings = LocationSettings(
-        accuracy: LocationAccuracy.high,
-        distanceFilter: 10,
-      );
+          accuracy: LocationAccuracy.high,
+          distanceFilter: 10,
+          timeLimit: Duration(seconds: 5));
 
       Position position = await Geolocator.getCurrentPosition(
           locationSettings: locationSettings);
@@ -39,7 +39,17 @@ class UserLocationCubit extends Cubit<UserLocationState> {
       await _updateUserLocation(coordinates);
 
       return coordinates;
+    } on TimeoutException {
+      final cachedLocation = await fetchLocalLocation();
+      if (cachedLocation != null) {
+        await _updateUserLocation(cachedLocation);
+      }
+      return cachedLocation;
     } on LocationServiceDisabledException {
+      final cachedLocation = await fetchLocalLocation();
+      if (cachedLocation != null) {
+        await _updateUserLocation(cachedLocation);
+      }
       _serviceDisabled();
       return null;
     } catch (e) {

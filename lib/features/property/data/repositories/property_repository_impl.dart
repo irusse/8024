@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
 import 'package:neighbours/features/property/data/datasources/property_remote_datasource.dart';
 import 'package:neighbours/features/property/domain/entities/property/property_entity.dart';
+import 'package:neighbours/features/property/domain/entities/light_property/light_property_entity.dart';
 import 'package:neighbours/features/property/domain/entities/user_verified_property/user_verified_property_entity.dart';
 import 'package:neighbours/features/property/domain/repositories/property_repository.dart';
 import 'package:neighbours/core/error/failures.dart';
@@ -105,15 +106,13 @@ class PropertyRepositoryImpl implements PropertyRepository {
   }
 
   @override
-  Future<Either<Failure, PropertyEntity>> verifyProperty({
+  Future<Either<Failure, PropertyEntity>> confirmPropertyByCode({
     required int propertyId,
-    required double userLatitude,
-    required double userLongitude,
+    required String code,
   }) async {
-    final result = await _remoteDataSource.verifyProperty(
+    final result = await _remoteDataSource.confirmPropertyByCode(
       propertyId: propertyId,
-      userLatitude: userLatitude,
-      userLongitude: userLongitude,
+      code: code,
     );
 
     return result.fold(
@@ -131,6 +130,28 @@ class PropertyRepositoryImpl implements PropertyRepository {
       (failure) => Left(failure),
       (modelsList) =>
           Right(modelsList.map((model) => model.toEntity()).toList()),
+    );
+  }
+
+  @override
+  Future<Either<Failure, PropertyEntity>> getPropertyById(int id) async {
+    final result = await _remoteDataSource.getPropertyById(id);
+
+    return result.fold(
+      (failure) => Left(failure),
+      (propertyModel) => Right(propertyModel.toEntity()),
+    );
+  }
+
+  @override
+  Future<Either<Failure, List<LightPropertyEntity>>> getUserProperties(int userId) async {
+    final result = await _remoteDataSource.getUserProperties(userId);
+    
+    return result.fold(
+      (failure) => Left(failure),
+      (propertyModels) => Right(
+        propertyModels.map((model) => model.toEntity()).toList(),
+      ),
     );
   }
 }

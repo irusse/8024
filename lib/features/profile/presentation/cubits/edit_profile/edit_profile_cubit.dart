@@ -5,14 +5,14 @@ import 'package:neighbours/core/di/injection.dart';
 import 'package:neighbours/core/domain/entities/user/user_entity.dart';
 import 'package:neighbours/core/services/image_service.dart';
 
-import '../../../../../core/mixins/form_validation_mixin.dart';
+import '../../mixins/user_data_validation_mixin.dart';
 
 part 'edit_profile_cubit.freezed.dart';
 
 part 'edit_profile_state.dart';
 
 class EditProfileCubit extends Cubit<EditProfileState>
-    with FormValidationMixin {
+    with UserDataValidationMixin {
   late UserEntity _originalUser;
 
   EditProfileCubit(UserEntity user)

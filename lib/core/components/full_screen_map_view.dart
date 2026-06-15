@@ -2,7 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import 'package:neighbours/core/components/default_app_bar.dart';
+import 'package:neighbours/core/components/floating_app_bar.dart';
 import 'package:neighbours/core/cubits/theme/theme_cubit.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/services/marker_service.dart';
@@ -74,17 +74,20 @@ class _FullScreenMapViewState extends State<FullScreenMapView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const DefaultAppBar(showBackButton: true),
-      body: MapWidget(
-        onMapCreated: _onMapCreated,
-        cameraOptions: CameraOptions(
-          center: Point(
-            coordinates: Position(widget.longitude, widget.latitude),
+        body: Stack(
+      children: [
+        MapWidget(
+          onMapCreated: _onMapCreated,
+          cameraOptions: CameraOptions(
+            center: Point(
+              coordinates: Position(widget.longitude, widget.latitude),
+            ),
+            zoom: 15,
           ),
-          zoom: 15,
+          styleUri: context.read<ThemeCubit>().getThemeMap,
         ),
-        styleUri: context.read<ThemeCubit>().getThemeMap,
-      ),
-    );
+        FloatingAppBar(title: "")
+      ],
+    ));
   }
 }

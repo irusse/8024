@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/components/primary_button.dart';
-import 'package:neighbours/core/domain/entities/community/community_entity.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
+import 'package:neighbours/features/community/domain/entities/community/community_entity.dart';
 
 class JoinCommunitySuccessDialog extends StatelessWidget {
   final CommunityEntity communityEntity;

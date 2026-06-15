@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/components/primary_button.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
-import 'package:neighbours/core/services/snackbar_service.dart';
+import 'package:neighbours/core/services/clipboard_service.dart';
 import 'package:neighbours/core/components/reusable_text_field.dart';
 import '../../../../core/utils/sheet_utils.dart';
 
@@ -26,14 +25,8 @@ class InviteNeighborsDialog extends StatelessWidget {
           controller: TextEditingController(text: communityCode),
           readOnly: true,
           hintText: '',
-          onTap: () {
-            Clipboard.setData(ClipboardData(text: communityCode)).then((_) {
-              if (context.mounted) {
-                context.snackbar.info(context, 'Скопировано в буфер обмена',
-                    position: SnackBarPosition.top);
-              }
-            });
-          },
+          onTap: () => ClipboardService.copyToClipboard(
+              context: context, text: communityCode),
         ),
         const VerticalGap(16),
         PrimaryButton(

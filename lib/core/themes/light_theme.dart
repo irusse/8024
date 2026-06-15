@@ -10,6 +10,6 @@ ThemeData createLightTheme() {
         ThemeTextStyles.light
       ],
       appBarTheme: const AppBarTheme(
-        color: Colors.transparent,
+        backgroundColor: Colors.transparent,
       ));
 }

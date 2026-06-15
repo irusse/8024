@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:neighbours/core/error/failures.dart';
 import 'package:neighbours/features/property/domain/entities/property/property_entity.dart';
+import 'package:neighbours/features/property/domain/entities/light_property/light_property_entity.dart';
 import 'package:neighbours/features/property/domain/entities/user_verified_property/user_verified_property_entity.dart';
 
 abstract class PropertyRepository {
@@ -38,12 +39,16 @@ abstract class PropertyRepository {
     required double radius,
   });
 
-  Future<Either<Failure, PropertyEntity>> verifyProperty({
+  Future<Either<Failure, PropertyEntity>> confirmPropertyByCode({
     required int propertyId,
-    required double userLatitude,
-    required double userLongitude,
+    required String code,
   });
 
   Future<Either<Failure, List<UserVerifiedPropertyEntity>>>
       getUserVerifications();
+
+  Future<Either<Failure, PropertyEntity>> getPropertyById(int id);
+
+  /// Получить список объектов пользователя
+  Future<Either<Failure, List<LightPropertyEntity>>> getUserProperties(int userId);
 }

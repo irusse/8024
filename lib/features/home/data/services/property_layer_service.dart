@@ -213,33 +213,59 @@ class PropertyLayerService extends LayerService {
     StyleManager style,
     Map<int, PropertyEntity> properties,
   ) async {
-    final dpr = MediaQuery.of(context).devicePixelRatio; // <- точный DPR
-    const double targetDp = 56; // <- желаемый логический размер на карте
+    final dpr = MediaQuery.of(context).devicePixelRatio;
+    const double targetDp = 56;
     final int pxSize = (targetDp * dpr).round();
-    for (final property in properties.values) {
-      final String imageId = property.id.toString();
+
+    final futures = properties.values.map((property) async {
+      if (property.photo.isEmpty) return;
+
+      final imageId = property.id.toString();
+
       try {
-        if (property.photo.isEmpty) continue;
-        final bytes = await _mapIconService.loadCircularNetworkImage(
+        final bytes = await _mapIconService.loadNetworkAvatar(
           property.photo,
           size: pxSize.toDouble(),
           borderColor: property.verificationStatusColor(context),
           borderWidth: 2 * dpr,
         );
-        if (bytes == null) continue;
+        if (bytes == null) return;
+
         final mbxImage = MbxImage(width: pxSize, height: pxSize, data: bytes);
-        await style.addStyleImage(
-          imageId,
-          dpr,
-          mbxImage,
-          false,
-          [],
-          [],
-          null,
-        );
-      } catch (e) {
-        debugPrint('Error loading photo for property ${property.id}: $e');
+        await style.addStyleImage(imageId, dpr, mbxImage, false, [], [], null);
+      } catch (e, st) {
+        debugPrint('Error loading photo for property $imageId: $e\n$st');
       }
-    }
+    });
+
+    await Future.wait(futures);
+  }
+
+  /// Показывает все слои недвижимости
+  Future<void> showAllLayers(StyleManager style) async {
+    await setLayersVisibility(
+      style,
+      [
+        propertiesClustersLayerId,
+        propertiesClusterCountLayerId,
+        propertiesUnclusteredLayerId,
+        propertyUnclusteredHaloLayer,
+      ],
+      true,
+    );
+  }
+
+  /// Скрывает все слои недвижимости
+  Future<void> hideAllLayers(StyleManager style) async {
+    await setLayersVisibility(
+      style,
+      [
+        propertiesClustersLayerId,
+        propertiesClusterCountLayerId,
+        propertiesUnclusteredLayerId,
+        propertyUnclusteredHaloLayer,
+      ],
+      false,
+    );
   }
 }

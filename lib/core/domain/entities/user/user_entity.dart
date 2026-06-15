@@ -1,11 +1,11 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:neighbours/core/domain/entities/community/community_entity.dart';
 import 'package:neighbours/core/mixins/has_name_mixin.dart';
+import 'package:neighbours/features/community/domain/entities/community/community_entity.dart';
 
 part 'user_entity.freezed.dart';
 
 @freezed
-class UserEntity with _$UserEntity implements HasName {
+abstract class UserEntity with _$UserEntity implements HasName {
   const factory UserEntity({
     required int id,
     required String firstName,

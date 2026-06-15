@@ -4,6 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:neighbours/core/error/failures.dart';
 import 'package:neighbours/core/exceptions/exceptions.dart';
+import 'package:neighbours/core/logging/logger.dart';
 
 class NetworkHandler {
   static Future<Either<Failure, T>> handleRequest<T>(
@@ -20,8 +21,9 @@ class NetworkHandler {
       return Left(ServerFailure(e.message, e.statusCode));
     } on NetworkException catch (e) {
       return Left(NetworkFailure(e.message));
-    } catch (e) {
-      return Left(ServerFailure('Неизвестная ошибка: $e'));
+    } catch (e,st) {
+      AppLogger.info(st.toString());
+     return Left(BadRequestFailure(e.toString()));
     }
   }
 
@@ -57,7 +59,7 @@ class NetworkHandler {
           case 403:
             return const AuthFailure('Доступ запрещен');
           case 404:
-            return const ServerFailure('Ресурс не найден');
+            return const NotFoundFailure('Ресурс не найден');
           case 500:
             return const ServerFailure('Внутренняя ошибка сервера');
           default:

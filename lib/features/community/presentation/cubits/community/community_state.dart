@@ -1,10 +1,18 @@
 part of 'community_cubit.dart';
 
 @freezed
-class CommunityState with _$CommunityState {
+abstract class CommunityState with _$CommunityState {
   const factory CommunityState({
-    @Default(false) bool isParticipantsLoading,
+    CommunityEntity? selectedCommunity,
+    @Default([]) List<CommunityEntity> communities,
     @Default([]) List<ParticipantEntity> participants,
-    String? participantsError,
+    @Default(ApiState<List<ParticipantEntity>>.initial())
+    ApiState<List<ParticipantEntity>> participantsState,
+    @Default(ApiState<CommunityEntity>.initial())
+    ApiState<CommunityEntity> fetchCommunityState,
+    @Default(ApiState<UserEntity>.initial())
+    ApiState<UserEntity> joinCommunityState,
+    @Default(ApiState<UserEntity>.initial())
+    ApiState<UserEntity> createCommunityState,
   }) = _CommunityState;
 }

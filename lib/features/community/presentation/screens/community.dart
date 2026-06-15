@@ -1,21 +1,27 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/components/default_app_bar.dart';
-import 'package:neighbours/core/domain/entities/community/community_entity.dart';
+import 'package:neighbours/core/components/default_loading_overlay.dart';
+import 'package:neighbours/core/cubits/user/user_cubit.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
-
-import '../../../../core/services/snackbar_service.dart';
+import 'package:neighbours/core/state/api_state.dart';
+import 'package:neighbours/core/components/error_with_try_btn.dart';
+import '../../../../core/services/clipboard_service.dart';
 import '../cubits/community/community_cubit.dart';
 import '../widgets/notifications_tab.dart';
 import '../widgets/events_tab.dart';
+import '../widgets/completed_events_tab.dart';
 import '../widgets/users_tab.dart';
 
 class Community extends StatefulWidget {
-  final CommunityEntity communityEntity;
+  final int communityId;
 
-  const Community({super.key, required this.communityEntity});
+  const Community({
+    super.key,
+    required this.communityId,
+  });
 
   @override
   State<Community> createState() => _CommunityState();
@@ -25,95 +31,143 @@ class _CommunityState extends State<Community> {
   @override
   void initState() {
     super.initState();
-    context
-        .read<CommunityCubit>()
-        .fetchCommunityParticipants(widget.communityEntity.id);
+    final communityCubit = context.read<CommunityCubit>();
+    final userCubit = context.read<UserCubit>();
+
+    // ищем сообщество среди уже загруженных у пользователя
+    final existingCommunity = userCubit.state.user.communities.firstWhereOrNull(
+      (c) => c.id == widget.communityId,
+    );
+
+    if (existingCommunity != null) {
+      // если нашли — сразу обновляем cubit
+      communityCubit.updateCommunity(existingCommunity);
+    } else {
+      // если не нашли — грузим с сервера
+      communityCubit.getCommunityById(widget.communityId);
+    }
+
+    // в фоне всё равно грузим участников
+    communityCubit.fetchCommunityParticipants(widget.communityId);
   }
 
   @override
   Widget build(BuildContext context) {
-    final communityEntity = widget.communityEntity;
-    return Scaffold(
-      appBar: DefaultAppBar(
-        height: 72,
-        showBackButton: true,
-        titleWidget: Expanded(
-            child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-                child: Text(
-              communityEntity.name,
-              overflow: TextOverflow.ellipsis,
-              style: context.text.titleSmall,
-            )),
-            const VerticalGap(4),
-            Text(
-              'ID: ${communityEntity.id.toString()}',
-              style: context.text.bodySmall
-                  .copyWith(color: context.color.secondaryText),
+    return BlocBuilder<CommunityCubit, CommunityState>(
+      builder: (context, state) {
+        if (state.selectedCommunity == null &&
+            state.fetchCommunityState.isLoading) {
+          return const Scaffold(body: DefaultLoadingOverlay());
+        }
+
+        // Ошибка + нет данных
+        if (state.fetchCommunityState.isFailure &&
+            state.selectedCommunity == null) {
+          return Scaffold(
+            appBar: const DefaultAppBar(
+              title: 'Ошибка',
+              showBackButton: true,
             ),
-          ],
-        )),
-        actions: [
-          GestureDetector(
-            child: Text(
-              communityEntity.joinCode,
-              style: context.text.bodyMedium.copyWith(
-                  color: context.color.primary, fontWeight: FontWeight.w500),
+            body: ErrorWithTryBtn(
+              error: 'Не удалось загрузить данные сообщества',
+              onErrorClick: () => context
+                  .read<CommunityCubit>()
+                  .getCommunityById(widget.communityId),
             ),
-            onTap: () {
-              Clipboard.setData(ClipboardData(text: communityEntity.joinCode))
-                  .then((_) {
-                if (context.mounted) {
-                  context.snackbar.info(context, 'Скопировано в буфер обмена',
-                      position: SnackBarPosition.bottom);
-                }
-              });
-            },
-          )
-        ],
-      ),
-      body: DefaultTabController(
-        length: 3,
-        child: Column(
-          children: [
-            TabBar(
-              tabs: const [
-                Tab(text: 'Оповещения'),
-                Tab(text: 'Мероприятия'),
-                Tab(text: 'Участники'),
-              ],
-              labelStyle:
-                  context.text.bodyMedium.copyWith(fontWeight: FontWeight.w500),
-              unselectedLabelStyle: context.text.bodyMedium.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: context.color.secondaryText),
-              indicatorPadding: EdgeInsets.zero,
-              indicatorColor: context.color.primary,
-              padding: EdgeInsets.zero,
-              labelPadding: EdgeInsets.zero,
-              dividerColor: context.color.secondary,
-            ),
-            Expanded(
-              child: TabBarView(
+          );
+        }
+        final communityEntity = state.selectedCommunity!;
+        final numberOfParticipants = state.participants.length;
+        final usersTabTitle = state.participantsState.isLoading ||
+                state.participantsState.isFailure
+            ? 'Участники'
+            : 'Участники $numberOfParticipants';
+
+        return Scaffold(
+          appBar: DefaultAppBar(
+            height: 72,
+            showBackButton: true,
+            titleWidget: Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  NotificationsTab(
-                    communityDescription: communityEntity.description,
-                    communityId: communityEntity.id,
+                  Expanded(
+                    child: Text(
+                      communityEntity.name,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.text.titleSmall,
+                    ),
                   ),
-                  EventsTab(
-                    communityId: communityEntity.id,
-                  ),
-                  UsersTab(
-                    communityId: communityEntity.id,
+                  const VerticalGap(4),
+                  Text(
+                    'ID: ${communityEntity.id}',
+                    style: context.text.bodySmall
+                        .copyWith(color: context.color.secondaryText),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
+            actions: [
+              GestureDetector(
+                child: Text(
+                  communityEntity.joinCode,
+                  style: context.text.bodyMedium.copyWith(
+                    color: context.color.primary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                onTap: () => ClipboardService.copyToClipboard(
+                    context: context, text: communityEntity.joinCode),
+              )
+            ],
+          ),
+          body: DefaultTabController(
+            length: 4,
+            child: Column(
+              children: [
+                TabBar(
+                  tabs: [
+                    const Tab(text: 'Оповещения'),
+                    const Tab(text: 'Мероприятия'),
+                    const Tab(text: 'Завершенные'),
+                    Tab(text: usersTabTitle),
+                  ],
+                  labelStyle: context.text.bodyMedium
+                      .copyWith(fontWeight: FontWeight.w500),
+                  unselectedLabelStyle: context.text.bodyMedium.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: context.color.secondaryText,
+                  ),
+                  indicatorColor: context.color.primary,
+                  labelPadding: const EdgeInsets.symmetric(horizontal: 16),
+                  dividerColor: context.color.secondary,
+                  isScrollable: true,
+                  tabAlignment: TabAlignment.start,
+                ),
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      NotificationsTab(
+                        communityDescription: communityEntity.description,
+                        communityId: communityEntity.id,
+                      ),
+                      EventsTab(
+                        communityId: communityEntity.id,
+                      ),
+                      CompletedEventsTab(
+                        communityId: communityEntity.id,
+                      ),
+                      UsersTab(
+                        communityId: communityEntity.id,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

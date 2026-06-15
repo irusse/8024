@@ -5,11 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
+import 'package:neighbours/core/themes/theme.dart';
+import 'package:neighbours/features/event/data/models/event/event_model.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
 import 'package:neighbours/features/home/data/services/layer_service.dart';
 
 import '../../../../core/constants/assets.dart';
-import '../../../../core/data/models/event/event_model.dart';
-import '../../../../core/domain/entities/event/event_entity.dart';
 import 'map_icon_service.dart';
 
 @injectable
@@ -29,12 +30,15 @@ class EventLayerService extends LayerService {
   // Минимальный зум при котором видны точки/кластеры
   static const double minZoom = 14;
 
-  static const double targetDp = 40; // целевой размер иконки на экране
+  static const double targetIconDp = 24; // целевой размер иконки на экране
+  static const double targetImageDp = 80; // целевой размер иконки на экране
 
   double get _dpr =>
       WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-  int get _iconPx => (targetDp * _dpr).round();
+  int get _iconPx => (targetIconDp * _dpr).round();
+
+  int get _imagePx => (targetImageDp * _dpr).round();
 
   @override
   Future<void> initializeLayers(
@@ -52,7 +56,7 @@ class EventLayerService extends LayerService {
         eventsUnclusteredLayerId
       ],
       cluster: true,
-      clusterRadius: 35,
+      clusterRadius: 20,
     );
 
     await _addSquareIconToStyle(style);
@@ -104,12 +108,12 @@ class EventLayerService extends LayerService {
         16,
         [
           "literal",
-          [0, 1.8]
+          [0, 2]
         ],
         21,
         [
           "literal",
-          [0, 3]
+          [0, 3.2]
         ],
       ],
       textSize: context.text.labelLarge.fontSize,
@@ -184,6 +188,8 @@ class EventLayerService extends LayerService {
   Map<String, dynamic> _createFeatureFromEvent(EventModel event) {
     final categoryColorHex = event.category.color;
     final iconImageId = 'icon_${event.category.id}';
+    final hasEventImage = event.image != null && event.image!.isNotEmpty;
+    final eventImageId = hasEventImage ? 'event_image_${event.id}' : null;
 
     final properties = {
       ...event.toJson(),
@@ -191,6 +197,8 @@ class EventLayerService extends LayerService {
       "category_icon": event.category.icon,
       "image": event.image,
       "category_icon_id": iconImageId,
+      "event_image_id": eventImageId,
+      "has_event_image": hasEventImage,
       "square_image": squareImage,
       "short_title": event.title.length > 20
           ? "${event.title.substring(0, 17)}…"
@@ -211,7 +219,17 @@ class EventLayerService extends LayerService {
       id: eventsUnclusteredLayerId,
       sourceId: eventsSourceId,
       minZoom: minZoom,
-      iconImage: squareImage,
+      // Условное отображение: если есть изображение события - показываем его, иначе - квадратный фон
+      iconImageExpression: [
+        'case',
+        [
+          '==',
+          ['get', 'has_event_image'],
+          true
+        ],
+        ['get', 'event_image_id'],
+        squareImage
+      ],
       filter: [
         "all",
         [
@@ -224,20 +242,27 @@ class EventLayerService extends LayerService {
         ["linear"],
         ["zoom"],
         16,
-        0.5,
+        0.6,
         18,
         0.7,
-        21,
-        0.8,
       ],
-      // Масштаб при необходимости
       iconAllowOverlap: true,
       iconIgnorePlacement: true,
+      // Цвет применяется только для квадратного фона (когда нет изображения события)
       iconColorExpression: [
         'case',
-        ['has', 'category_color'],
-        ['get', 'category_color'],
-        '#FF5722'
+        [
+          '==',
+          ['get', 'has_event_image'],
+          true
+        ],
+        'rgba(255, 255, 255, 0)', // прозрачный для изображений
+        [
+          'case',
+          ['has', 'category_color'],
+          ['get', 'category_color'],
+          '#FF5722'
+        ]
       ],
     ));
   }
@@ -251,41 +276,38 @@ class EventLayerService extends LayerService {
           filter: [
             "all",
             ["has", "category_icon_id"],
+            // Показываем иконку только если нет изображения события
+            [
+              "!=",
+              ["get", "has_event_image"],
+              true
+            ],
           ],
           iconImageExpression: ["get", "category_icon_id"],
           iconColor: iconColor,
-          iconSize: 0.7,
+          iconSize: 1,
           iconAllowOverlap: true,
           iconIgnorePlacement: true,
           iconAnchor: IconAnchor.CENTER),
     );
   }
 
-  Map<String, dynamic> _createGeoJsonFromEvents(
-    Map<int, EventEntity> events,
-  ) {
-    final features = <Map<String, dynamic>>[];
-
-    for (final event in events.values) {
-      final eventModel = EventModel.fromEntity(event);
-      final feature = _createFeatureFromEvent(eventModel);
-      features.add(feature);
-    }
-
-    return {
-      "type": "FeatureCollection",
-      "features": features,
-    };
-  }
+  Map<String, dynamic> _createGeoJsonFromEvents(List<EventEntity> events) => {
+        "type": "FeatureCollection",
+        "features": events
+            .map((e) => _createFeatureFromEvent(EventModel.fromEntity(e)))
+            .toList(),
+      };
 
   Future<void> updateData(
     MapboxMap? mapboxMap,
-    Map<int, EventEntity> events,
+    List<EventEntity> events,
   ) async {
     if (mapboxMap == null) return;
     final style = mapboxMap.style;
-    await _loadEventIcons(style, events);
-    final geoJson = _createGeoJsonFromEvents(events);
+    final filteredEvents = events.where((event) => !event.isCompleted).toList();
+    await _loadEventIcons(style, filteredEvents);
+    final geoJson = _createGeoJsonFromEvents(filteredEvents);
     final geoJsonString = jsonEncode(geoJson);
 
     try {
@@ -300,49 +322,72 @@ class EventLayerService extends LayerService {
     }
   }
 
-  /// Загружает иконки для уведомлений
+  /// Загружает иконки и изображения для событий
   Future<void> _loadEventIcons(
     StyleManager style,
-    Map<int, EventEntity> events,
+    List<EventEntity> events,
   ) async {
-    // Собираем уникальные иконки
-    final uniqueIcons = <int, String>{};
-    for (final event in events.values) {
-      if (event.category.icon.isNotEmpty) {
-        uniqueIcons[event.category.id] = event.category.icon;
-      }
-    }
+    final uniqueIcons = <int, String>{
+      for (final e in events)
+        if (e.category.icon.isNotEmpty) e.category.id: e.category.icon,
+    };
 
-    // Загружаем каждую уникальную иконку
-    for (final entry in uniqueIcons.entries) {
-      final categoryId = entry.key;
-      final iconUrl = entry.value;
-      final iconImageId = 'icon_$categoryId';
+    // Иконки категорий
+    final iconFutures = uniqueIcons.entries.map((entry) async {
+      final id = 'icon_${entry.key}';
+      if (await style.hasStyleImage(id)) return;
+
+      final bytes = await _mapIconService.loadSvgIcon(
+        entry.value,
+        size: _iconPx.toDouble(),
+      );
+      if (bytes == null) return;
+
+      final img = MbxImage(width: _iconPx, height: _iconPx, data: bytes);
+      await style.addStyleImage(id, _dpr, img, true, [], [], null);
+    });
+
+    // Картинки событий
+    final imageFutures = events
+        .where((e) => e.image?.isNotEmpty == true)
+        .map((e) => _loadEventImages(style, e));
+
+    await Future.wait([...iconFutures, ...imageFutures]);
+  }
+
+  Future<void> _loadEventImages(StyleManager style, EventEntity event) async {
+    if (event.image != null && event.image!.isNotEmpty) {
+      final eventImageId = 'event_image_${event.id}';
 
       try {
-        // Проверяем, не загружена ли уже иконка
-        final imageExists = await style.hasStyleImage(iconImageId);
-        if (imageExists) continue;
+        // Проверяем, не загружено ли уже изображение
+        final imageExists = await style.hasStyleImage(eventImageId);
+        if (imageExists) return;
 
-        // Загружаем SVG иконку
-        final iconBytes = await _mapIconService.loadSvgIcon(iconUrl,
-            size: _iconPx.toDouble());
-        if (iconBytes != null) {
+        // Загружаем изображение события с зеленой обводкой
+        final imageBytes = await _mapIconService.loadNetworkAvatar(event.image!,
+            size: _imagePx.toDouble(),
+            shape: AvatarShape.rounded,
+            borderColor: CommonModeColors.green,
+            borderWidth: 5 * _dpr,
+            borderRadius: 2 * _dpr);
+
+        if (imageBytes != null) {
           // Создаем MbxImage для Mapbox
           final mbxImage = MbxImage(
-            width: _iconPx,
-            height: _iconPx,
-            data: iconBytes,
+            width: _imagePx,
+            height: _imagePx,
+            data: imageBytes,
           );
 
-          // Добавляем иконку в стиль карты
+          // Добавляем изображение в стиль карты
           await style.addStyleImage(
-            iconImageId,
+            eventImageId,
             _dpr,
             // scale
             mbxImage,
-            true,
-            // sdf
+            false,
+            // sdf = false для растровых изображений
             [],
             // stretchX
             [],
@@ -351,8 +396,38 @@ class EventLayerService extends LayerService {
           );
         }
       } catch (e) {
-        debugPrint('Error loading icon for category $categoryId: $e');
+        debugPrint('Error loading image for event ${event.id}: $e');
       }
     }
+  }
+
+  /// Показывает все слои событий
+  Future<void> showAllLayers(StyleManager style) async {
+    await setLayersVisibility(
+      style,
+      [
+        eventsClustersLayerId,
+        eventsClusterCountLayerId,
+        eventsUnclusteredLayerId,
+        eventsIconsLayerId,
+        eventsTitlesLayerId,
+      ],
+      true,
+    );
+  }
+
+  /// Скрывает все слои событий
+  Future<void> hideAllLayers(StyleManager style) async {
+    await setLayersVisibility(
+      style,
+      [
+        eventsClustersLayerId,
+        eventsClusterCountLayerId,
+        eventsUnclusteredLayerId,
+        eventsIconsLayerId,
+        eventsTitlesLayerId,
+      ],
+      false,
+    );
   }
 }

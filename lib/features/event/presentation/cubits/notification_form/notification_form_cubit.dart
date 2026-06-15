@@ -1,22 +1,25 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import 'package:neighbours/core/domain/entities/event/event_entity.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
 
 part 'notification_form_cubit.freezed.dart';
 
 part 'notification_form_state.dart';
 
 class NotificationFormCubit extends Cubit<NotificationFormState> {
-  final NotificationEvent? _originalEvent;
+  final EventEntity? _originalEvent;
 
-  NotificationFormCubit({NotificationEvent? event})
-      : _originalEvent = event,
+  NotificationFormCubit({
+    EventEntity? event,
+    double? defaultLatitude,
+    double? defaultLongitude,
+  })  : _originalEvent = event,
         super(NotificationFormState(
           id: event?.id ?? 0,
           title: event?.title ?? '',
-          latitude: event?.latitude ?? 0,
-          longitude: event?.longitude ?? 0,
+          latitude: event?.latitude ?? defaultLatitude ?? 0,
+          longitude: event?.longitude ?? defaultLongitude ?? 0,
           categoryId: event?.category.id,
           description: event?.description ?? '',
           image: event?.image,

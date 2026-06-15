@@ -206,4 +206,60 @@ abstract class LayerService {
       return [];
     }
   }
+
+  /// Показывает слой на карте (устанавливает visibility в "visible")
+  Future<void> showLayer(StyleManager style, String layerId) async {
+    try {
+      final exists = await style.styleLayerExists(layerId);
+      if (!exists) return;
+      
+      await style.setStyleLayerProperty(
+        layerId,
+        "visibility",
+        "visible",
+      );
+    } catch (e) {
+      debugPrint('Error showing layer $layerId: $e');
+    }
+  }
+
+  /// Скрывает слой на карте (устанавливает visibility в "none")
+  Future<void> hideLayer(StyleManager style, String layerId) async {
+    try {
+      final exists = await style.styleLayerExists(layerId);
+      if (!exists) return;
+      
+      await style.setStyleLayerProperty(
+        layerId,
+        "visibility",
+        "none",
+      );
+    } catch (e) {
+      debugPrint('Error hiding layer $layerId: $e');
+    }
+  }
+
+  /// Переключает видимость нескольких слоёв одновременно
+  Future<void> setLayersVisibility(
+    StyleManager style,
+    List<String> layerIds,
+    bool visible,
+  ) async {
+    final visibility = visible ? "visible" : "none";
+    
+    for (final layerId in layerIds) {
+      try {
+        final exists = await style.styleLayerExists(layerId);
+        if (!exists) continue;
+        
+        await style.setStyleLayerProperty(
+          layerId,
+          "visibility",
+          visibility,
+        );
+      } catch (e) {
+        debugPrint('Error setting visibility for layer $layerId: $e');
+      }
+    }
+  }
 }

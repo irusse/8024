@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:neighbours/core/components/custom_outlined_button.dart';
+import 'package:neighbours/core/components/default_loading_overlay.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/state/api_state.dart';
+import 'package:neighbours/core/components/error_with_try_btn.dart';
 import 'package:neighbours/features/property/presentation/widgets/resource_item.dart';
 
 import '../../../../core/components/custom_button.dart';
@@ -35,50 +36,30 @@ class PropertyResources extends StatelessWidget {
       },
       builder: (context, state) {
         if (state.fetchState.isLoading) {
-          return Center(
-            child: CircularProgressIndicator(
-              color: context.color.primary,
-            ),
-          );
+          return const DefaultLoadingOverlay();
         }
 
         if (state.fetchState.isFailure) {
-          return Column(
-            children: [
-              const VerticalGap(16),
-              Text(
-                '${state.error}',
-                style: context.text.bodyMedium.copyWith(
-                  color: context.color.basicRed,
-                  fontWeight: FontWeight.w600,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const VerticalGap(16),
-              CustomOutlinedButton(
-                onPressed: () {
-                  context
-                      .read<ResourcesCubit>()
-                      .fetchResourcesByPropertyId(propertyId);
-                },
-                text: 'Повторить',
-              )
-            ],
-          );
+          return ErrorWithTryBtn(
+              error: state.error!,
+              onErrorClick: () => context
+                  .read<ResourcesCubit>()
+                  .fetchResourcesByPropertyId(propertyId));
         }
 
         final resources = state.resources;
 
         return Column(
           children: [
+            const VerticalGap(16),
             GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: calculateCrossAxisCount(context),
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 8,
-                childAspectRatio: 167.5 / 157,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                childAspectRatio: 0.75,
               ),
               itemCount: resources.length,
               itemBuilder: (context, index) => ResourceItem(
@@ -86,8 +67,8 @@ class PropertyResources extends StatelessWidget {
                 resourceEntity: resources[index],
               ),
             ),
-            const VerticalGap(16),
-            if (isUserProperty)
+            if (isUserProperty) ...[
+              const VerticalGap(16),
               Center(
                 child: CustomButton(
                   onPressed: () => context.push(
@@ -102,6 +83,7 @@ class PropertyResources extends StatelessWidget {
                   icon: const Icon(Icons.add, color: Colors.white),
                 ),
               ),
+            ]
           ],
         );
       },

@@ -1,7 +1,7 @@
 part of 'edit_profile_cubit.dart';
 
 @freezed
-class EditProfileState with _$EditProfileState {
+abstract class EditProfileState with _$EditProfileState {
   const factory EditProfileState({
     required String firstName,
     String? lastName,

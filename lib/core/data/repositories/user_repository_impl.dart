@@ -22,7 +22,6 @@ class UserRepositoryImpl implements UserRepository {
     return result.fold(
         (failure) => Left(failure), (userModel) => Right(userModel.toEntity()));
   }
-
   @override
   Future<Either<Failure, UserEntity>> updateUser(UserEntity user,
       {XFile? avatarFile}) async {
@@ -36,7 +35,7 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<Either<Failure, SmsResponseEntity>> requestProfileDeletion() async {
+  Future<Either<Failure, SmsResponseEntity>> requestUserDeletion() async {
     final result = await _remote.requestProfileDeletion();
 
     return result.fold(
@@ -46,7 +45,7 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<Either<Failure, ProfileDeletionEntity>> confirmProfileDeletion(
+  Future<Either<Failure, ProfileDeletionEntity>> confirmUserDeletion(
       String code) async {
     final result = await _remote.confirmProfileDeletion(code);
 
@@ -57,7 +56,27 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<Either<Failure, String>> restoreProfile() async {
+  Future<Either<Failure, UserEntity>> submitUser({
+    required String name,
+    required String surname,
+    required String email,
+    XFile? image,
+  }) async {
+    final result = await _remote.submitProfile(
+      name: name,
+      surname: surname,
+      email: email,
+      image: image,
+    );
+
+    return result.fold(
+      (failure) => Left(failure),
+      (userModel) => Right(userModel.toEntity()),
+    );
+  }
+
+  @override
+  Future<Either<Failure, String>> restoreUser() async {
     final result = await _remote.restoreProfile();
 
     return result.fold(

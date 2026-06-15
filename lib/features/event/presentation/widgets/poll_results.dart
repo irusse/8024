@@ -5,15 +5,20 @@ import 'package:neighbours/core/components/default_loading_overlay.dart';
 import 'package:neighbours/core/constants/ui_constants.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/state/api_state.dart';
-import 'package:neighbours/features/community/presentation/widgets/error_with_try_btn.dart';
+import 'package:neighbours/core/components/error_with_try_btn.dart';
 import 'package:neighbours/features/event/domain/entities/vote_option/vote_option_entity.dart';
 import 'package:neighbours/features/event/presentation/cubits/vote/vote_cubit.dart';
 
 class PollResults extends StatefulWidget {
   final int eventId;
   final bool canVote;
+  final bool isCompleted;
 
-  const PollResults({super.key, required this.eventId, required this.canVote});
+  const PollResults(
+      {super.key,
+      required this.eventId,
+      required this.canVote,
+      required this.isCompleted});
 
   @override
   State<PollResults> createState() => _PollResultsState();
@@ -54,26 +59,39 @@ class _PollResultsState extends State<PollResults> {
           );
         }
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(
-              horizontal: UIConstants.defaultHorizontalPadding),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                state.votingResults!.votingQuestion,
-                style: context.text.titleSmall
-                    .copyWith(fontWeight: FontWeight.w500),
+        return Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: UIConstants.defaultHorizontalPadding),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    state.votingResults!.votingQuestion,
+                    style: context.text.titleSmall
+                        .copyWith(fontWeight: FontWeight.w500),
+                  ),
+                  const VerticalGap(16),
+                  ...votingResults!.map((result) => Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: _pollOptionItem(
+                            result, state.votingResults!.totalVotes),
+                      )),
+                  const VerticalGap(24),
+                ],
               ),
-              const VerticalGap(16),
-              ...votingResults!.map((result) => Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: _pollOptionItem(
-                        result, state.votingResults!.totalVotes),
-                  )),
-              const VerticalGap(24),
-            ],
-          ),
+            ),
+            if (widget.isCompleted)
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: context.color.background.withValues(alpha: 0.7),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+          ],
         );
       },
     );
@@ -84,6 +102,10 @@ class _PollResultsState extends State<PollResults> {
         entity.votesCount > 0 ? entity.votesCount / totalVotes : 0.0;
     return GestureDetector(
       onTap: () {
+        // Если мероприятие завершено, не реагируем на нажатия
+        if (widget.isCompleted) {
+          return;
+        }
         if (!widget.canVote) {
           context.snackbar.info(context,
               "Для того чтобы проголосовать нужно сначала встпуить в мероприятие");

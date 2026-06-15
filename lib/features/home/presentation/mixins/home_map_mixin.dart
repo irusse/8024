@@ -4,22 +4,31 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' hide Error;
 import 'package:neighbours/core/components/bottom_sheet_dialog.dart';
-import 'package:neighbours/core/cubits/events/events_cubit.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
 import 'package:neighbours/core/cubits/user_location/user_location_cubit.dart';
 import 'package:neighbours/core/di/injection.dart';
-import 'package:neighbours/core/domain/entities/event/event_entity.dart';
+import 'package:neighbours/core/logging/logger.dart';
 import 'package:neighbours/core/utils/map_camera_utils.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
+import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart'
+    show EventsCubit;
 import 'package:neighbours/features/home/data/services/event_layer_service.dart';
 import 'package:neighbours/features/home/data/services/notification_layer_service.dart';
 import 'package:neighbours/features/home/data/services/property_layer_service.dart';
+import 'package:neighbours/features/home/data/services/plan_b_layer_service.dart';
+import 'package:neighbours/features/home/domain/enums/map_display_mode.dart';
 import 'package:neighbours/features/home/presentation/pages/home.dart';
 import 'package:neighbours/features/home/presentation/widgets/event_cluster_list.dart';
 import 'package:neighbours/features/home/presentation/widgets/event_info_dialog.dart';
 import 'package:neighbours/features/home/presentation/widgets/property_info_dialog.dart';
 import 'package:neighbours/features/home/presentation/widgets/notification_info_dialog.dart';
+import 'package:neighbours/features/home/presentation/widgets/plan_b_info_dialog.dart';
+import 'package:neighbours/features/home/presentation/widgets/plan_b_cluster_list.dart';
+import 'package:neighbours/features/plan_b/domain/enitities/plan_b_map/plan_b_map_entity.dart';
+import 'package:neighbours/features/plan_b/presentation/cubits/plan_b/plan_b_cubit.dart';
 import 'package:neighbours/features/property/presentation/cubits/properties/properties_cubit.dart';
 
+import '../cubits/home/home_cubit.dart';
 import '../widgets/notification_cluster_list.dart';
 
 mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
@@ -28,6 +37,8 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
   set mapboxMapController(MapboxMap? controller);
 
   PropertyLayerService get propertyLayerService;
+
+  PlanBLayerService get planBLayerService;
 
   EventLayerService get eventLayerService;
 
@@ -78,34 +89,61 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
     if (mapboxMapController == null) return;
 
     try {
+      AppLogger.debug('Starting layer reinitialization after theme change');
+
       // Пересоздаем все слои
       await _initializeLayers();
       if (!mounted) return;
 
+      AppLogger.debug('Layers initialized, updating data...');
+
       // Обновляем данные на карте
       final propertiesState = context.read<PropertiesCubit>().state;
-      final eventsState = context.read<EventsCubit>().state;
+      final events = context.read<EventsCubit>().allFullEvents();
+      final notifications = context.read<EventsCubit>().allNotifications();
 
       if (propertiesState.properties.isNotEmpty) {
         propertyLayerService.updateData(
             context, mapboxMapController, propertiesState.properties);
+        AppLogger.debug(
+            'Property data updated: ${propertiesState.properties.length} items');
       }
 
-      if (eventsState.notifications.isNotEmpty) {
-        await notificationLayerService.updateData(
-          mapboxMapController!,
-          eventsState.notifications,
-        );
-      }
-
-      if (eventsState.events.isNotEmpty) {
+      if (events.isNotEmpty) {
         await eventLayerService.updateData(
           mapboxMapController,
-          eventsState.events,
+          events,
         );
+        AppLogger.debug('Events data updated: ${events.length} items');
       }
-    } catch (e) {
-      debugPrint('Error reinitializing layers after theme change: $e');
+
+      if (notifications.isNotEmpty) {
+        await notificationLayerService.updateData(
+          mapboxMapController,
+          notifications,
+        );
+        AppLogger.debug(
+            'Notifications data updated: ${notifications.length} items');
+      }
+
+      final planBState = context.read<PlanBCubit>().state;
+      if (planBState.items.isNotEmpty) {
+        await planBLayerService.updateData(
+          context,
+          mapboxMapController,
+          planBState.items,
+        );
+        debugPrint('✅ Plan B data updated: ${planBState.items.length} items');
+      }
+
+      // ВАЖНО: Применяем текущий режим отображения после пересоздания слоёв
+      final currentMode = context.read<HomeCubit>().displayMode;
+      AppLogger.debug('Applying display mode: $currentMode');
+      await applyDisplayMode(currentMode);
+      AppLogger.debug('Display mode applied successfully');
+    } catch (e, stackTrace) {
+      AppLogger.error('Error reinitializing layers after theme change: $e');
+      debugPrint('Stack trace: $stackTrace');
     }
   }
 
@@ -124,6 +162,11 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
       mapboxMapController!,
       context,
     );
+    if (!mounted) return;
+    await planBLayerService.initializeLayers(
+      mapboxMapController!,
+      context,
+    );
   }
 
   Future<void> _onClusterClick(ScreenCoordinate screenPoint) async {
@@ -134,6 +177,7 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
         PropertyLayerService.propertiesClustersLayerId,
         NotificationLayerService.notificationsClustersLayerId,
         EventLayerService.eventsClustersLayerId,
+        PlanBLayerService.planBClustersLayerId,
       ]),
     );
 
@@ -170,8 +214,9 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
         if (!mounted) return;
         showModalBottomSheet(
           context: context,
-          isScrollControlled: false,
+          isScrollControlled: true,
           backgroundColor: Colors.transparent,
+          useSafeArea: true,
           // false т.к. у нас фиксированная высота
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
@@ -197,12 +242,12 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
           sourceId: EventLayerService.eventsSourceId,
           clusterFeature: feature.cast<String, Object?>(),
         );
-        final List<FullEvent> events = [];
+        final List<EventEntity> events = [];
         for (final l in leaves) {
           final event = eventLayerService.parseEventFromFeature(
               jsonDecode(jsonEncode(l)) as Map<String, dynamic>);
           if (event != null) {
-            events.add(event.toEntity() as FullEvent);
+            events.add(event.toEntity());
           }
         }
         if (!mounted) return;
@@ -217,6 +262,34 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
           builder: (_) {
             return EventClusterList(
               events: events,
+            );
+          },
+        );
+      } else if (layer == PlanBLayerService.planBClustersLayerId) {
+        final leaves = await planBLayerService.getClusterLeaves(
+          mapboxMap: mapboxMapController!,
+          sourceId: PlanBLayerService.planBSourceId,
+          clusterFeature: feature.cast<String, Object?>(),
+        );
+        final List<PlanBMapEntity> planBItems = [];
+        for (final l in leaves) {
+          final planB = planBLayerService.parsePlanBFromFeature(
+              jsonDecode(jsonEncode(l)) as Map<String, dynamic>);
+          if (planB != null) {
+            planBItems.add(planB);
+          }
+        }
+        if (!mounted) return;
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+          ),
+          builder: (_) {
+            return PlanBClusterList(
+              items: planBItems,
             );
           },
         );
@@ -307,7 +380,34 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
         showBaseBottomSheet(
           context: context,
           child: EventInfoDialog(
-            event: event.toEntity() as FullEvent,
+            event: event.toEntity(),
+          ),
+        );
+      }
+
+      return;
+    }
+
+    // Проверяем отдельные точки Plan B
+    final planBFeatures = await mapboxMapController?.queryRenderedFeatures(
+      RenderedQueryGeometry.fromScreenCoordinate(screenPoint),
+      RenderedQueryOptions(layerIds: [PlanBLayerService.planBCircleLayerId]),
+    );
+
+    if (planBFeatures != null && planBFeatures.isNotEmpty) {
+      final feature = planBFeatures.first?.queriedFeature.feature;
+      if (feature == null) return;
+      final planB = planBLayerService.parsePlanBFromFeature(
+        jsonDecode(jsonEncode(feature)) as Map<String, dynamic>,
+      );
+
+      if (planB == null) return;
+      if (mounted) {
+        showBaseBottomSheet(
+          context: context,
+          child: PlanBInfoDialog(
+            inClusterList: false,
+            planB: planB,
           ),
         );
       }
@@ -321,11 +421,78 @@ mixin HomeMapMixin<T extends StatefulWidget> on State<Home> {
         await mapboxMapController?.pixelForCoordinate(gestureContext.point);
 
     if (screenPoint == null) {
-      debugPrint("Не удалось получить screen coordinate");
+      AppLogger.warning("Cannot get screen coordinates");
       return;
     }
 
     await _onClusterClick(screenPoint);
     await _onPointClick(screenPoint);
+  }
+
+  /// Применяет выбранный режим отображения к слоям карты
+  Future<void> applyDisplayMode(MapDisplayMode mode) async {
+    if (mapboxMapController == null) {
+      AppLogger.warning(
+          'Cannot apply display mode: mapboxMapController is null');
+      return;
+    }
+
+    AppLogger.info('Applying display mode: $mode');
+    final style = mapboxMapController!.style;
+
+    try {
+      switch (mode) {
+        case MapDisplayMode.all:
+          AppLogger.debug('Showing all layers');
+          await propertyLayerService.showAllLayers(style);
+          await planBLayerService.showAllLayers(style);
+          await notificationLayerService.showAllLayers(style);
+          await eventLayerService.showAllLayers(style);
+          // Zoom level 6 for "All" mode
+          await _animateCameraZoom(6.0);
+          break;
+
+        case MapDisplayMode.planBOnly:
+          AppLogger.debug('Showing only Plan B layers');
+          await propertyLayerService.hideAllLayers(style);
+          await planBLayerService.showAllLayers(style);
+          await notificationLayerService.hideAllLayers(style);
+          await eventLayerService.hideAllLayers(style);
+          // Zoom level 8 for "PlanB mode"
+          await _animateCameraZoom(8.0);
+          break;
+
+        case MapDisplayMode.propertyOnly:
+          AppLogger.debug('Showing property and event layers');
+          await propertyLayerService.showAllLayers(style);
+          await planBLayerService.hideAllLayers(style);
+          await notificationLayerService.hideAllLayers(style);
+          await eventLayerService.showAllLayers(style);
+          break;
+      }
+    } catch (e, stackTrace) {
+      AppLogger.error('Error applying display mode: $e');
+      AppLogger.error('Stack trace: $stackTrace');
+    }
+  }
+
+  /// Анимированный переход к заданному зуму
+  Future<void> _animateCameraZoom(double zoom) async {
+    if (mapboxMapController == null) return;
+
+    try {
+      final currentCamera = await mapboxMapController!.getCameraState();
+      final newCamera = CameraOptions(
+        center: currentCamera.center,
+        zoom: zoom,
+      );
+
+      await mapboxMapController!.easeTo(
+        newCamera,
+        MapAnimationOptions(duration: 1000, startDelay: 0),
+      );
+    } catch (e) {
+      AppLogger.error('Error animating camera zoom: $e');
+    }
   }
 }

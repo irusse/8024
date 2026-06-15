@@ -1,7 +1,7 @@
 part of 'notification_form_cubit.dart';
 
 @freezed
-class NotificationFormState with _$NotificationFormState {
+abstract class NotificationFormState with _$NotificationFormState {
   const factory NotificationFormState({
     @Default(0) int id,
     @Default('') String title,

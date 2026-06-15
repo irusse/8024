@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
+import 'package:neighbours/core/components/drag_handle.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 
 class BaseBottomSheetDialog extends StatelessWidget {
@@ -13,8 +13,6 @@ class BaseBottomSheetDialog extends StatelessWidget {
   final bool isDismissible;
   final bool enableDrag;
   final String? title;
-  final Widget? titleWidget;
-  final List<Widget>? actions;
 
   const BaseBottomSheetDialog({
     Key? key,
@@ -27,8 +25,6 @@ class BaseBottomSheetDialog extends StatelessWidget {
     this.isDismissible = true,
     this.enableDrag = true,
     this.title,
-    this.titleWidget,
-    this.actions,
   }) : super(key: key);
 
   @override
@@ -48,28 +44,16 @@ class BaseBottomSheetDialog extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (showDragHandle) ...[
-            Center(
-              child: Container(
-                width: 56,
-                height: 3,
-                decoration: BoxDecoration(
-                  color: context.color.tertiary,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-          ],
-          if (title != null || titleWidget != null) ...[
+          if (showDragHandle) const DragHandle(),
+          if (title != null) ...[
             Container(
               margin: const EdgeInsets.only(top: 16),
               child: Center(
-                child: titleWidget ??
-                    Text(
-                      title!,
-                      style: context.text.titleSmall,
-                      textAlign: TextAlign.center,
-                    ),
+                child: Text(
+                  title!,
+                  style: context.text.titleSmall,
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
           ],
@@ -79,26 +63,6 @@ class BaseBottomSheetDialog extends StatelessWidget {
               child: child,
             ),
           ),
-          if (actions != null && actions!.isNotEmpty) ...[
-            const VerticalGap(16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: actions!.map((action) {
-                if (action is TextButton) {
-                  return TextButton(
-                    onPressed: () {
-                      if (action.onPressed != null) {
-                        action.onPressed!();
-                      }
-                      context.pop();
-                    },
-                    child: action.child!,
-                  );
-                }
-                return action;
-              }).toList(),
-            ),
-          ],
         ],
       ),
     );
@@ -134,8 +98,6 @@ Future<T?> showBaseBottomSheet<T>({
       padding: padding,
       showDragHandle: showDragHandle,
       title: title,
-      titleWidget: titleWidget,
-      actions: actions,
       child: child,
     ),
   );

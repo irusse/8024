@@ -7,18 +7,21 @@ class CustomOutlinedButton extends StatelessWidget {
   final String text;
   final IconData? iconData;
   final double verticalPadding;
+  final bool isLoading;
 
   const CustomOutlinedButton(
       {super.key,
       required this.onPressed,
       required this.text,
       this.iconData,
+      this.isLoading = false,
       this.verticalPadding = 16});
 
   @override
   Widget build(BuildContext context) {
     return CustomButton(
       onPressed: onPressed,
+      isLoading: isLoading,
       padding: EdgeInsets.symmetric(vertical: verticalPadding),
       label: Text(
         text,

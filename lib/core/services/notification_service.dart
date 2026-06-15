@@ -1,26 +1,29 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:injectable/injectable.dart';
-import 'package:neighbours/core/cubits/events/events_cubit.dart';
+import 'package:neighbours/core/constants/notification_constants.dart';
+import 'package:neighbours/core/data/models/app_notification/app_notification_model.dart';
 import 'package:neighbours/core/di/injection.dart';
-import 'package:neighbours/core/domain/entities/event/event_entity.dart';
-import 'package:neighbours/core/router/app_router.dart';
-import 'package:neighbours/core/router/app_routes.dart';
-import 'package:neighbours/features/chat/domain/entities/message/message_entity.dart';
+import 'package:neighbours/core/logging/logger.dart';
+import '../notifications/notification_handler.dart';
 
 @singleton
 class NotificationService {
-  final notificationPlugin = FlutterLocalNotificationsPlugin();
+  final _notificationPlugin = FlutterLocalNotificationsPlugin();
+
   bool _isInitialized = false;
 
-  bool get isInitialized => _isInitialized;
+  final _controller = StreamController<AppNotificationModel>.broadcast();
+  final _tag = "Notification Service";
+
+  Stream<AppNotificationModel> get stream => _controller.stream;
 
   Future<void> init() async {
     if (_isInitialized) return;
-
     const initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
@@ -35,22 +38,18 @@ class NotificationService {
             android: initializationSettingsAndroid,
             iOS: initializationSettingsIOS);
 
-    await notificationPlugin.initialize(
+    await _notificationPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
         if (response.payload != null) {
-          final data = jsonDecode(response.payload!);
-          final eventId = data["eventId"];
-          final eventTitle = data["eventTitle"];
-
-          _handleNotificationTap(eventId, eventTitle);
+          handleNotificationTap(jsonDecode(response.payload!));
         }
       },
     );
 
     if (Platform.isAndroid) {
       final androidImplementation =
-          notificationPlugin.resolvePlatformSpecificImplementation<
+          _notificationPlugin.resolvePlatformSpecificImplementation<
               AndroidFlutterLocalNotificationsPlugin>();
 
       final granted =
@@ -60,7 +59,7 @@ class NotificationService {
 
     if (Platform.isIOS) {
       final iosImplementation =
-          notificationPlugin.resolvePlatformSpecificImplementation<
+          _notificationPlugin.resolvePlatformSpecificImplementation<
               IOSFlutterLocalNotificationsPlugin>();
 
       await iosImplementation?.requestPermissions(
@@ -73,13 +72,39 @@ class NotificationService {
     _isInitialized = true;
   }
 
-  void _handleNotificationTap(String eventId, String eventTitle) {
-    getIt<AppRouter>()
-        .router
-        .push(AppRouteBuilder.chatPage(int.parse(eventId), eventTitle));
+  void onNewNotification(RemoteMessage? message) {
+    if (message == null) return;
+    final appNotificationModel =
+        AppNotificationModel.fromRemoteMessage(message);
+
+    _controller.add(appNotificationModel);
+    if (appNotificationModel.type != NotificationConstants.messageReceived) {
+      showBasicNotification(appNotificationModel);
+    }
   }
 
-  NotificationDetails _chatNotificationDetails() {
+  Future<void> showBasicNotification(AppNotificationModel notification) async {
+    if (notification.payload == null || notification.payload!.isEmpty) {
+      return Future.value();
+    }
+
+    await _notificationPlugin.show(
+      notification.hashCode,
+      notification.title,
+      notification.body,
+      _notificationDetails(),
+      payload:
+          jsonEncode(buildPayloadMap(notification.payload!, notification.type)),
+    );
+  }
+
+  Map<String, dynamic> buildPayloadMap(String payload, String type) {
+    final payloadMap = jsonDecode(payload) as Map<String, dynamic>;
+    payloadMap["type"] = type;
+    return payloadMap;
+  }
+
+  NotificationDetails _notificationDetails() {
     return const NotificationDetails(
         android: AndroidNotificationDetails('chat_channel', 'Чат',
             channelDescription: 'Уведомления о новых сообщениях в чате',
@@ -93,29 +118,15 @@ class NotificationService {
         ));
   }
 
-  /// Показывает уведомление о новом сообщении в событии
-  Future<void> showEventMessageNotification(MessageEntity message) async {
-    final eventsCubit = getIt<EventsCubit>();
-    final event = eventsCubit.state.events[message.eventId] ??
-        eventsCubit.state.notifications[message.eventId];
-    String eventTitle = "Чат";
-    if (event != null) {
-      eventTitle = event.title;
+  void handleNotificationTap(Map<String, dynamic> payload) {
+    final type = payload["type"];
+    if (type == null) return;
+    if (getIt.isRegistered<NotificationHandler>(instanceName: type)) {
+      final handler = getIt<NotificationHandler>(instanceName: type);
+      handler.handle(payload);
+    } else {
+      AppLogger.warning("No NotificationHandler registered for type: $type",
+          tag: _tag);
     }
-    final title = event is FullEvent
-        ? 'Мероприятие "$eventTitle"'
-        : 'Оповещение "$eventTitle"';
-    final body =
-        '${message.user.firstName}: ${message.text.length > 25 ? "${message.text.substring(0, 25)}..." : message.text}';
-    return notificationPlugin.show(
-      message.id.hashCode,
-      title,
-      body,
-      _chatNotificationDetails(),
-      payload: jsonEncode({
-        "eventId": message.eventId.toString(),
-        "eventTitle": eventTitle,
-      }),
-    );
   }
 }

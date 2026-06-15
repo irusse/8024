@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:injectable/injectable.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter/cupertino.dart';
 
 @singleton
 class AuthService {
@@ -24,7 +23,6 @@ class AuthService {
       final token = await _storage.read(key: _accessTokenKey);
       return token != null && token.isNotEmpty;
     } catch (e) {
-      debugPrint('[AuthService] Error checking token: $e');
       return false;
     }
   }
@@ -47,10 +45,8 @@ class AuthService {
 
       if (!_isDisposed) {
         _accessTokenController.add(accessToken);
-        debugPrint('[AuthService] Tokens saved successfully');
       }
     } catch (e) {
-      debugPrint('[AuthService] Error saving tokens: $e');
       rethrow;
     }
   }
@@ -65,12 +61,8 @@ class AuthService {
 
       if (!_isDisposed) {
         _accessTokenController.add(null);
-        debugPrint('[AuthService] Tokens cleared successfully');
       }
-    } catch (e) {
-      debugPrint('[AuthService] Error clearing tokens: $e');
-      // Не пробрасываем ошибку, так как очистка должна быть надежной
-    }
+    } catch (e) {}
   }
 
   /// Получает access token
@@ -79,7 +71,6 @@ class AuthService {
       final token = await _storage.read(key: _accessTokenKey);
       return token?.isNotEmpty == true ? token : null;
     } catch (e) {
-      debugPrint('[AuthService] Error getting access token: $e');
       return null;
     }
   }
@@ -90,7 +81,6 @@ class AuthService {
       final token = await _storage.read(key: _refreshTokenKey);
       return token?.isNotEmpty == true ? token : null;
     } catch (e) {
-      debugPrint('[AuthService] Error getting refresh token: $e');
       return null;
     }
   }
@@ -98,7 +88,7 @@ class AuthService {
   /// Проверяет валидность токена (базовая проверка)
   bool isTokenValid(String? token) {
     if (token == null || token.isEmpty) return false;
-    
+
     // Базовая проверка формата JWT (должен содержать 3 части, разделенные точками)
     final parts = token.split('.');
     return parts.length == 3;
@@ -116,24 +106,12 @@ class AuthService {
     return isTokenValid(token) ? token : null;
   }
 
-  /// Проверяет, авторизован ли пользователь
-  Future<bool> isAuthenticated() async {
-    try {
-      final accessToken = await getValidAccessToken();
-      final refreshToken = await getValidRefreshToken();
-      return accessToken != null && refreshToken != null;
-    } catch (e) {
-      debugPrint('[AuthService] Error checking authentication: $e');
-      return false;
-    }
-  }
 
   /// Безопасно освобождает ресурсы
   void dispose() {
     if (!_isDisposed) {
       _isDisposed = true;
       _accessTokenController.close();
-      debugPrint('[AuthService] Disposed successfully');
     }
   }
 

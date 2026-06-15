@@ -4,7 +4,7 @@ import 'package:neighbours/features/event/domain/entities/vote_option/vote_optio
 part 'voting_results_entity.freezed.dart';
 
 @freezed
-class VotingResultsEntity with _$VotingResultsEntity {
+abstract class VotingResultsEntity with _$VotingResultsEntity {
   const factory VotingResultsEntity({
     required int eventId,
     required String votingQuestion,

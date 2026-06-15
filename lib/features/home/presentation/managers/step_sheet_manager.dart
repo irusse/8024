@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:neighbours/core/cubits/user_location/user_location_cubit.dart';
 import 'package:neighbours/core/di/injection.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
@@ -8,7 +9,7 @@ import 'package:neighbours/features/home/presentation/pages/home.dart';
 import 'package:neighbours/features/home/presentation/widgets/add_event_dialog.dart';
 import 'package:neighbours/features/home/presentation/widgets/auth_address_dialog.dart';
 import 'package:neighbours/features/home/presentation/widgets/no_communities_dialog.dart';
-import 'package:neighbours/features/home/presentation/widgets/profile_dialog.dart';
+import 'package:neighbours/features/profile/presentation/widgets/profile_dialog.dart';
 import 'package:neighbours/features/home/presentation/widgets/add_property_dialog.dart';
 import 'package:neighbours/core/components/bottom_sheet_dialog.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
@@ -16,10 +17,12 @@ import 'package:neighbours/features/property/presentation/cubits/properties/prop
 import 'package:neighbours/features/property/presentation/cubits/property_form/property_form_cubit.dart';
 
 import '../../../../core/utils/sheet_utils.dart';
+import '../../../profile/presentation/cubits/profile_create/profile_create_cubit.dart';
 import '../cubits/home/home_cubit.dart';
-import '../cubits/profile_create/profile_create_cubit.dart';
 
 mixin StepSheetManager<T extends StatefulWidget> on State<Home> {
+  MapboxMap? get mapboxMapController;
+
   Future<void> showStepSheet(
     BuildContext context,
     HomeState state, {
@@ -111,12 +114,30 @@ mixin StepSheetManager<T extends StatefulWidget> on State<Home> {
       case ShowSetCoordinates():
         return await SheetUtils.ensureBottomSheetClosed(context);
       case ShowAddEvent():
-        return _buildStepSheet(
-          context,
-          title: 'Добавить',
-          isDismissible: true,
-          child: const AddEventDialog(),
-        );
+        double? cameraLatitude;
+        double? cameraLongitude;
+
+        if (mapboxMapController != null) {
+          try {
+            final camera = await mapboxMapController!.getCameraState();
+            final center = camera.center;
+            cameraLatitude = center.coordinates.lat.toDouble();
+            cameraLongitude = center.coordinates.lng.toDouble();
+          } catch (e) {
+            // Если не удалось получить координаты камеры, используем null
+          }
+        }
+        if (context.mounted) {
+          return _buildStepSheet(
+            context,
+            title: 'Добавить',
+            isDismissible: true,
+            child: AddEventDialog(
+              cameraLatitude: cameraLatitude,
+              cameraLongitude: cameraLongitude,
+            ),
+          );
+        }
       case ShowNoActiveCommunities():
         return _buildStepSheet(
           context,

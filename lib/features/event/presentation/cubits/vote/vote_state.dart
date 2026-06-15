@@ -1,7 +1,7 @@
 part of 'vote_cubit.dart';
 
 @freezed
-class VoteState with _$VoteState {
+abstract class VoteState with _$VoteState {
   const factory VoteState({
      VotingResultsEntity? votingResults,
     @Default(ApiState.initial()) ApiState<void> voteState,

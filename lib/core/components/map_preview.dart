@@ -1,12 +1,9 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:neighbours/core/cubits/theme/theme_cubit.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
-import 'package:neighbours/core/router/app_routes.dart';
-import 'package:neighbours/core/services/map_service.dart';
 import 'package:neighbours/core/services/marker_service.dart';
 import 'package:neighbours/core/di/injection.dart';
 import 'package:neighbours/core/utils/map_camera_utils.dart';
@@ -16,14 +13,19 @@ class MapPreview extends StatefulWidget {
   final double longitude;
   final double? radius;
   final double height;
+  final double zoom;
+  final Widget? customPoint;
+  final VoidCallback onClick;
 
-  const MapPreview({
-    super.key,
-    required this.latitude,
-    required this.longitude,
-    this.height = 132,
-    this.radius,
-  });
+  const MapPreview(
+      {super.key,
+      required this.latitude,
+      required this.longitude,
+      required this.onClick,
+      this.height = 132,
+      this.zoom = 16,
+      this.radius,
+      this.customPoint});
 
   @override
   State<MapPreview> createState() => _MapPreviewState();
@@ -51,27 +53,28 @@ class _MapPreviewState extends State<MapPreview> {
         size: 80,
       ),
     );
+    if (widget.customPoint == null) {
+      final manager =
+          await mapboxMap.annotations.createPointAnnotationManager();
+      _annotationManager = manager;
 
+      await manager.create(PointAnnotationOptions(
+        geometry: Point(
+          coordinates: Position(widget.longitude, widget.latitude),
+        ),
+        image: markerImage,
+        iconSize: 1.0,
+      ));
+      await MapCameraUtils.flyToPosition(
+          mapboxMap, widget.latitude, widget.longitude);
+    }
     // Создаём менеджер аннотаций
-    final manager = await mapboxMap.annotations.createPointAnnotationManager();
-    _annotationManager = manager;
-
-    await manager.create(PointAnnotationOptions(
-      geometry: Point(
-        coordinates: Position(widget.longitude, widget.latitude),
-      ),
-      image: markerImage,
-      iconSize: 1.0,
-    ));
-    await MapCameraUtils.flyToPosition(
-        mapboxMap, widget.latitude, widget.longitude);
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => context.push(AppRoutePath.fullMapPreview,
-          extra: LatLng(widget.latitude, widget.longitude)),
+      onTap: widget.onClick,
       child: SizedBox(
         height: widget.height,
         child: ClipRRect(
@@ -84,12 +87,11 @@ class _MapPreviewState extends State<MapPreview> {
                   child: MapWidget(
                     onMapCreated: _onMapCreated,
                     cameraOptions: CameraOptions(
-                      center: Point(
-                        coordinates:
-                            Position(widget.longitude, widget.latitude),
-                      ),
-                      zoom: 9.0,
-                    ),
+                        center: Point(
+                          coordinates:
+                              Position(widget.longitude, widget.latitude),
+                        ),
+                        zoom: widget.zoom),
                     styleUri: context.read<ThemeCubit>().getThemeMap,
                   ),
                 ),
@@ -98,9 +100,14 @@ class _MapPreviewState extends State<MapPreview> {
                   top: 10,
                   child: Icon(
                     Icons.fullscreen_outlined,
-                    color: context.color.primaryText,
+                    color: Colors.white,
                   ),
                 ),
+                if (widget.customPoint != null)
+                  Align(
+                    alignment: Alignment.center,
+                    child: widget.customPoint!,
+                  ),
               ],
             ),
           ),

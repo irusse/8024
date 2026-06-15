@@ -1,6 +1,8 @@
 class DefaultConstants {
-  static const String mapBoxLight = "mapbox://styles/mapbox/satellite-streets-v12";
-  static const String mapBoxDark = "mapbox://styles/mapbox/satellite-streets-v12";
+  static const String mapBoxLight =
+      "mapbox://styles/mapbox/satellite-streets-v12";
+  static const String mapBoxDark =
+      "mapbox://styles/mapbox/satellite-streets-v12";
 
   static const addressNeedStep = 1;
   static const userInfoNeedStep = 2;
@@ -21,6 +23,7 @@ class DefaultConstants {
   };
   static const verified = "VERIFIED";
   static const unverified = "UNVERIFIED";
+  static const completed = "COMPLETED";
 
   static const Map<String, String> verificationStatus = {
     verified: 'Подтвержден',
@@ -30,4 +33,11 @@ class DefaultConstants {
   static const privacy = "privacy";
   static const event = "EVENT";
   static const notification = "NOTIFICATION";
+
+  static const eventDeletedText =
+      "К сожалению, это мероприятие больше недоступно.Возможно, его удалил организатор.";
+  static const propertyDeletedText =
+      "К сожалению, этот объект недвижимости недоступен.";
+  static const userNotFoundText =
+      "К сожалению, профиль пользователя недоступен.";
 }

@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/components/custom_svg.dart';
 import 'package:neighbours/core/constants/default_constants.dart';
-import 'package:neighbours/core/cubits/events/events_cubit.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
+import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart';
 
 class NotificationTypeSelector extends StatefulWidget {
   final int? selectedType;

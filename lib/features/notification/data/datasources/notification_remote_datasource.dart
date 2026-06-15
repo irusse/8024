@@ -18,6 +18,9 @@ abstract class NotificationRemoteDataSource {
 
   /// Удалить все уведомления
   Future<Either<Failure, void>> deleteAllNotifications();
+
+  /// Отметить уведомление как прочитанное
+  Future<Either<Failure, void>> markAsRead(int notificationId);
 }
 
 @Singleton(as: NotificationRemoteDataSource)
@@ -55,6 +58,13 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
   Future<Either<Failure, void>> deleteAllNotifications() async {
     return NetworkHandler.handleRequest(() async {
       await _dio.delete('/notifications');
+    });
+  }
+
+  @override
+  Future<Either<Failure, void>> markAsRead(int notificationId) async {
+    return NetworkHandler.handleRequest(() async {
+      await _dio.patch('/notifications/$notificationId/read');
     });
   }
 }

@@ -1,6 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:neighbours/core/components/shaped_cached_image.dart';
 
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/router/app_routes.dart';
@@ -28,20 +28,18 @@ class ResourceItem extends StatelessWidget {
         child: Column(
           children: [
             AspectRatio(
-              aspectRatio: 1.65,
+              aspectRatio: 1,
               child: _showResourcePhoto(context, resourceEntity.photo),
             ),
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: Text(
-                  resourceEntity.name,
-                  style: context.text.bodyMedium.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              child: Text(
+                resourceEntity.name,
+                style: context.text.bodyMedium.copyWith(
+                  fontWeight: FontWeight.w500,
                 ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
@@ -51,34 +49,10 @@ class ResourceItem extends StatelessWidget {
   }
 
   Widget _showResourcePhoto(BuildContext context, String? photo) {
-    if (resourceEntity.photo != null) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: CachedNetworkImage(
-          imageUrl: resourceEntity.photo!,
-          fit: BoxFit.cover,
-          progressIndicatorBuilder: (context, url, downloadProgress) =>
-              SizedBox(
-            width: 32,
-            height: 32,
-            child: CircularProgressIndicator(
-              value: downloadProgress.progress,
-              color: context.color.primary,
-              strokeWidth: 1,
-            ),
-          ),
-        ),
-      );
-    }
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        color: context.color.tertiary,
-      ),
-      child: Icon(
-        Icons.camera_alt_outlined,
-        color: context.color.primaryText,
-      ),
+    return ShapedCachedImage(
+      url: resourceEntity.photo,
+      isSquare: true,
+      radius: 8,
     );
   }
 }

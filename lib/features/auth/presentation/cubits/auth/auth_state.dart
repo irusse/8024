@@ -1,12 +1,11 @@
 part of 'auth_cubit.dart';
 
 @freezed
-class AuthState with _$AuthState {
+abstract class AuthState with _$AuthState {
   const factory AuthState({
     @Default(ApiState<void>.initial()) ApiState<void> loginState,
     @Default(ApiState<void>.initial()) ApiState<void> resendState,
     @Default(ApiState<void>.initial()) ApiState<void> verifyState,
-    @Default(false) bool isAuthenticated,
     @Default('') String digits,
     @Default(false) bool isValid,
     required CountryPhoneSpec country,

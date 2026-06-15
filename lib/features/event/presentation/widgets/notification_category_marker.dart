@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:neighbours/core/domain/entities/event/event_category_entity.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_category_entity.dart';
 
 import '../../../../core/components/custom_svg.dart';
 

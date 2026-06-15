@@ -31,7 +31,6 @@ class AddPropertyDialog extends StatefulWidget {
 }
 
 class _AddPropertyDialogState extends State<AddPropertyDialog> {
-  String? _coordinates;
   final _nameController = TextEditingController();
 
   @override
@@ -40,10 +39,6 @@ class _AddPropertyDialogState extends State<AddPropertyDialog> {
 
     final cubit = context.read<PropertyFormCubit>();
     _nameController.text = cubit.state.name;
-
-    _coordinates = cubit.state.longitude != null && cubit.state.latitude != null
-        ? '${cubit.state.latitude}, ${cubit.state.longitude}'
-        : null;
   }
 
   @override
@@ -104,11 +99,23 @@ class _AddPropertyDialogState extends State<AddPropertyDialog> {
               },
             ),
             const VerticalGap(8),
-            const CustomLabel(text: 'Координаты', isRequired: true),
+            const CustomLabel(
+                text: 'Выберите точку на карте', isRequired: true),
             const VerticalGap(4),
-            SetCoordinatesButton(
-              text: _coordinates,
-              onClick: widget.onSetCoordinatesClick,
+            BlocBuilder<PropertyFormCubit, PropertyFormState>(
+              buildWhen: (prev, curr) =>
+                  prev.latitude != curr.latitude ||
+                  prev.longitude != curr.longitude,
+              builder: (context, state) {
+                final coords = state.longitude != null && state.latitude != null
+                    ? '${state.latitude}, ${state.longitude}'
+                    : null;
+                return SetCoordinatesButton(
+                  text: coords,
+                  onClear: () => context.read<PropertyFormCubit>().clearCoordinates(),
+                  onClick: widget.onSetCoordinatesClick,
+                );
+              },
             ),
             const VerticalGap(8),
             const CustomLabel(
@@ -147,6 +154,7 @@ class _AddPropertyDialogState extends State<AddPropertyDialog> {
                         await context.read<UserLocationCubit>().getPosition();
                     if (userLocation == null) return;
                     if (!context.mounted) return;
+
                     final property = await context
                         .read<PropertiesCubit>()
                         .addProperty(

@@ -5,9 +5,9 @@ import 'package:neighbours/core/components/default_app_bar.dart';
 import 'package:neighbours/core/components/default_loading_overlay.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/state/api_state.dart';
-import 'package:neighbours/features/community/presentation/widgets/error_with_try_btn.dart';
+import 'package:neighbours/core/components/error_with_try_btn.dart';
 import 'package:neighbours/features/profile/presentation/cubits/user_verified_properties/user_verified_properties_cubit.dart';
-import 'package:neighbours/features/profile/presentation/widgets/verified_property_item.dart';
+import 'package:neighbours/features/property/presentation/widgets/verified_property_item.dart';
 
 class PropertyVerifications extends StatefulWidget {
   const PropertyVerifications({super.key});
@@ -52,9 +52,12 @@ class _PropertyVerificationsState extends State<PropertyVerifications> {
                   final verification = state.verifications[index];
                   return VerifiedPropertyItem(entity: verification);
                 },
-                separatorBuilder: (context,index)=>const VerticalGap(8),
+                separatorBuilder: (context, index) => const VerticalGap(8),
               ),
-              if (state.fetchState.isLoading) const DefaultLoadingOverlay(transparent: true,),
+              if (state.fetchState.isLoading)
+                const DefaultLoadingOverlay(
+                  transparent: true,
+                ),
               if (state.fetchState.isFailure)
                 ErrorWithTryBtn(
                     error: state.fetchState.error!,

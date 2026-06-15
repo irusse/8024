@@ -3,6 +3,7 @@ import 'package:collection/collection.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
+import 'package:neighbours/core/error/failures.dart';
 import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/features/property/domain/entities/property/property_entity.dart';
 import 'package:neighbours/features/property/domain/repositories/property_repository.dart';
@@ -16,6 +17,9 @@ class PropertiesCubit extends Cubit<PropertiesState> {
   final PropertyRepository _propertyRepository;
 
   PropertiesCubit(this._propertyRepository) : super(const PropertiesState());
+  final int _propertyVerificationCodeLength = 6;
+
+  int get propertyVerificationCodeLength => _propertyVerificationCodeLength;
 
   Future<void> fetchMyProperties() async {
     _resetStates();
@@ -141,7 +145,7 @@ class PropertiesCubit extends Cubit<PropertiesState> {
     }
   }
 
-  PropertyEntity? getUserProperty(int userId) {
+  PropertyEntity? getMyProperty(int userId) {
     return state.properties.values.firstWhereOrNull(
       (prop) => prop.createdById == userId,
     );
@@ -187,34 +191,74 @@ class PropertiesCubit extends Cubit<PropertiesState> {
         verifyState: const ApiState.initial()));
   }
 
-  Future<PropertyEntity?> verifyProperty({
+  Future<void> confirmPropertyByCode({
     required int propertyId,
-    required double userLatitude,
-    required double userLongitude,
+    required String code,
   }) async {
     _resetStates();
     emit(state.copyWith(verifyState: const ApiState.loading()));
 
-    final result = await _propertyRepository.verifyProperty(
+    final result = await _propertyRepository.confirmPropertyByCode(
       propertyId: propertyId,
-      userLatitude: userLatitude,
-      userLongitude: userLongitude,
+      code: code,
     );
 
     return result.fold(
       (failure) {
+        if (failure is NotFoundFailure) {
+          final updatedProperties =
+              Map<int, PropertyEntity>.from(state.properties)
+                ..remove(propertyId);
+          emit(state.copyWith(
+              verifyState: ApiState.failure(failure.message),
+              properties: updatedProperties));
+          return null;
+        }
         emit(state.copyWith(verifyState: ApiState.failure(failure.message)));
         return null;
       },
-      (verifiedProperty) {
+      (confirmedProperty) {
         final updatedProperties =
             Map<int, PropertyEntity>.from(state.properties)
-              ..[propertyId] = verifiedProperty;
+              ..[propertyId] = confirmedProperty;
         emit(state.copyWith(
           properties: updatedProperties,
           verifyState: const ApiState.success(null),
         ));
-        return verifiedProperty;
+
+      },
+    );
+  }
+
+  Future<PropertyEntity?> getPropertyById(int id) async {
+    _resetStates();
+    emit(state.copyWith(fetchState: const ApiState.loading()));
+
+    final result = await _propertyRepository.getPropertyById(id);
+
+    return result.fold(
+      (failure) {
+        if (failure is NotFoundFailure) {
+          final updatedProperties =
+              Map<int, PropertyEntity>.from(state.properties)..remove(id);
+          emit(state.copyWith(
+              fetchState: ApiState.failure(failure.message),
+              properties: updatedProperties));
+          return;
+        }
+
+        emit(state.copyWith(fetchState: ApiState.failure(failure.message)));
+        return null;
+      },
+      (property) {
+        final updatedProperties =
+            Map<int, PropertyEntity>.from(state.properties)..[id] = property;
+
+        emit(state.copyWith(
+          properties: updatedProperties,
+          fetchState: const ApiState.success(null),
+        ));
+        return property;
       },
     );
   }

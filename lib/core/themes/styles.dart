@@ -40,4 +40,5 @@ class CommonModeColors {
   static const Color yellow = Color(0xFFDFFF27);
   static const Color green = Color(0xFF02FB6E);
   static const Color red = Color(0xFFFC4F60);
+  static const Color purple = Color(0xFF9C27B0);
 }

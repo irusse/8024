@@ -1,26 +1,34 @@
 abstract class AppRoutePath {
   static const home = '/';
+  static const eventDetails = 'event-details/:eventId';
+  static const propertyDetails = 'property-details/:propertyId';
+  static const planBDetails = 'plan-b-details/:planBId';
   static const authWelcome = '/auth-welcome';
   static const splash = '/splash';
   static const login = '/login';
-  static const propertyDetails = '/property-details/:propertyId';
   static const propertyEdit = 'edit';
-  static const communityInfo = '/community-info';
+  static const community = 'community/:communityId';
   static const resourceForm = 'resource-form';
   static const sms = '/sms/:phone';
-  static const profile = '/profile';
+  static const myProfile = '/my-profile';
+  static const otherProfile = '/profile/:userId';
   static const editProfile = 'edit';
   static const myEvents = 'my-events';
+  static const notFound = '/not-found';
   static const noInternet = '/no_internet';
   static const unexpectedError = '/unexpected-error';
   static const notificationForm = '/notification-form';
   static const eventForm = '/event-form';
-  static const eventDetails = '/event-details';
   static const fullMapPreview = '/full-map-preview';
+  static const fullMapPicker = '/full-map-picker';
   static const propertyVerifications = 'property-verifications';
   static const documentPage = 'document-page/:key';
   static const chatListPage = '/chat-list-page';
   static const chatPage = 'chat-page/:eventId/:eventTitle';
+  static const eventChatPage = 'event-chat/:eventId/:eventTitle';
+  static const communityChatPage =
+      'community-chat/:communityId/:communityTitle';
+  static const privateChatPage = '/private-chat/:interlocutorId';
   static const settingsPage = 'settings';
   static const deleteSmsCode = 'delete-sms-code';
   static const countryCodeSelect = '/countryCodeSelect';
@@ -29,27 +37,49 @@ abstract class AppRoutePath {
 
 abstract class AppRouteBuilder {
   static String documentPage(String key) =>
-      '${AppRoutePath.profile}/document-page/$key';
+      '${AppRoutePath.myProfile}/document-page/$key';
 
   static String propertyDetails(int propertyId) =>
       '/property-details/$propertyId';
 
-  static String chatPage(int eventId, String eventTitle) =>
-      '${AppRoutePath.chatListPage}/${AppRoutePath.chatPage}'
+  static String otherProfile(int userId) => '/profile/$userId';
+
+  static String eventChatPage(int eventId, String eventTitle) =>
+      '${AppRoutePath.chatListPage}/${AppRoutePath.eventChatPage}'
           .replaceAll(
             ':eventId',
             eventId.toString(),
           )
           .replaceAll(
             ':eventTitle',
-            eventTitle,
+            Uri.encodeComponent(eventTitle),
           );
+
+  static String communityChatPage(int communityId, String communityTitle) =>
+      '${AppRoutePath.chatListPage}/${AppRoutePath.communityChatPage}'
+          .replaceAll(
+            ':communityId',
+            communityId.toString(),
+          )
+          .replaceAll(
+            ':communityTitle',
+            Uri.encodeComponent(communityTitle),
+          );
+
+  static String privateChatPage(int interlocutorId) =>
+      '/private-chat/$interlocutorId';
 
   static String propertyEdit(int propertyId) =>
       '/property-details/$propertyId/${AppRoutePath.propertyEdit}';
+
+  static String eventDetails(int eventId) => "/event-details/$eventId";
+
+  static String planBDetails(int planBId) => "/plan-b-details/$planBId";
 
   static String resourceForm(int propertyId) =>
       '/property-details/$propertyId/${AppRoutePath.resourceForm}';
 
   static String sms(String phone) => '/sms/$phone';
+
+  static String community(int communityId) => '/community/$communityId';
 }

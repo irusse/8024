@@ -30,6 +30,10 @@ class AuthFailure extends Failure {
   const AuthFailure(String message) : super(message);
 }
 
+class NotFoundFailure extends Failure {
+  const NotFoundFailure(String message) : super(message);
+}
+
 class ValidationFailure extends Failure {
   const ValidationFailure(String message) : super(message);
 }

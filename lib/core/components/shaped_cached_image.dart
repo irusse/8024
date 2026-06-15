@@ -9,6 +9,7 @@ class ShapedCachedImage extends StatelessWidget {
   final double? height;
   final Border? border;
   final bool isSquare;
+  final Widget? errorWidget;
 
   const ShapedCachedImage({
     Key? key,
@@ -16,6 +17,7 @@ class ShapedCachedImage extends StatelessWidget {
     this.radius,
     this.width,
     this.height,
+    this.errorWidget,
     this.border,
     this.isSquare = false,
   })  : assert(
@@ -73,11 +75,13 @@ class ShapedCachedImage extends StatelessWidget {
                 ),
               ),
             ),
-            errorWidget: (context, url, error) => Icon(
-              Icons.error,
-              size: radius,
-              color: context.color.basicRed,
-            ),
+            errorWidget: (context, url, error) =>
+                errorWidget ??
+                Icon(
+                  Icons.error,
+                  size: radius,
+                  color: context.color.basicRed,
+                ),
           );
   }
 }

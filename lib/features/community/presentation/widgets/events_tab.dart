@@ -5,10 +5,11 @@ import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
 import 'package:neighbours/core/router/app_routes.dart';
 import 'package:neighbours/core/state/api_state.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
+import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart';
 
 import '../../../../core/constants/ui_constants.dart';
-import '../../../../core/cubits/events/events_cubit.dart';
-import 'error_with_try_btn.dart';
+import '../../../../core/components/error_with_try_btn.dart';
 import 'event_card.dart';
 
 class EventsTab extends StatelessWidget {
@@ -63,7 +64,9 @@ class EventsTab extends StatelessWidget {
                       );
                     }
 
-                    final values = state.events.values.toList();
+                    // Получаем только активные события (исключаем завершенные)
+                    final allEvents = context.read<EventsCubit>().allFullEvents();
+                    final values = allEvents.where((event) => !event.isCompleted).toList();
 
                     return SliverPadding(
                       padding: const EdgeInsets.symmetric(

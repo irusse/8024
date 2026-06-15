@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/constants/ui_constants.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
-import 'package:neighbours/core/domain/entities/event/event_entity.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
+import 'package:neighbours/core/extensions/full_name_ext.dart';
+import 'package:neighbours/core/router/app_routes.dart';
+import 'package:neighbours/core/services/map_service.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
 import 'package:neighbours/features/event/presentation/widgets/date_time_row.dart';
 import 'package:neighbours/features/event/presentation/widgets/default_divider.dart';
 import 'package:neighbours/features/event/presentation/widgets/location_address_view.dart';
@@ -12,7 +16,7 @@ import 'package:neighbours/features/event/presentation/widgets/poll_results.dart
 import '../../../../core/components/map_preview.dart';
 
 class EventInfoTab extends StatefulWidget {
-  final FullEvent event;
+  final EventEntity event;
 
   const EventInfoTab({super.key, required this.event});
 
@@ -46,6 +50,7 @@ class _EventInfoTabState extends State<EventInfoTab>
                   const VerticalGap(16),
                   if (widget.event.votingQuestion != null)
                     PollResults(
+                      isCompleted: widget.event.isCompleted,
                       eventId: widget.event.id,
                       canVote: widget.event.isParticipant(userId) ||
                           widget.event.isCreator(userId),
@@ -88,7 +93,7 @@ class _EventInfoTabState extends State<EventInfoTab>
     );
   }
 
-  Widget _creatorInfo(BuildContext context, FullEvent event) {
+  Widget _creatorInfo(BuildContext context, EventEntity event) {
     final fullName = event.creator.fullName;
     final address = event.creator.address ?? '';
     return Padding(
@@ -134,6 +139,10 @@ class _EventInfoTabState extends State<EventInfoTab>
           const VerticalGap(8),
           Expanded(
             child: MapPreview(
+              key: ValueKey(
+                  '${widget.event.latitude}_${widget.event.longitude}'),
+              onClick: () => context.push(AppRoutePath.fullMapPreview,
+                  extra: LatLng(widget.event.latitude, widget.event.longitude)),
               latitude: widget.event.latitude,
               longitude: widget.event.longitude,
               radius: 12,

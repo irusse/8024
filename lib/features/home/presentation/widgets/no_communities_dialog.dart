@@ -5,12 +5,12 @@ import 'package:neighbours/core/components/primary_button.dart';
 import 'package:neighbours/core/cubits/user/user_cubit.dart';
 import 'package:neighbours/core/cubits/user_location/user_location_cubit.dart';
 import 'package:neighbours/core/di/injection.dart';
-import 'package:neighbours/features/home/presentation/cubits/create_community_form/create_community_form_cubit.dart';
-import 'package:neighbours/features/home/presentation/cubits/home/home_cubit.dart';
+import 'package:neighbours/features/community/presentation/cubits/community/community_cubit.dart';
 import 'package:neighbours/features/home/presentation/widgets/join_community_dialog.dart';
 import 'package:neighbours/features/home/presentation/widgets/create_community_dialog.dart';
 import '../../../../core/components/bottom_sheet_dialog.dart';
 import '../../../../core/utils/sheet_utils.dart';
+import '../cubits/community_access_form/community_access_cubit.dart';
 
 class NoCommunitiesDialog extends StatelessWidget {
   final VoidCallback onDataFetchRequired;
@@ -53,31 +53,31 @@ class NoCommunitiesDialog extends StatelessWidget {
     required String title,
     required Widget child,
   }) async {
-    await SheetUtils.ensureBottomSheetClosed(context);
+    final hostContext = Navigator.of(context).overlay?.context ?? context;
 
-    if (context.mounted) {
-      showBaseBottomSheet(
-        context: context,
-        title: title,
-        isDismissible: false,
-        child: MultiBlocProvider(
-          providers: [
-            BlocProvider(
-              create: (_) => getIt<CreateCommunityFormCubit>(),
-            ),
-            BlocProvider.value(
-              value: getIt<UserLocationCubit>(),
-            ),
-            BlocProvider.value(
-              value: getIt<UserCubit>(),
-            ),
-            BlocProvider.value(
-              value: getIt<HomeCubit>(),
-            ),
-          ],
-          child: child,
-        ),
-      );
-    }
+    await SheetUtils.ensureBottomSheetClosed(context);
+    if (!hostContext.mounted) return;
+    showBaseBottomSheet(
+      context: hostContext,
+      title: title,
+      isDismissible: false,
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (_) => getIt<CommunityAccessCubit>(),
+          ),
+          BlocProvider.value(
+            value: getIt<UserLocationCubit>(),
+          ),
+          BlocProvider.value(
+            value: getIt<UserCubit>(),
+          ),
+          BlocProvider.value(
+            value: getIt<CommunityCubit>(),
+          ),
+        ],
+        child: child,
+      ),
+    );
   }
 }

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:neighbours/core/components/primary_button.dart';
-import 'package:neighbours/core/domain/entities/event/event_entity.dart';
 import 'package:neighbours/core/router/app_routes.dart';
 import 'package:neighbours/features/community/presentation/widgets/event_card.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
 
 import '../../../../core/components/custom_gap.dart';
 import '../../../event/presentation/widgets/location_address_view.dart';
 
 class EventInfoDialog extends StatelessWidget {
-  final FullEvent event;
+  final EventEntity event;
 
   const EventInfoDialog({super.key, required this.event});
 
@@ -33,7 +33,7 @@ class EventInfoDialog extends StatelessWidget {
           text: 'Подробнее',
           onPressed: () {
             context.pop();
-            context.push(AppRoutePath.eventDetails, extra: event);
+            context.push(AppRouteBuilder.eventDetails(event.id));
           },
           verticalPadding: 10,
         ),

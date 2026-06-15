@@ -5,11 +5,11 @@ import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/components/custom_outlined_button.dart';
 import 'package:neighbours/core/components/default_loading_overlay.dart';
 import 'package:neighbours/core/components/primary_button.dart';
-import 'package:neighbours/core/cubits/events/events_cubit.dart';
-import 'package:neighbours/core/domain/entities/event/event_entity.dart';
 import 'package:neighbours/core/router/app_routes.dart';
 import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/features/community/presentation/widgets/notification_card.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
+import 'package:neighbours/features/event/presentation/cubits/events/events_cubit.dart';
 import '../../../event/presentation/widgets/location_address_view.dart';
 
 class NotificationInfoDialog extends StatelessWidget {
@@ -30,7 +30,14 @@ class NotificationInfoDialog extends StatelessWidget {
           prev.joinEventState != curr.joinEventState ||
           prev.leaveEventState != curr.leaveEventState,
       builder: (context, state) {
-        final notification = state.notifications[eventId]!;
+        final notification = state.events[eventId];
+        if (notification == null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (context.mounted && context.canPop()) context.pop();
+          });
+          return const SizedBox.shrink();
+        }
+
         final isCreator = notification.isCreator(userId);
         final isParticipant = notification.isParticipant(userId);
 
@@ -39,19 +46,15 @@ class NotificationInfoDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const VerticalGap(8),
             NotificationCard(
               event: notification,
               isClickable: false,
             ),
             const VerticalGap(8),
-            SizedBox(
-              height: 50,
-              child: LocationAddressView(
-                longitude: notification.longitude,
-                latitude: notification.latitude,
-                maxLines: 2,
-              ),
+            LocationAddressView(
+              longitude: notification.longitude,
+              latitude: notification.latitude,
+              maxLines: 1,
             ),
             const VerticalGap(16),
             _bottom(context,
@@ -60,6 +63,7 @@ class NotificationInfoDialog extends StatelessWidget {
                 isParticipant: isParticipant,
                 eventTitle: notification.title,
                 state: state),
+            const VerticalGap(8),
           ],
         );
       },
@@ -87,7 +91,7 @@ class NotificationInfoDialog extends StatelessWidget {
           Expanded(
               child: CustomOutlinedButton(
             onPressed: () =>
-                context.push(AppRouteBuilder.chatPage(eventId, eventTitle)),
+                context.push(AppRouteBuilder.eventChatPage(eventId, eventTitle)),
             text: 'Чат',
             verticalPadding: 12,
           )),
@@ -113,7 +117,7 @@ class NotificationInfoDialog extends StatelessWidget {
                 Expanded(
                   child: CustomOutlinedButton(
                     onPressed: () => context
-                        .push(AppRouteBuilder.chatPage(eventId, eventTitle)),
+                        .push(AppRouteBuilder.eventChatPage(eventId, eventTitle)),
                     text: 'Чат',
                     verticalPadding: 12,
                   ),

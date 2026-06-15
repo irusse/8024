@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' hide ImageSource;
 import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/components/default_app_bar.dart';
 import 'package:neighbours/core/components/default_page_wrapper.dart';
+import 'package:neighbours/core/components/map_preview.dart';
 import 'package:neighbours/core/components/primary_button.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
+import 'package:neighbours/core/router/app_routes.dart';
 import 'package:neighbours/core/services/map_service.dart';
 import 'package:neighbours/core/state/api_state.dart';
 import 'package:neighbours/features/property/presentation/cubits/properties/properties_cubit.dart';
 import 'package:neighbours/features/property/presentation/cubits/property_form/property_form_cubit.dart';
 import '../../../../core/components/category_select_field.dart';
-import '../../../../core/components/centered_map_picker.dart';
 import '../../../../core/components/custom_label.dart';
 import '../../../../core/components/image_picker_field.dart';
 import '../../../../core/components/reusable_text_field.dart';
@@ -41,9 +43,39 @@ class _EditPropertyState extends State<EditProperty> {
     super.dispose();
   }
 
+  Future<void> _openMapPicker() async {
+    final propertyFormCubit = context.read<PropertyFormCubit>();
+    final initialCoords = propertyFormCubit.state.latitude != null &&
+            propertyFormCubit.state.longitude != null
+        ? LatLng(
+            propertyFormCubit.state.latitude!,
+            propertyFormCubit.state.longitude!,
+          )
+        : null;
+
+    final result = await context.push<Point>(
+      AppRoutePath.fullMapPicker,
+      extra: {
+        'centralWidget': const PropertyMarker(isVerified: false),
+        'initialCoordinates': initialCoords,
+        'title': 'Выберите точку на карте',
+      },
+    );
+
+    if (result != null && mounted) {
+      propertyFormCubit.setCoordinates(
+        LatLng(
+          result.coordinates.lat.toDouble(),
+          result.coordinates.lng.toDouble(),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final propertyFormCubit = context.read<PropertyFormCubit>();
+    final height = MediaQuery.of(context).size.height;
 
     final isSubmitEnabled =
         context.select((PropertyFormCubit cubit) => cubit.isSubmitEnabled());
@@ -59,6 +91,7 @@ class _EditPropertyState extends State<EditProperty> {
             if (state.updateState.isSuccess) {
               context.snackbar
                   .success(context, 'Объект недвижимости успешно обновлен');
+              context.pop();
             }
             if (state.updateState.isFailure) {
               context.snackbar.error(context, state.updateState.error!);
@@ -66,34 +99,79 @@ class _EditPropertyState extends State<EditProperty> {
           },
           child: Column(
             children: [
-              AspectRatio(
-                aspectRatio: 1,
-                child: CenteredMapPicker(
-                    initialCoordinates: propertyFormCubit.state.latitude != null
-                        ? LatLng(propertyFormCubit.state.latitude!,
-                            propertyFormCubit.state.longitude!)
-                        : null,
-                    centralWidget: const PropertyMarker(
-                      isVerified: false,
+              const VerticalGap(16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const CustomLabel(
+                      text: 'Выберите точку на карте',
+                      isRequired: true,
                     ),
-                    onCameraChange: (Point value) {
-                      final pos = value.coordinates; // mapbox turf Position
-                      context.read<PropertyFormCubit>().setCoordinates(
-                            LatLng(pos.lat.toDouble(), pos.lng.toDouble()),
+                    const VerticalGap(8),
+                    BlocBuilder<PropertyFormCubit, PropertyFormState>(
+                      buildWhen: (prev, curr) =>
+                          prev.latitude != curr.latitude ||
+                          prev.longitude != curr.longitude,
+                      builder: (context, state) {
+                        if (state.latitude == null || state.longitude == null) {
+                          return GestureDetector(
+                            onTap: _openMapPicker,
+                            child: Container(
+                              height: height / 5,
+                              decoration: BoxDecoration(
+                                color: context.color.secondary,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.location_on_outlined,
+                                      size: 48,
+                                      color: context.color.primary,
+                                    ),
+                                    const VerticalGap(8),
+                                    Text(
+                                      'Нажмите, чтобы выбрать локацию',
+                                      style: context.text.bodyMedium.copyWith(
+                                        color: context.color.primary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                           );
-                    }),
+                        }
+                        return MapPreview(
+                          key: ValueKey('${state.latitude}_${state.longitude}'),
+                          radius: 16,
+                          zoom: 16,
+                          height: height / 5,
+                          onClick: _openMapPicker,
+                          latitude: state.latitude!,
+                          longitude: state.longitude!,
+                          customPoint: const PropertyMarker(isVerified: false),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
+              const VerticalGap(16),
               Expanded(
                 child: DefaultPageWrapper(
                   padding: EdgeInsets.zero,
                   children: [
-                    const VerticalGap(16),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Column(
                         children: [
                           const CustomLabel(text: 'Название', isRequired: true),
-                          const VerticalGap(4),
+                          const VerticalGap(8),
                           BlocBuilder<PropertyFormCubit, PropertyFormState>(
                               buildWhen: (old, curr) =>
                                   old.nameError != curr.nameError ||

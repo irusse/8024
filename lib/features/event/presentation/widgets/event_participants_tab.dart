@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:neighbours/core/components/custom_gap.dart';
 import 'package:neighbours/core/components/participant_item.dart';
-import 'package:neighbours/core/domain/entities/event/participant_entity.dart';
+import 'package:neighbours/core/domain/entities/participant/participant_entity.dart';
 import 'package:neighbours/core/extensions/context_ext.dart';
+import 'package:neighbours/core/extensions/full_name_ext.dart';
 
 class EventParticipantsTab extends StatefulWidget {
   final List<ParticipantEntity> participants;

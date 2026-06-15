@@ -66,7 +66,8 @@ class _AuthAddressDialogState extends State<AuthAddressDialog> {
                     Text(
                       state.maybeWhen(
                           loading: () => '',
-                          locationReceived: (latLng, placeMark) =>placeMark.subtitle,
+                          locationReceived: (latLng, placeMark) =>
+                              placeMark.subtitle,
                           error: (message) => message,
                           orElse: () => 'Не удалось определить местоположение'),
                       style: context.text.labelLarge.copyWith(

@@ -9,7 +9,14 @@ import 'package:neighbours/core/router/app_routes.dart';
 import '../../../../core/constants/assets.dart';
 
 class AddEventDialog extends StatelessWidget {
-  const AddEventDialog({super.key});
+  final double? cameraLatitude;
+  final double? cameraLongitude;
+  
+  const AddEventDialog({
+    super.key,
+    this.cameraLatitude,
+    this.cameraLongitude,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,12 +27,20 @@ class AddEventDialog extends StatelessWidget {
           children: [
             _eventButton(context, onClick: () {
               context.pop();
-              context.push(AppRoutePath.notificationForm);
+              context.push(AppRoutePath.notificationForm, extra: {
+                'event': null,
+                'defaultLatitude': cameraLatitude,
+                'defaultLongitude': cameraLongitude,
+              });
             }, text: "Оповещение", iconPath: Assets.icons.bell),
             const HorizontalGap(8),
             _eventButton(context, onClick: () {
               context.pop();
-              context.push(AppRoutePath.eventForm);
+              context.push(AppRoutePath.eventForm, extra: {
+                'event': null,
+                'defaultLatitude': cameraLatitude,
+                'defaultLongitude': cameraLongitude,
+              });
             }, text: "Мероприятие", iconPath: Assets.icons.stars),
           ],
         ),

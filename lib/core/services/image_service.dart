@@ -3,7 +3,10 @@ import 'package:injectable/injectable.dart';
 import 'package:neighbours/core/constants/default_constants.dart';
 
 abstract class ImageService {
-  Future<XFile?> pickImage(ImageSource source);
+  Future<XFile?> pickImage(ImageSource source,
+      {int imageQuality = DefaultConstants.imageQuality,
+      double maxWidth = 512,
+      double maxHeight = 512});
 }
 
 @Singleton(as: ImageService)

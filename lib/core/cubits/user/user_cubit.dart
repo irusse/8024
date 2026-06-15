@@ -20,7 +20,7 @@ class UserCubit extends Cubit<UserState> {
   UserCubit(this._userRepository) : super(UserState.initial());
 
   Future<void> fetchUser() async {
-    reset();
+    _reset();
     emit(state.copyWith(fetchState: const ApiState.loading()));
     final result = await _userRepository.fetchUser();
     result.fold(
@@ -32,7 +32,7 @@ class UserCubit extends Cubit<UserState> {
   }
 
   Future<void> updateUser(UserEntity user, {XFile? avatarFile}) async {
-    reset();
+    _reset();
     emit(state.copyWith(updateState: const ApiState.loading()));
     final result =
         await _userRepository.updateUser(user, avatarFile: avatarFile);
@@ -47,11 +47,11 @@ class UserCubit extends Cubit<UserState> {
     emit(state.copyWith(user: user));
   }
 
-  void setInitial() {
+  void onLogout() {
     emit(UserState.initial());
   }
 
-  void reset() {
+  void _reset() {
     emit(state.copyWith(
         confirmProfileDeletion: const ApiState.initial(),
         requestProfileDeletion: const ApiState.initial(),
@@ -61,9 +61,9 @@ class UserCubit extends Cubit<UserState> {
   }
 
   Future<void> requestProfileDeletion() async {
-    reset();
+    _reset();
     emit(state.copyWith(requestProfileDeletion: const ApiState.loading()));
-    final result = await _userRepository.requestProfileDeletion();
+    final result = await _userRepository.requestUserDeletion();
     result.fold(
       (failure) => emit(state.copyWith(
           requestProfileDeletion: ApiState.failure(failure.message))),
@@ -73,10 +73,35 @@ class UserCubit extends Cubit<UserState> {
     );
   }
 
+  Future<void> createProfile(
+      {required String name,
+      required String surname,
+      required String email,
+      XFile? image}) async {
+    _reset();
+    emit(state.copyWith(createState: ApiState.loading()));
+
+    final result = await _userRepository.submitUser(
+      name: name,
+      surname: surname,
+      email: email,
+      image: image,
+    );
+
+    result.fold(
+      (failure) {
+        emit(state.copyWith(createState: ApiState.failure(failure.message)));
+      },
+      (user) {
+        emit(state.copyWith(createState: ApiState.success(user), user: user));
+      },
+    );
+  }
+
   Future<void> confirmProfileDeletion(String code) async {
-    reset();
+    _reset();
     emit(state.copyWith(confirmProfileDeletion: const ApiState.loading()));
-    final result = await _userRepository.confirmProfileDeletion(code);
+    final result = await _userRepository.confirmUserDeletion(code);
     result.fold(
       (failure) => emit(state.copyWith(
         confirmProfileDeletion: ApiState.failure(failure.message),
@@ -89,9 +114,9 @@ class UserCubit extends Cubit<UserState> {
   }
 
   Future<void> restoreProfile() async {
-    reset();
+    _reset();
     emit(state.copyWith(restoreProfile: const ApiState.loading()));
-    final result = await _userRepository.restoreProfile();
+    final result = await _userRepository.restoreUser();
     result.fold(
       (failure) => emit(state.copyWith(
         restoreProfile: ApiState.failure(failure.message),

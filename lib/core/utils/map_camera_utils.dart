@@ -3,7 +3,7 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
 class MapCameraUtils {
   static const double defaultZoom = 17;
-  static const int defaultMapAnimationDuration = 150;
+  static const int defaultMapAnimationDuration = 450;
 
   static CameraOptions createCameraOptions(
       {required double lat, required double lng, double zoom = defaultZoom}) {

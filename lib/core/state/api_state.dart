@@ -34,9 +34,9 @@ extension ApiStateExtensions<T> on ApiState<T> {
     required VoidCallback onSuccess,
     void Function(String error)? onError,
   }) {
-    if (this.isSuccess) onSuccess();
-    if (this.isFailure && onError != null) {
-      onError(this.error ?? 'Неизвестная ошибка');
+    if (isSuccess) onSuccess();
+    if (isFailure && onError != null) {
+      onError(error ?? 'Неизвестная ошибка');
     }
   }
 }

@@ -3,24 +3,27 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' hide ImageSource;
 import 'package:neighbours/core/di/injection.dart';
-import 'package:neighbours/core/domain/entities/event/event_entity.dart';
 import 'package:neighbours/core/services/image_service.dart';
+import 'package:neighbours/features/event/domain/entities/event/event_entity.dart';
 
 part 'event_form_cubit.freezed.dart';
 
 part 'event_form_state.dart';
 
 class EventFormCubit extends Cubit<EventFormState> {
-  final FullEvent? _originalEvent;
+  final EventEntity? _originalEvent;
 
-  EventFormCubit({FullEvent? event})
-      : _originalEvent = event,
+  EventFormCubit({
+    EventEntity? event,
+    double? defaultLatitude,
+    double? defaultLongitude,
+  })  : _originalEvent = event,
         super(EventFormState(
           id: event?.id ?? 0,
           title: event?.title ?? '',
           description: event?.description ?? '',
-          latitude: event?.latitude ?? 0,
-          longitude: event?.longitude ?? 0,
+          latitude: event?.latitude ?? defaultLatitude ?? 0,
+          longitude: event?.longitude ?? defaultLongitude ?? 0,
           categoryId: event?.category.id,
           imageUrl: event?.image,
           selectedDateTime: event?.eventDateTime,

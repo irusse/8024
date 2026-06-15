@@ -1,7 +1,7 @@
 part of 'resource_form_cubit.dart';
 
 @freezed
-class ResourceFormState with _$ResourceFormState {
+abstract class ResourceFormState with _$ResourceFormState {
   const factory ResourceFormState({
     @Default(0) int id,
     @Default('') String name,
